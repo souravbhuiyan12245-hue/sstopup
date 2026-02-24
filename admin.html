@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SS TOP-UP — Admin Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #f97316;
+            --primary-dark: #ea580c;
+            --accent: #06b6d4;
+            --bg: #030712;
+            --card: #111827;
+            --border: rgba(255,255,255,0.06);
+            --text: #e5e7eb;
+            --muted: #6b7280;
+            --success: #22c55e;
+            --pink: #ec4899;
+            --danger: #ef4444;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+        
+        /* Login Screen */
+        .login-screen { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+        .login-box { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 40px 30px; max-width: 360px; width: 100%; text-align: center; }
+        .login-box h2 { font-size: 1.5rem; margin-bottom: 6px; }
+        .login-box .sub { color: var(--muted); font-size: 0.85rem; margin-bottom: 24px; }
+        .login-box .brand { font-size: 2rem; margin-bottom: 16px; display: block; }
+        
+        .inp { width: 100%; padding: 12px 14px; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 10px; color: #fff; font-size: 0.95rem; outline: none; font-family: inherit; transition: border 0.2s; margin-bottom: 12px; }
+        .inp:focus { border-color: var(--primary); }
+        .inp::placeholder { color: #4b5563; }
+        
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-size: 0.95rem; font-weight: 700; cursor: pointer; font-family: inherit; transition: all 0.2s; }
+        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: #fff; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(249,115,22,0.3); }
+        .btn-success { background: linear-gradient(135deg, var(--success), #16a34a); color: #fff; }
+        .btn-danger { background: var(--danger); color: #fff; }
+        
+        .error { color: var(--danger); font-size: 0.8rem; margin-bottom: 10px; display: none; }
+        
+        /* Admin Panel */
+        .admin-panel { display: none; max-width: 600px; margin: 0 auto; padding: 20px; }
+        
+        .admin-nav { position: sticky; top: 0; z-index: 100; background: rgba(3,7,18,0.95); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; margin: -20px -20px 20px; }
+        .admin-nav h2 { font-size: 1rem; display: flex; align-items: center; gap: 8px; }
+        .admin-nav .badge { background: var(--danger); color: #fff; font-size: 0.6rem; padding: 2px 8px; border-radius: 20px; }
+        .logout-btn { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: var(--danger); padding: 6px 12px; border-radius: 8px; font-size: 0.75rem; cursor: pointer; font-family: inherit; }
+        
+        .section { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 20px; margin-bottom: 16px; }
+        .section h3 { font-size: 0.9rem; font-weight: 700; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+        
+        .price-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+        .price-row:last-child { border-bottom: none; }
+        .price-label { flex: 1; font-size: 0.85rem; font-weight: 600; }
+        .price-label small { display: block; color: var(--muted); font-size: 0.7rem; font-weight: 400; }
+        .price-input { width: 90px; padding: 8px 10px; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 8px; color: #fff; font-size: 0.9rem; outline: none; font-family: inherit; text-align: right; }
+        .price-input:focus { border-color: var(--primary); }
+        .price-input-sm { width: 70px; }
+        .tk { color: var(--muted); font-size: 0.8rem; }
+        
+        .announce-input { width: 100%; padding: 10px 14px; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 10px; color: #fff; font-size: 0.85rem; outline: none; font-family: inherit; resize: vertical; min-height: 60px; }
+        .announce-input:focus { border-color: var(--primary); }
+        .announce-input::placeholder { color: #4b5563; }
+        
+        .save-bar { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(3,7,18,0.95); backdrop-filter: blur(20px); border-top: 1px solid var(--border); padding: 14px 20px; display: none; z-index: 100; }
+        .save-bar.show { display: block; }
+        .save-bar .inner { max-width: 600px; margin: 0 auto; display: flex; gap: 10px; }
+        .save-bar .btn { flex: 1; }
+        
+        .toast { position: fixed; top: 20px; right: 20px; background: var(--success); color: #fff; padding: 12px 20px; border-radius: 10px; font-size: 0.85rem; font-weight: 600; z-index: 200; display: none; animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { opacity:0; transform:translateY(-10px); } to { opacity:1; transform:translateY(0); } }
+        
+        .last-updated { text-align: center; color: var(--muted); font-size: 0.72rem; padding: 10px; }
+    </style>
+</head>
+<body>
+
+<!-- Login -->
+<div class="login-screen" id="loginScreen">
+    <div class="login-box">
+        <span class="brand">🔐</span>
+        <h2>SS TOP-UP Admin</h2>
+        <p class="sub">পাসওয়ার্ড দিয়ে লগইন করো</p>
+        <div class="error" id="loginError">❌ ভুল পাসওয়ার্ড!</div>
+        <input class="inp" type="password" id="passInput" placeholder="Password দাও..." onkeypress="if(event.key==='Enter')login()">
+        <button class="btn btn-primary" onclick="login()">🔓 Login</button>
+    </div>
+</div>
+
+<!-- Admin Panel -->
+<div class="admin-panel" id="adminPanel">
+    <div class="admin-nav">
+        <h2>⚙️ Admin Panel <span class="badge">ADMIN</span></h2>
+        <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+    </div>
+
+    <!-- Announcement -->
+    <div class="section">
+        <h3>📢 Announcement</h3>
+        <textarea class="announce-input" id="announcement" placeholder="কোনো notice লিখো... (খালি রাখলে দেখাবে না)" oninput="markChanged()"></textarea>
+    </div>
+
+    <!-- Diamond Prices -->
+    <div class="section">
+        <h3>💎 Diamond Prices</h3>
+        <div id="diamondPrices"></div>
+    </div>
+
+    <!-- Pass Prices -->
+    <div class="section">
+        <h3>📅 Pass / Membership</h3>
+        <div id="passPrices"></div>
+    </div>
+
+    <!-- Special Prices -->
+    <div class="section">
+        <h3>🎯 Special Items</h3>
+        <div id="specialPrices"></div>
+    </div>
+
+    <div class="last-updated" id="lastUpdated"></div>
+    <div style="height:80px"></div>
+</div>
+
+<!-- Save Bar -->
+<div class="save-bar" id="saveBar">
+    <div class="inner">
+        <button class="btn btn-success" onclick="saveAll()">💾 Save করো</button>
+    </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">✅ সেভ হয়ে গেছে!</div>
+
+<script>
+const BLOB_ID = '019c8f52-b33c-7283-adb7-4c62866d9a4d';
+const API = `https://jsonblob.com/api/jsonBlob/${BLOB_ID}`;
+const PASS = 'ss2026';
+
+let data = null;
+let changed = false;
+
+function login() {
+    const p = document.getElementById('passInput').value;
+    if (p === PASS) {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('adminPanel').style.display = 'block';
+        sessionStorage.setItem('admin', '1');
+        loadData();
+    } else {
+        document.getElementById('loginError').style.display = 'block';
+        document.getElementById('passInput').value = '';
+    }
+}
+
+function logout() {
+    sessionStorage.removeItem('admin');
+    location.reload();
+}
+
+// Auto-login if session
+if (sessionStorage.getItem('admin')) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('adminPanel').style.display = 'block';
+    loadData();
+}
+
+async function loadData() {
+    try {
+        const r = await fetch(API);
+        data = await r.json();
+        renderAll();
+    } catch(e) {
+        alert('❌ ডেটা লোড হয়নি! ইন্টারনেট চেক করো।');
+    }
+}
+
+function renderAll() {
+    // Announcement
+    document.getElementById('announcement').value = data.announcement || '';
+    
+    // Diamonds
+    const dEl = document.getElementById('diamondPrices');
+    dEl.innerHTML = '';
+    const dKeys = Object.keys(data.diamonds).sort((a,b) => Number(a) - Number(b));
+    dKeys.forEach(k => {
+        const d = data.diamonds[k];
+        dEl.innerHTML += `
+            <div class="price-row">
+                <div class="price-label">💎 ${k} Diamond<small>আগের দাম: ৳${d.original}</small></div>
+                <span class="tk">৳</span>
+                <input class="price-input" type="number" value="${d.price}" data-type="diamonds" data-key="${k}" data-field="price" oninput="markChanged()">
+            </div>`;
+    });
+    
+    // Passes
+    const pEl = document.getElementById('passPrices');
+    pEl.innerHTML = '';
+    Object.keys(data.passes).forEach(k => {
+        const p = data.passes[k];
+        pEl.innerHTML += `
+            <div class="price-row">
+                <div class="price-label">📅 ${p.name}<small>আগের দাম: ৳${p.original}</small></div>
+                <span class="tk">৳</span>
+                <input class="price-input" type="number" value="${p.price}" data-type="passes" data-key="${k}" data-field="price" oninput="markChanged()">
+            </div>`;
+    });
+    
+    // Specials
+    const sEl = document.getElementById('specialPrices');
+    sEl.innerHTML = '';
+    Object.keys(data.specials).forEach(k => {
+        const s = data.specials[k];
+        sEl.innerHTML += `
+            <div class="price-row">
+                <div class="price-label">🎯 ${s.name}<small>আগের দাম: ৳${s.original}</small></div>
+                <span class="tk">৳</span>
+                <input class="price-input" type="number" value="${s.price}" data-type="specials" data-key="${k}" data-field="price" oninput="markChanged()">
+            </div>`;
+    });
+    
+    document.getElementById('lastUpdated').textContent = `শেষ আপডেট: ${data.updated || 'N/A'}`;
+}
+
+function markChanged() {
+    changed = true;
+    document.getElementById('saveBar').classList.add('show');
+}
+
+async function saveAll() {
+    // Collect all values
+    document.querySelectorAll('.price-input').forEach(inp => {
+        const type = inp.dataset.type;
+        const key = inp.dataset.key;
+        const field = inp.dataset.field;
+        data[type][key][field] = Number(inp.value);
+    });
+    
+    data.announcement = document.getElementById('announcement').value.trim();
+    data.updated = new Date().toLocaleDateString('en-GB');
+    
+    try {
+        const r = await fetch(API, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        
+        if (r.ok) {
+            document.getElementById('saveBar').classList.remove('show');
+            changed = false;
+            showToast('✅ সেভ হয়ে গেছে!');
+            document.getElementById('lastUpdated').textContent = `শেষ আপডেট: ${data.updated}`;
+        } else {
+            showToast('❌ সেভ হয়নি! আবার চেষ্টা করো।');
+        }
+    } catch(e) {
+        showToast('❌ ইন্টারনেট চেক করো!');
+    }
+}
+
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.style.display = 'block';
+    setTimeout(() => t.style.display = 'none', 3000);
+}
+</script>
+</body>
+</html>
