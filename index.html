@@ -317,8 +317,9 @@
 <footer>© 2026 SS TOP-UP — All Rights Reserved<br>Free Fire™ is a trademark of Garena.</footer>
 
 <script>
-const BLOB_ID = '019c8f52-b33c-7283-adb7-4c62866d9a4d';
-const API = `https://jsonblob.com/api/jsonBlob/${BLOB_ID}`;
+const GH_USER = 'souravbhuiyan12245-hue';
+const GH_REPO = 'sstopup';
+const API = `https://raw.githubusercontent.com/${GH_USER}/${GH_REPO}/main/prices.json`;
 
 let prices = null;
 let sel = null, pm = 'bkash', curCat = 'uid-topup';
@@ -327,7 +328,7 @@ let pkgList = [];
 // Load prices from cloud
 async function loadPrices() {
     try {
-        const r = await fetch(API);
+        const r = await fetch(API + '?t=' + Date.now());
         prices = await r.json();
         updateHomePrices();
     } catch(e) {
