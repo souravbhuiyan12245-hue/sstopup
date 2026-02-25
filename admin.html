@@ -85,7 +85,8 @@
         <h2>SS TOP-UP Admin</h2>
         <p class="sub">পাসওয়ার্ড দিয়ে লগইন করো</p>
         <div class="error" id="loginError">❌ ভুল পাসওয়ার্ড!</div>
-        <input class="inp" type="password" id="passInput" placeholder="Password দাও..." onkeypress="if(event.key==='Enter')login()">
+        <input class="inp" type="password" id="passInput" placeholder="Password..." onkeypress="if(event.key==='Enter')login()">
+        <input class="inp" type="password" id="tokenInput" placeholder="GitHub Token (ghp_...)" value="">
         <button class="btn btn-primary" onclick="login()">🔓 Login</button>
     </div>
 </div>
@@ -136,8 +137,10 @@
 <div class="toast" id="toast">✅ সেভ হয়ে গেছে!</div>
 
 <script>
-const BLOB_ID = '019c8f52-b33c-7283-adb7-4c62866d9a4d';
-const API = `https://jsonblob.com/api/jsonBlob/${BLOB_ID}`;
+const REPO = 'souravbhuiyan12245-hue/sstopup';
+const API_READ = `https://raw.githubusercontent.com/${REPO}/main/prices.json`;
+const GH_API = `https://api.github.com/repos/${REPO}/contents/prices.json`;
+const GH_TOKEN = localStorage.getItem('gh_token') || '';
 const PASS = 'ss2026';
 
 let data = null;
@@ -145,7 +148,9 @@ let changed = false;
 
 function login() {
     const p = document.getElementById('passInput').value;
+    const token = document.getElementById('tokenInput').value.trim();
     if (p === PASS) {
+        if (token) localStorage.setItem('gh_token', token);
         document.getElementById('loginScreen').style.display = 'none';
         document.getElementById('adminPanel').style.display = 'block';
         sessionStorage.setItem('admin', '1');
@@ -171,7 +176,7 @@ if (sessionStorage.getItem('admin')) {
 async function loadData(retries = 3) {
     for (let i = 0; i < retries; i++) {
         try {
-            const r = await fetch(API, { cache: 'no-store' });
+            const r = await fetch(API_READ + '?t=' + Date.now(), { cache: 'no-store' });
             if (!r.ok) throw new Error('HTTP ' + r.status);
             data = await r.json();
             renderAll();
@@ -183,7 +188,7 @@ async function loadData(retries = 3) {
             }
         }
     }
-    document.getElementById('adminPanel').innerHTML = '<div style="text-align:center;padding:60px 20px;"><h2>❌ ডেটা লোড হয়নি!</h2><p style="color:#6b7280;margin:12px 0;">পেজ রিফ্রেশ করো।</p><button class="btn btn-primary" style="max-width:200px;margin:16px auto;" onclick="location.reload()">🔄 Refresh</button></div>';
+    document.getElementById('adminPanel').innerHTML = '<div style="text-align:center;padding:60px 20px;"><h2>❌ Data not loaded!</h2><p style="color:#6b7280;margin:12px 0;">Refresh the page.</p><button class="btn btn-primary" style="max-width:200px;margin:16px auto;" onclick="location.reload()">🔄 Refresh</button></div>';
 }
 
 function renderAll() {
@@ -251,22 +256,36 @@ async function saveAll() {
     data.updated = new Date().toLocaleDateString('en-GB');
     
     try {
-        const r = await fetch(API, {
+        // Get current file SHA
+        const shaR = await fetch(GH_API, { headers: { 'Authorization': 'token ' + GH_TOKEN } });
+        const shaData = await shaR.json();
+        const sha = shaData.sha;
+        
+        const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
+        const r = await fetch(GH_API, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
+            headers: { 
+                'Authorization': 'token ' + GH_TOKEN,
+                'Content-Type': 'application/json' 
+            },
+            body: JSON.stringify({
+                message: 'Update prices from admin panel',
+                content: content,
+                sha: sha,
+                branch: 'main'
+            })
         });
         
         if (r.ok) {
             document.getElementById('saveBar').classList.remove('show');
             changed = false;
-            showToast('✅ সেভ হয়ে গেছে!');
-            document.getElementById('lastUpdated').textContent = `শেষ আপডেট: ${data.updated}`;
+            showToast('✅ Saved!');
+            document.getElementById('lastUpdated').textContent = `Last updated: ${data.updated}`;
         } else {
-            showToast('❌ সেভ হয়নি! আবার চেষ্টা করো।');
+            showToast('❌ Save failed! Check your token.');
         }
     } catch(e) {
-        showToast('❌ ইন্টারনেট চেক করো!');
+        showToast('❌ Check your internet!');
     }
 }
 
