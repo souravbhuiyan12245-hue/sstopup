@@ -196,8 +196,6 @@
             <span>SS TOP-UP</span>
         </div>
         <div class="nav-actions">
-            <a class="n-btn ghost" onclick="goHome()">Home</a>
-            <a class="n-btn ghost" onclick="openDash()" id="dashLink">📊 Dashboard</a>
             <a class="n-btn solid" href="https://wa.me/8801606335174" target="_blank">💬 Support</a>
         </div>
     </div>
@@ -418,7 +416,24 @@
     </div>
 </div>
 
-<a href="https://wa.me/8801606335174" class="wa-fab" target="_blank">💬</a>
+<!-- Bottom Navigation -->
+<div style="position:fixed;bottom:0;left:0;right:0;background:rgba(3,7,18,0.95);backdrop-filter:blur(20px);border-top:1px solid var(--border);padding:8px 0 calc(8px + env(safe-area-inset-bottom));z-index:100;">
+    <div style="display:flex;justify-content:space-around;max-width:400px;margin:0 auto;">
+        <div onclick="goHome();closeDash();" style="display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:4px 16px;">
+            <span style="font-size:1.2rem;">🏠</span>
+            <span style="font-size:0.62rem;font-weight:600;color:var(--primary);">Home</span>
+        </div>
+        <div onclick="openDash();" style="display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:4px 16px;">
+            <span style="font-size:1.2rem;">📊</span>
+            <span style="font-size:0.62rem;font-weight:600;color:var(--muted);">Dashboard</span>
+        </div>
+        <div onclick="window.open('https://wa.me/8801606335174')" style="display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:4px 16px;">
+            <span style="font-size:1.2rem;">💬</span>
+            <span style="font-size:0.62rem;font-weight:600;color:var(--muted);">Support</span>
+        </div>
+    </div>
+</div>
+<div style="height:60px;"></div>
 
 <footer>© 2026 SS TOP-UP — All Rights Reserved<br>Free Fire™ is a trademark of Garena.</footer>
 
