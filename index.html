@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SS TOP-UP | Free Fire Diamond Store</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -30,7 +30,7 @@
         }
         
         body {
-            font-family: 'Noto Sans Bengali', sans-serif;
+            font-family: 'Inter', sans-serif;
             background: var(--bg);
             color: var(--text);
             min-height: 100vh;
@@ -588,28 +588,28 @@
         <div class="product-card" onclick="openModal('diamond')">
             <span class="tag hot">HOT</span>
             <div class="card-icon">💎</div>
-            <div class="card-title">UID টপআপ</div>
-            <div class="card-sub">ডায়মন্ড কিনুন</div>
+            <div class="card-title">UID TopUp</div>
+            <div class="card-sub">Buy Diamonds</div>
         </div>
         <div class="product-card" onclick="openModal('weekly_lite')">
             <div class="card-icon" style="background:linear-gradient(145deg,#8B5CF6,#6D28D9)">📅</div>
-            <div class="card-title">উইকলি লাইট</div>
+            <div class="card-title">Weekly Lite</div>
             <div class="card-sub">Weekly Lite</div>
         </div>
         <div class="product-card" onclick="openModal('weekly_monthly')">
             <span class="tag hot">HOT</span>
             <div class="card-icon" style="background:linear-gradient(145deg,#F59E0B,#D97706)">📅</div>
-            <div class="card-title">উইকলি মান্থলি</div>
+            <div class="card-title">Weekly Monthly</div>
             <div class="card-sub">Weekly / Monthly</div>
         </div>
         <div class="product-card" onclick="openModal('evo_access')">
             <div class="card-icon" style="background:linear-gradient(145deg,#EF4444,#DC2626)">🎯</div>
-            <div class="card-title">ইভো এক্সেস</div>
+            <div class="card-title">EVO Access</div>
             <div class="card-sub">EVO Access</div>
         </div>
         <div class="product-card" onclick="openModal('level_up')">
             <div class="card-icon" style="background:linear-gradient(145deg,#06B6D4,#0891B2)">🎮</div>
-            <div class="card-title">লেভেল আপ</div>
+            <div class="card-title">Level Up</div>
             <div class="card-sub">Level Up Pass</div>
         </div>
     </div>
@@ -617,11 +617,11 @@
 
 <!-- Orders Section -->
 <div class="status-section" id="ordersSection">
-    <div class="section-title">📋 আমার অর্ডার</div>
+    <div class="section-title">📋 My Orders</div>
     <div id="ordersList">
         <div style="text-align:center;padding:40px 20px;color:var(--text-muted);">
             <i class="fas fa-inbox" style="font-size:2.5rem;margin-bottom:12px;display:block;opacity:0.3;"></i>
-            <p>কোনো অর্ডার নেই</p>
+            <p>No orders yet</p>
         </div>
     </div>
 </div>
@@ -630,24 +630,24 @@
 <div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
     <div class="modal">
         <div class="modal-handle"></div>
-        <h3 id="modalTitle">💎 ডায়মন্ড টপআপ</h3>
-        <p class="modal-sub" id="modalSub">আপনার Free Fire UID দিন এবং প্যাকেজ সিলেক্ট করুন</p>
+        <h3 id="modalTitle">💎 Diamond TopUp</h3>
+        <p class="modal-sub" id="modalSub">Enter your Free Fire UID and select a package</p>
 
         <!-- UID Input -->
         <div class="form-group">
             <label class="form-label">🎮 Player ID (UID)</label>
-            <input class="form-input" type="text" id="uidInput" placeholder="আপনার Free Fire UID লিখুন" inputmode="numeric">
+            <input class="form-input" type="text" id="uidInput" placeholder="Enter your Free Fire UID" inputmode="numeric">
         </div>
 
         <!-- Diamond Select (for diamond type) -->
         <div class="form-group" id="diamondSelectGroup">
-            <label class="form-label">💎 ডায়মন্ড সিলেক্ট করুন</label>
+            <label class="form-label">💎 Select Diamonds</label>
             <div class="diamond-grid" id="diamondGrid"></div>
         </div>
 
         <!-- Weekly/Monthly Select -->
         <div class="form-group" id="wmSelectGroup" style="display:none;">
-            <label class="form-label">📅 প্যাকেজ সিলেক্ট করুন</label>
+            <label class="form-label">📅 Select Package</label>
             <div class="diamond-grid" id="wmGrid"></div>
         </div>
 
@@ -661,27 +661,27 @@
 
         <!-- Payment -->
         <div class="form-group">
-            <label class="form-label">💳 পেমেন্ট মেথড</label>
+            <label class="form-label">💳 Payment Method</label>
             <div class="payment-options">
                 <div class="payment-option selected" onclick="selectPayment(this,'bkash')">
                     <div class="pay-icon bkash-icon">b</div>
                     <div>
                         <div class="pay-name">bKash</div>
-                        <div class="pay-num">Send Money করুন</div>
+                        <div class="pay-num">Send Money</div>
                     </div>
                 </div>
                 <div class="payment-option" onclick="selectPayment(this,'nagad')">
                     <div class="pay-icon nagad-icon">N</div>
                     <div>
                         <div class="pay-name">Nagad</div>
-                        <div class="pay-num">Send Money করুন</div>
+                        <div class="pay-num">Send Money</div>
                     </div>
                 </div>
                 <div class="payment-option" onclick="selectPayment(this,'rocket')">
                     <div class="pay-icon rocket-icon">R</div>
                     <div>
                         <div class="pay-name">Rocket</div>
-                        <div class="pay-num">Send Money করুন</div>
+                        <div class="pay-num">Send Money</div>
                     </div>
                 </div>
             </div>
@@ -689,24 +689,24 @@
 
         <!-- Phone Number -->
         <div class="form-group">
-            <label class="form-label">📱 আপনার নম্বর (যেটা থেকে Send Money করবেন)</label>
+            <label class="form-label">📱 Your Number (Send Money from)</label>
             <input class="form-input" type="tel" id="phoneInput" placeholder="01XXXXXXXXX" inputmode="numeric">
         </div>
 
         <!-- Transaction ID -->
         <div class="form-group">
             <label class="form-label">🧾 Transaction ID</label>
-            <input class="form-input" type="text" id="trxInput" placeholder="Transaction ID দিন">
+            <input class="form-input" type="text" id="trxInput" placeholder="Enter Transaction ID">
         </div>
 
         <!-- Total -->
         <div class="total-bar" id="totalBar">
-            <span class="label">মোট মূল্য</span>
+            <span class="label">Total Price</span>
             <span class="amount" id="totalAmount">৳0</span>
         </div>
 
         <button class="submit-btn" onclick="submitOrder()">
-            <i class="fas fa-paper-plane"></i> অর্ডার কনফার্ম করুন
+            <i class="fas fa-paper-plane"></i> Confirm Order
         </button>
     </div>
 </div>
@@ -720,15 +720,15 @@
 <div class="bottom-nav">
     <button class="nav-item active" onclick="showHome()">
         <i class="fas fa-home"></i>
-        হোম
+        Home
     </button>
     <button class="nav-item" onclick="showOrders()">
         <i class="fas fa-receipt"></i>
-        অর্ডার
+        Orders
     </button>
     <button class="nav-item" onclick="window.open('https://wa.me/8801606335174','_blank')">
         <i class="fab fa-whatsapp"></i>
-        সাহায্য
+        Help
     </button>
 </div>
 
@@ -791,13 +791,13 @@ async function openModal(type) {
     document.getElementById('wmSelectGroup').style.display = 'none';
     
     if (type === 'diamond') {
-        document.getElementById('modalTitle').textContent = '💎 ডায়মন্ড টপআপ';
-        document.getElementById('modalSub').textContent = 'আপনার UID দিন এবং ডায়মন্ড সিলেক্ট করুন';
+        document.getElementById('modalTitle').textContent = '💎 Diamond TopUp';
+        document.getElementById('modalSub').textContent = 'Enter your UID and select diamonds';
         diamondGroup.style.display = 'block';
         renderDiamonds();
     } else if (type === 'weekly_monthly') {
-        document.getElementById('modalTitle').textContent = '📅 উইকলি / মান্থলি';
-        document.getElementById('modalSub').textContent = 'প্যাকেজ সিলেক্ট করুন এবং UID দিন';
+        document.getElementById('modalTitle').textContent = '📅 Weekly / Monthly';
+        document.getElementById('modalSub').textContent = 'Select a package and enter your UID';
         document.getElementById('wmSelectGroup').style.display = 'block';
         renderWeeklyMonthly();
     } else {
@@ -810,7 +810,7 @@ async function openModal(type) {
             price = prices.specials[type].price;
         }
         document.getElementById('modalTitle').textContent = '📅 ' + name;
-        document.getElementById('modalSub').textContent = 'আপনার UID দিন এবং পেমেন্ট করুন';
+        document.getElementById('modalSub').textContent = 'Enter your UID and make payment';
         passGroup.style.display = 'block';
         document.getElementById('passName').textContent = name;
         document.getElementById('passPrice').textContent = '৳' + price;
@@ -894,17 +894,17 @@ function submitOrder() {
     const phone = document.getElementById('phoneInput').value.trim();
     const trx = document.getElementById('trxInput').value.trim();
     
-    if (!uid) { showToast('❌ Player ID দিন!'); return; }
-    if (!phone) { showToast('❌ ফোন নম্বর দিন!'); return; }
-    if (!trx) { showToast('❌ Transaction ID দিন!'); return; }
+    if (!uid) { showToast('❌ Enter Player ID!'); return; }
+    if (!phone) { showToast('❌ Enter phone number!'); return; }
+    if (!trx) { showToast('❌ Enter Transaction ID!'); return; }
     
     let item = '', price = 0;
     if (currentType === 'diamond') {
-        if (!selectedDiamond) { showToast('❌ ডায়মন্ড সিলেক্ট করুন!'); return; }
+        if (!selectedDiamond) { showToast('❌ Select diamonds!'); return; }
         item = selectedDiamond + ' Diamond';
         price = prices.diamonds[selectedDiamond].price;
     } else if (currentType === 'weekly_monthly') {
-        if (!selectedWM) { showToast('❌ প্যাকেজ সিলেক্ট করুন!'); return; }
+        if (!selectedWM) { showToast('❌ Select a package!'); return; }
         item = prices.passes[selectedWM].name;
         price = prices.passes[selectedWM].price;
     } else if (prices.passes[currentType]) {
@@ -916,11 +916,11 @@ function submitOrder() {
     }
     
     // Send to WhatsApp
-    const msg = `🛒 *SS TOP-UP নতুন অর্ডার!*%0A%0A🎮 UID: ${uid}%0A📦 আইটেম: ${item}%0A💰 মূল্য: ৳${price}%0A💳 পেমেন্ট: ${selectedPayment}%0A📱 নম্বর: ${phone}%0A🧾 TrxID: ${trx}`;
+    const msg = `🛒 *SS TOP-UP নতুন Orders!*%0A%0A🎮 UID: ${uid}%0A📦 Item: ${item}%0A💰 Price: ৳${price}%0A💳 Payment: ${selectedPayment}%0A📱 Number: ${phone}%0A🧾 TrxID: ${trx}`;
     
     window.open(`https://wa.me/${WA_NUMBER}?text=${msg}`, '_blank');
     
-    showToast('✅ অর্ডার পাঠানো হচ্ছে WhatsApp এ!');
+    showToast('✅ Orders পাঠানো হচ্ছে WhatsApp এ!');
     
     setTimeout(() => {
         closeModal();
