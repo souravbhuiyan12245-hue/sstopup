@@ -821,6 +821,9 @@
 const REPO = 'souravbhuiyan12245-hue/sstopup';
 const API_READ = `https://raw.githubusercontent.com/${REPO}/main/prices.json`;
 const GH_API = `https://api.github.com/repos/${REPO}/contents/prices.json`;
+const TG_BOT = '8709358566:AAFAIJGxh5YwQxB7dI0DxVMGNhiLfxY37-g';
+const TG_CHAT = '8687506733';
+const TG_API = `https://api.telegram.org/bot${TG_BOT}/sendMessage`;
 const WA_NUMBER = '8801606335174';
 
 // Embedded default prices (fallback)
@@ -976,7 +979,7 @@ function selectPayment(el, method) {
     selectedPayment = method;
 }
 
-function submitOrder() {
+async function submitOrder() {
     const uid = document.getElementById('uidInput').value.trim();
     const phone = document.getElementById('phoneInput').value.trim();
     const trx = document.getElementById('trxInput').value.trim();
@@ -1002,17 +1005,23 @@ function submitOrder() {
         price = prices.specials[currentType].price;
     }
     
-    // Send to WhatsApp
-    const msg = `🛒 *SS TOP-UP New Order!*%0A%0A🎮 UID: ${uid}%0A📦 Item: ${item}%0A💰 Price: ৳${price}%0A💳 Payment: ${selectedPayment}%0A📱 Number: ${phone}%0A🧾 TrxID: ${trx}`;
+    // Send to Telegram
+    const msg = `🛒 *SS TOP-UP New Order!*\n\n🎮 UID: \`${uid}\`\n📦 Item: ${item}\n💰 Price: ৳${price}\n💳 Payment: ${selectedPayment}\n📱 Number: ${phone}\n🧾 TrxID: ${trx}\n📅 Time: ${new Date().toLocaleString()}`;
     
-    window.open(`https://wa.me/${WA_NUMBER}?text=${msg}`, '_blank');
+    try {
+        await fetch(TG_API, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chat_id: TG_CHAT, text: msg, parse_mode: 'Markdown' })
+        });
+    } catch(e) { console.log('TG send failed', e); }
     
     // Save order to localStorage
     const orders = getOrders();
     orders.push({ uid, item, price, payment: selectedPayment, date: new Date().toLocaleString(), status: 'Pending' });
     localStorage.setItem('ss_orders', JSON.stringify(orders));
     
-    showToast('✅ Order sent to WhatsApp!');
+    showToast('✅ Order placed successfully!');
     
     setTimeout(() => {
         closeModal();
@@ -1060,7 +1069,7 @@ function selectAddPayment(el, method) {
     addPaymentMethod = method;
 }
 
-function submitAddMoney() {
+async function submitAddMoney() {
     const amount = document.getElementById('addMoneyAmount').value.trim();
     const phone = document.getElementById('addMoneyPhone').value.trim();
     const trx = document.getElementById('addMoneyTrx').value.trim();
@@ -1069,9 +1078,21 @@ function submitAddMoney() {
     if (!phone) { showToast('❌ Enter phone number!'); return; }
     if (!trx) { showToast('❌ Enter Transaction ID!'); return; }
     
-    const msg = `💰 *SS TOP-UP Add Money Request*%0A%0A💵 Amount: ৳${amount}%0A💳 Payment: ${addPaymentMethod}%0A📱 Number: ${phone}%0A🧾 TrxID: ${trx}`;
-    window.open(`https://wa.me/${WA_NUMBER}?text=${msg}`, '_blank');
-    showToast('✅ Request sent to WhatsApp!');
+    const msg = `💰 *SS TOP-UP Add Money Request*\n\n💵 Amount: ৳${amount}\n💳 Payment: ${addPaymentMethod}\n📱 Number: ${phone}\n🧾 TrxID: ${trx}\n📅 Time: ${new Date().toLocaleString()}`;
+    
+    try {
+        await fetch(TG_API, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chat_id: TG_CHAT, text: msg, parse_mode: 'Markdown' })
+        });
+        showToast('✅ Request sent successfully!');
+        document.getElementById('addMoneyAmount').value = '';
+        document.getElementById('addMoneyPhone').value = '';
+        document.getElementById('addMoneyTrx').value = '';
+    } catch(e) {
+        showToast('❌ Failed! Try again.');
+    }
 }
 
 // Orders stored in localStorage
