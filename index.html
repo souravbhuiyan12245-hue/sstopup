@@ -291,8 +291,9 @@
             border-radius: 24px 24px 0 0;
             width: 100%;
             max-width: 500px;
-            max-height: 90vh;
+            max-height: 92vh;
             overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
             padding: 24px 20px 40px;
             animation: slideUp 0.3s ease;
         }
@@ -777,7 +778,8 @@ function updateUI() {
     }
 }
 
-function openModal(type) {
+async function openModal(type) {
+    if (!prices) await loadPrices();
     currentType = type;
     const modal = document.getElementById('modalOverlay');
     const diamondGroup = document.getElementById('diamondSelectGroup');
