@@ -176,7 +176,17 @@
             right: -30px;
             width: 80px;
             height: 80px;
-            background: rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.15);
+            border-radius: 50%;
+        }
+        .offer-card::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            left: -20px;
+            width: 60px;
+            height: 60px;
+            background: rgba(255,255,255,0.08);
             border-radius: 50%;
         }
         .offer-card:active { transform: scale(0.96); }
@@ -251,19 +261,46 @@
         .product-card:nth-child(5) { animation-delay: 0.55s; }
         .product-card:nth-child(6) { animation-delay: 0.65s; }
         .product-card:nth-child(7) { animation-delay: 0.75s; }
-        .product-card .card-icon { animation: pulse 2.5s ease infinite; }
-        .product-card:hover .card-icon { animation: shake 0.5s ease; }
+        .product-card .card-icon { animation: pulse 2.5s ease infinite, shimmer 3s ease infinite; }
+        
+        @keyframes shimmer {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.2); }
+        }
         .product-card .card-icon {
-            width: 56px;
-            height: 56px;
-            margin: 0 auto 10px;
+            width: 100%;
+            height: 80px;
+            margin: -14px -10px 10px;
+            width: calc(100% + 20px);
             background: linear-gradient(145deg, var(--primary-light), var(--primary));
-            border-radius: 14px;
+            border-radius: 14px 14px 0 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 2.2rem;
             color: #fff;
+            position: relative;
+            overflow: hidden;
+        }
+        .product-card .card-icon::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            width: 60px;
+            height: 60px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 50%;
+        }
+        .product-card .card-icon::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: -15px;
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
         }
         .product-card .card-title {
             font-size: 0.72rem;
@@ -677,23 +714,23 @@
     <!-- Special Offers -->
     <div class="section-title">🔥 SPECIAL OFFER <span class="badge">HOT</span></div>
     <div class="offers-scroll">
-        <div class="offer-card" onclick="openModal('weekly_lite')">
-            <span class="icon">📦</span>
+        <div class="offer-card" onclick="openModal('weekly_lite')" style="background:linear-gradient(145deg,#7C3AED,#4338CA);">
+            <span class="icon">📦✨</span>
             <div class="title">Weekly Lite</div>
             <div class="sub" id="offerWeeklyLite">৳120</div>
         </div>
-        <div class="offer-card gold" onclick="openModal('weekly_1x')">
-            <span class="icon">👑</span>
+        <div class="offer-card" onclick="openModal('weekly_1x')" style="background:linear-gradient(145deg,#F59E0B,#DC2626);">
+            <span class="icon">👑🔥</span>
             <div class="title">1X Weekly</div>
             <div class="sub" id="offerWeekly1x">৳250</div>
         </div>
-        <div class="offer-card pink" onclick="openModal('monthly')">
-            <span class="icon">🏆</span>
+        <div class="offer-card" onclick="openModal('monthly')" style="background:linear-gradient(145deg,#EC4899,#9333EA);">
+            <span class="icon">🏆💫</span>
             <div class="title">Monthly</div>
             <div class="sub" id="offerMonthly">৳950</div>
         </div>
-        <div class="offer-card green" onclick="openModal('weekly_2x')">
-            <span class="icon">⚡</span>
+        <div class="offer-card" onclick="openModal('weekly_2x')" style="background:linear-gradient(145deg,#22C55E,#0EA5E9);">
+            <span class="icon">⚡💎</span>
             <div class="title">2X Weekly</div>
             <div class="sub" id="offerWeekly2x">৳480</div>
         </div>
@@ -707,28 +744,28 @@
     <div class="product-grid">
         <div class="product-card" onclick="openModal('diamond')">
             <span class="tag hot">HOT</span>
-            <div class="card-icon">💎</div>
+            <div class="card-icon" style="background:linear-gradient(145deg,#4F46E5,#7C3AED,#EC4899);">💎</div>
             <div class="card-title">UID TopUp</div>
             <div class="card-sub">Buy Diamonds</div>
         </div>
         <div class="product-card" onclick="openModal('weekly_lite')">
-            <div class="card-icon" style="background:linear-gradient(145deg,#8B5CF6,#6D28D9)">📅</div>
+            <div class="card-icon" style="background:linear-gradient(145deg,#7C3AED,#4338CA);">📦</div>
             <div class="card-title">Weekly Lite</div>
             <div class="card-sub">Weekly Lite</div>
         </div>
         <div class="product-card" onclick="openModal('weekly_monthly')">
             <span class="tag hot">HOT</span>
-            <div class="card-icon" style="background:linear-gradient(145deg,#F59E0B,#D97706)">📅</div>
+            <div class="card-icon" style="background:linear-gradient(145deg,#F59E0B,#EF4444);">👑</div>
             <div class="card-title">Weekly Monthly</div>
             <div class="card-sub">Weekly / Monthly</div>
         </div>
         <div class="product-card" onclick="openModal('evo_access')">
-            <div class="card-icon" style="background:linear-gradient(145deg,#EF4444,#DC2626)">🎯</div>
+            <div class="card-icon" style="background:linear-gradient(145deg,#DC2626,#9333EA);">🛡️</div>
             <div class="card-title">EVO Access</div>
             <div class="card-sub">EVO Access</div>
         </div>
         <div class="product-card" onclick="openModal('level_up')">
-            <div class="card-icon" style="background:linear-gradient(145deg,#06B6D4,#0891B2)">🎮</div>
+            <div class="card-icon" style="background:linear-gradient(145deg,#0EA5E9,#6366F1);">⚔️</div>
             <div class="card-title">Level Up</div>
             <div class="card-sub">Level Up Pass</div>
         </div>
