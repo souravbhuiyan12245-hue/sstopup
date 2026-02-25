@@ -340,8 +340,8 @@
         /* Diamond Select */
         .diamond-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
             margin-bottom: 8px;
         }
         .diamond-option {
@@ -762,22 +762,27 @@ const API_READ = `https://raw.githubusercontent.com/${REPO}/main/prices.json`;
 const GH_API = `https://api.github.com/repos/${REPO}/contents/prices.json`;
 const WA_NUMBER = '8801606335174';
 
-let prices = null;
+// Embedded default prices (fallback)
+const DEFAULT_PRICES = {"diamonds":{"25":{"price":35,"original":40},"50":{"price":65,"original":75},"100":{"price":120,"original":140},"310":{"price":350,"original":400},"520":{"price":580,"original":650},"1060":{"price":1100,"original":1250},"2180":{"price":2200,"original":2500},"5600":{"price":5500,"original":6200},"10120":{"price":10000,"original":11500}},"passes":{"weekly_lite":{"price":120,"original":140,"name":"Weekly Lite"},"weekly_1x":{"price":250,"original":290,"name":"1X Weekly"},"weekly_2x":{"price":480,"original":550,"name":"2X Weekly"},"monthly":{"price":950,"original":1100,"name":"Monthly"}},"specials":{"evo_access":{"price":850,"original":1000,"name":"EVO Access"},"level_up":{"price":450,"original":550,"name":"Level Up Pass"}},"announcement":"","updated":"2026-02-24"};
+
+let prices = DEFAULT_PRICES;
 let selectedDiamond = null;
 let selectedPayment = 'bkash';
 let currentType = 'diamond';
 
 // Load prices
 async function loadPrices() {
-    for (let i = 0; i < 3; i++) {
-        try {
-            const r = await fetch(API_READ + '?t=' + Date.now(), { cache: 'no-store' });
+    // Use default prices immediately
+    updateUI();
+    // Then try to fetch latest from GitHub
+    try {
+        const r = await fetch(API_READ + '?t=' + Date.now(), { cache: 'no-store' });
+        if (r.ok) {
             prices = await r.json();
             updateUI();
-            return;
-        } catch(e) {
-            if (i < 2) await new Promise(r => setTimeout(r, 1500));
         }
+    } catch(e) {
+        console.log('Using default prices');
     }
 }
 
@@ -801,10 +806,6 @@ function updateUI() {
 }
 
 async function openModal(type) {
-    if (!prices) {
-        await loadPrices();
-        if (!prices) { alert('Data loading failed. Please refresh the page.'); return; }
-    }
     currentType = type;
     const modal = document.getElementById('modalOverlay');
     const diamondGroup = document.getElementById('diamondSelectGroup');
