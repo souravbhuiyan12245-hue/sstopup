@@ -921,13 +921,64 @@
 
 <!-- Account Section -->
 <div class="status-section" id="accountSection">
-    <div style="text-align:center;padding:20px 0;">
-        <div style="width:70px;height:70px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:2rem;color:#fff;" id="accountAvatar">👤</div>
-        <div style="font-size:1.1rem;font-weight:800;" id="accountName">Guest</div>
+    <!-- Profile Header with Photo Upload -->
+    <div style="text-align:center;padding:24px 0 16px;">
+        <div style="position:relative;width:90px;height:90px;margin:0 auto 14px;">
+            <div style="width:90px;height:90px;border-radius:50%;border:3px solid var(--primary);overflow:hidden;background:linear-gradient(135deg,var(--primary),var(--primary-dark));display:flex;align-items:center;justify-content:center;" id="accountAvatarWrap">
+                <img id="accountAvatarImg" src="" style="width:100%;height:100%;object-fit:cover;display:none;">
+                <span id="accountAvatarIcon" style="font-size:2.2rem;color:#fff;">👤</span>
+            </div>
+            <label for="profilePhotoInput" style="position:absolute;bottom:0;right:0;width:30px;height:30px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.2);">
+                <i class="fas fa-camera" style="color:#fff;font-size:0.7rem;"></i>
+            </label>
+            <input type="file" id="profilePhotoInput" accept="image/*" style="display:none;" onchange="handleProfilePhoto(this)">
+        </div>
+        <div style="font-size:1.15rem;font-weight:800;" id="accountName">Guest</div>
         <div style="font-size:0.8rem;color:var(--text-muted);" id="accountEmail">No email added</div>
+        <div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:6px;">
+            <span style="font-size:0.82rem;color:var(--text-muted);">Available Balance :</span>
+            <span style="font-size:0.95rem;font-weight:800;color:var(--primary);" id="accountBalance">0 Tk</span>
+            <i class="fas fa-sync-alt" style="font-size:0.7rem;color:var(--primary);cursor:pointer;" onclick="showAddMoney()"></i>
+        </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+        <div class="status-card" style="text-align:center;margin:0;padding:14px 10px;">
+            <div style="font-size:1.3rem;font-weight:800;color:#3b82f6;" id="statSupportPin">—</div>
+            <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;">Support Pin</div>
+        </div>
+        <div class="status-card" style="text-align:center;margin:0;padding:14px 10px;">
+            <div style="font-size:1.3rem;font-weight:800;color:#3b82f6;" id="statWeeklySpent">0 ৳</div>
+            <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;">Weekly Spent</div>
+        </div>
+        <div class="status-card" style="text-align:center;margin:0;padding:14px 10px;">
+            <div style="font-size:1.3rem;font-weight:800;color:#f97316;" id="statTotalSpent">0</div>
+            <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;">Total Spent</div>
+        </div>
+        <div class="status-card" style="text-align:center;margin:0;padding:14px 10px;">
+            <div style="font-size:1.3rem;font-weight:800;color:#f97316;" id="statTotalOrders">0</div>
+            <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;">Total Order</div>
+        </div>
+    </div>
+
+    <!-- Account Info Card -->
+    <div class="status-card" style="margin-bottom:12px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+            <i class="fas fa-shield-alt" style="color:var(--primary);font-size:1rem;"></i>
+            <span style="font-weight:700;font-size:0.9rem;">Account Information</span>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #F3F4F6;">
+            <span style="font-size:0.82rem;color:var(--text-muted);">Balance</span>
+            <span style="font-size:0.9rem;font-weight:700;color:var(--primary);" id="accountBalInfo">0.00৳</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;padding:10px 0;" id="verifyStatus">
+            <i class="fas fa-check-circle" style="color:#3b82f6;font-size:0.9rem;"></i>
+            <span style="font-size:0.82rem;color:#3b82f6;font-weight:600;">Account Active</span>
+        </div>
     </div>
     
-    <!-- Profile Setup Card (shown if not logged in) -->
+    <!-- Profile Setup Card -->
     <div class="status-card" id="profileSetupCard">
         <h4 style="font-size:0.9rem;margin-bottom:14px;">📝 Setup Your Profile</h4>
         <div class="form-group">
@@ -1354,13 +1405,16 @@ function showAccount() {
     const user = localStorage.getItem('ss_user');
     if (user) {
         const u = JSON.parse(user);
-        document.getElementById('accountAvatar').textContent = u.name[0].toUpperCase();
         document.getElementById('accountName').textContent = u.name;
         document.getElementById('accountEmail').textContent = u.email;
         document.getElementById('profileSetupCard').style.display = 'none';
+        updateAccountStats();
     } else {
         document.getElementById('profileSetupCard').style.display = 'block';
     }
+    // Always try to load photo
+    const photo = localStorage.getItem('ss_profile_photo');
+    if (photo) showProfilePhoto(photo);
 }
 
 let addPaymentMethod = 'bkash';
@@ -1469,10 +1523,14 @@ function handleLogin() {
     
     // Update UI
     document.querySelector('.profile-btn').textContent = name[0].toUpperCase();
-    document.getElementById('accountAvatar').textContent = name[0].toUpperCase();
     document.getElementById('accountName').textContent = name;
     document.getElementById('accountEmail').textContent = email;
     document.getElementById('profileSetupCard').style.display = 'none';
+    // Generate support pin
+    if (!localStorage.getItem('ss_support_pin')) {
+        localStorage.setItem('ss_support_pin', Math.floor(1000000 + Math.random() * 9000000).toString());
+    }
+    updateAccountStats();
     
     showToast('✅ Profile saved!');
     
@@ -1488,11 +1546,46 @@ function handleLogin() {
     }).catch(e => {});
 }
 
+function handleProfilePhoto(input) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const dataUrl = e.target.result;
+            localStorage.setItem('ss_profile_photo', dataUrl);
+            showProfilePhoto(dataUrl);
+            showToast('✅ Profile photo updated!');
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+function showProfilePhoto(dataUrl) {
+    const img = document.getElementById('accountAvatarImg');
+    const icon = document.getElementById('accountAvatarIcon');
+    if (dataUrl) {
+        img.src = dataUrl;
+        img.style.display = 'block';
+        icon.style.display = 'none';
+    }
+}
+
+function updateAccountStats() {
+    const pin = localStorage.getItem('ss_support_pin');
+    if (pin) document.getElementById('statSupportPin').textContent = pin;
+    // Load photo
+    const photo = localStorage.getItem('ss_profile_photo');
+    if (photo) showProfilePhoto(photo);
+}
+
 function checkLogin() {
     const user = localStorage.getItem('ss_user');
     if (user) {
         const u = JSON.parse(user);
         document.querySelector('.profile-btn').textContent = u.name[0].toUpperCase();
+        if (!localStorage.getItem('ss_support_pin')) {
+            localStorage.setItem('ss_support_pin', Math.floor(1000000 + Math.random() * 9000000).toString());
+        }
+        updateAccountStats();
     }
 }
 
