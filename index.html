@@ -197,6 +197,7 @@
         </div>
         <div class="nav-actions">
             <a class="n-btn ghost" onclick="goHome()">Home</a>
+            <a class="n-btn ghost" onclick="openDash()" id="dashLink">📊 Dashboard</a>
             <a class="n-btn solid" href="https://wa.me/8801606335174" target="_blank">💬 Support</a>
         </div>
     </div>
@@ -295,6 +296,10 @@
             <div class="cc-icon ng">💳</div>
             <div class="cc-text"><div class="cc-label">Nagad</div><div class="cc-val">01854707074</div></div>
         </a>
+        <a href="mailto:souravbhuiyan12245@gmail.com" class="contact-card">
+            <div class="cc-icon" style="background:rgba(59,130,246,0.15);">📧</div>
+            <div class="cc-text"><div class="cc-label">Email</div><div class="cc-val">souravbhuiyan12245@gmail.com</div></div>
+        </a>
     </div>
 </div>
 
@@ -366,6 +371,53 @@
     </div>
 </div>
 
+<!-- DASHBOARD -->
+<div class="topup-view" id="dashView">
+    <div class="page" style="max-width:1000px;margin:0 auto;padding:20px;">
+        <div class="back" onclick="closeDash()">← Back</div>
+        
+        <!-- Not logged in -->
+        <div id="authBox" style="display:block;">
+            <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;max-width:380px;margin:30px auto;text-align:center;">
+                <div style="font-size:2.5rem;margin-bottom:10px;">👤</div>
+                <h3 style="margin-bottom:4px;">Welcome to SS TOP-UP</h3>
+                <p style="color:var(--muted);font-size:0.82rem;margin-bottom:18px;">Login or create account to track orders</p>
+                <div style="display:flex;gap:4px;margin-bottom:14px;background:rgba(255,255,255,0.03);border-radius:10px;padding:3px;">
+                    <div class="auth-tab active" onclick="switchAuth('login')" id="tabLogin" style="flex:1;padding:8px;text-align:center;border-radius:8px;font-size:0.82rem;font-weight:600;cursor:pointer;transition:all 0.2s;">Login</div>
+                    <div class="auth-tab" onclick="switchAuth('signup')" id="tabSignup" style="flex:1;padding:8px;text-align:center;border-radius:8px;font-size:0.82rem;font-weight:600;cursor:pointer;color:var(--muted);transition:all 0.2s;">Sign Up</div>
+                </div>
+                <div id="loginFields">
+                    <input class="inp" type="email" id="authEmail" placeholder="📧 Email" style="margin-bottom:8px;">
+                    <input class="inp" type="password" id="authPass" placeholder="🔒 Password" style="margin-bottom:10px;">
+                    <button class="go-btn" onclick="doLogin()" style="margin-top:0;">Login →</button>
+                </div>
+                <div id="signupFields" style="display:none;">
+                    <input class="inp" type="text" id="regName" placeholder="👤 Your name" style="margin-bottom:8px;">
+                    <input class="inp" type="email" id="regEmail" placeholder="📧 Email" style="margin-bottom:8px;">
+                    <input class="inp" type="tel" id="regPhone" placeholder="📱 Phone number" style="margin-bottom:8px;">
+                    <input class="inp" type="password" id="regPass" placeholder="🔒 Password" style="margin-bottom:10px;">
+                    <button class="go-btn" onclick="doSignup()" style="margin-top:0;">Create Account →</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Logged in dashboard -->
+        <div id="dashContent" style="display:none;">
+            <div style="display:flex;align-items:center;gap:12px;padding:16px;background:var(--card);border:1px solid var(--border);border-radius:14px;margin-bottom:16px;">
+                <div style="width:50px;height:50px;background:linear-gradient(135deg,var(--primary),var(--accent));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:900;flex-shrink:0;" id="dashAvatar">S</div>
+                <div><h3 style="font-size:1rem;" id="dashName">User</h3><p style="font-size:0.78rem;color:var(--muted);" id="dashEmail">email</p></div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px;">
+                <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center;"><div style="font-size:0.7rem;color:var(--muted);">Total Orders</div><div style="font-size:1.3rem;font-weight:800;color:var(--primary);" id="dTotal">0</div></div>
+                <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center;"><div style="font-size:0.7rem;color:var(--muted);">Total Spent</div><div style="font-size:1.3rem;font-weight:800;color:#22c55e;" id="dSpent">৳0</div></div>
+            </div>
+            <div style="font-size:0.8rem;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:6px;">📋 My Orders</div>
+            <div id="myOrdersList"></div>
+            <button class="go-btn" onclick="logoutUser()" style="margin-top:16px;background:linear-gradient(135deg,#ef4444,#dc2626);">🚪 Logout</button>
+        </div>
+    </div>
+</div>
+
 <a href="https://wa.me/8801606335174" class="wa-fab" target="_blank">💬</a>
 
 <footer>© 2026 SS TOP-UP — All Rights Reserved<br>Free Fire™ is a trademark of Garena.</footer>
@@ -424,6 +476,12 @@ function confirm(){
     const pn=pm==='nagad'?'Nagad':pm==='rocket'?'Rocket':'bKash';
     const msg=encodeURIComponent(`🆕 NEW ORDER!\n📋 ${o}\n💎 ${sel.n}\n💰 ৳${sel.p}\n🎮 ID: ${pid}\n💳 ${pn}\n📱 ${s}\n🧾 ${t}\n⏰ ${new Date().toLocaleString()}`);
     window.open(`https://wa.me/8801606335174?text=${msg}`,'_blank');
+    // Save order
+    if(currentUser){
+        const orders=JSON.parse(localStorage.getItem('ss_orders_'+currentUser.email)||'[]');
+        orders.unshift({id:o,pkg:sel.n,price:sel.p,pid:pid,pay:pn,date:new Date().toLocaleDateString(),status:'pending'});
+        localStorage.setItem('ss_orders_'+currentUser.email,JSON.stringify(orders));
+    }
     hide('payOL');document.getElementById('okOL').classList.add('show');
     // Add live order
     const lo=document.getElementById('liveOrders');
@@ -432,6 +490,71 @@ function confirm(){
     d.innerHTML=`<div class="oc-left"><div class="oc-avatar ${colors[Math.floor(Math.random()*5)]}">${s.slice(-1)}</div><div><div class="oc-name">***${s.slice(-4)}</div><div class="oc-pkg">${sel.n}</div></div></div><div class="oc-right"><div class="oc-price">৳${sel.p.toLocaleString()}</div><div class="oc-status" style="color:#eab308;background:rgba(234,179,8,0.1)">⏳ Processing</div></div>`;
     lo.insertBefore(d,lo.firstChild);if(lo.children.length>5)lo.removeChild(lo.lastChild);
 }
+// ===== DASHBOARD =====
+let currentUser=null;
+function openDash(){
+    document.getElementById('homeView').classList.add('off');
+    document.getElementById('topupView').classList.remove('on');
+    document.getElementById('dashView').classList.add('on');
+    if(currentUser){showDashContent();}
+    window.scrollTo({top:0,behavior:'smooth'});
+}
+function closeDash(){
+    document.getElementById('dashView').classList.remove('on');
+    document.getElementById('homeView').classList.remove('off');
+}
+function switchAuth(t){
+    document.getElementById('loginFields').style.display=t==='login'?'block':'none';
+    document.getElementById('signupFields').style.display=t==='signup'?'block':'none';
+    document.getElementById('tabLogin').style.cssText=t==='login'?'flex:1;padding:8px;text-align:center;border-radius:8px;font-size:0.82rem;font-weight:600;cursor:pointer;background:var(--primary);color:#fff;':'flex:1;padding:8px;text-align:center;border-radius:8px;font-size:0.82rem;font-weight:600;cursor:pointer;color:var(--muted);';
+    document.getElementById('tabSignup').style.cssText=t==='signup'?'flex:1;padding:8px;text-align:center;border-radius:8px;font-size:0.82rem;font-weight:600;cursor:pointer;background:var(--primary);color:#fff;':'flex:1;padding:8px;text-align:center;border-radius:8px;font-size:0.82rem;font-weight:600;cursor:pointer;color:var(--muted);';
+}
+function doSignup(){
+    const n=document.getElementById('regName').value.trim(),e=document.getElementById('regEmail').value.trim(),ph=document.getElementById('regPhone').value.trim(),p=document.getElementById('regPass').value;
+    if(!n||!e||!p){alert('সব ফিল্ড পূরণ করো!');return;}
+    const users=JSON.parse(localStorage.getItem('ss_users')||'{}');
+    if(users[e]){alert('এই email আগে থেকে আছে! Login করো।');return;}
+    users[e]={name:n,email:e,phone:ph,pass:p};
+    localStorage.setItem('ss_users',JSON.stringify(users));
+    currentUser=users[e];localStorage.setItem('ss_current',e);
+    showDashContent();
+}
+function doLogin(){
+    const e=document.getElementById('authEmail').value.trim(),p=document.getElementById('authPass').value;
+    const users=JSON.parse(localStorage.getItem('ss_users')||'{}');
+    if(!users[e]||users[e].pass!==p){alert('❌ Email বা Password ভুল!');return;}
+    currentUser=users[e];localStorage.setItem('ss_current',e);
+    showDashContent();
+}
+function showDashContent(){
+    document.getElementById('authBox').style.display='none';
+    document.getElementById('dashContent').style.display='block';
+    document.getElementById('dashAvatar').textContent=currentUser.name[0].toUpperCase();
+    document.getElementById('dashName').textContent=currentUser.name;
+    document.getElementById('dashEmail').textContent=currentUser.email;
+    loadMyOrders();
+}
+function loadMyOrders(){
+    const orders=JSON.parse(localStorage.getItem('ss_orders_'+currentUser.email)||'[]');
+    document.getElementById('dTotal').textContent=orders.length;
+    document.getElementById('dSpent').textContent='৳'+orders.reduce((a,o)=>a+o.price,0).toLocaleString();
+    const el=document.getElementById('myOrdersList');
+    if(!orders.length){el.innerHTML='<div style="text-align:center;padding:30px;color:var(--muted);font-size:0.85rem;">No orders yet 🛒</div>';return;}
+    const colors=['a1','a2','a3','a4','a5'];
+    el.innerHTML=orders.map((o,i)=>`<div class="order-card"><div class="oc-left"><div class="oc-avatar ${colors[i%5]}">${o.pkg.slice(0,1)}</div><div><div class="oc-name">${o.id}</div><div class="oc-pkg">${o.pkg} • ${o.date}</div></div></div><div class="oc-right"><div class="oc-price">৳${o.price.toLocaleString()}</div><div class="oc-status" style="color:#eab308;background:rgba(234,179,8,0.1)">⏳ Processing</div></div></div>`).join('');
+}
+function logoutUser(){
+    localStorage.removeItem('ss_current');currentUser=null;
+    document.getElementById('authBox').style.display='block';
+    document.getElementById('dashContent').style.display='none';
+    closeDash();
+}
+// Auto-login
+(function(){
+    const s=localStorage.getItem('ss_current');
+    if(s){const u=JSON.parse(localStorage.getItem('ss_users')||'{}');if(u[s]){currentUser=u[s];}}
+})();
+
 function done(){
     hide('okOL');sel=null;
     document.querySelectorAll('.pkg').forEach(e=>e.classList.remove('on'));
