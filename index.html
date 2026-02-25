@@ -3,691 +3,442 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SS TOP-UP ⚡ Best Free Fire Top-Up in BD</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <title>SS TOP-UP ⚡ Fastest Free Fire Diamond Store in BD</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #f97316;
             --primary-dark: #ea580c;
             --accent: #06b6d4;
-            --bg: #0a0a0b;
-            --surface: #141416;
-            --surface2: #1c1c1f;
-            --surface3: #242428;
+            --bg: #030712;
+            --card: #111827;
+            --card2: #1f2937;
             --border: rgba(255,255,255,0.06);
             --text: #e5e7eb;
-            --text2: #9ca3af;
             --muted: #6b7280;
             --success: #22c55e;
-            --danger: #ef4444;
             --pink: #ec4899;
-            --purple: #8b5cf6;
-            --blue: #3b82f6;
-            --yellow: #eab308;
         }
-        * { margin:0; padding:0; box-sizing:border-box; }
-        body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; overflow-x:hidden; }
-        a { text-decoration:none; color:inherit; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
 
-        /* Top Bar */
-        .topbar { background:var(--surface); border-bottom:1px solid var(--border); padding:10px 16px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; backdrop-filter:blur(20px); }
-        .topbar-left { display:flex; align-items:center; gap:10px; }
-        .logo { display:flex; align-items:center; gap:8px; }
-        .logo-icon { width:36px; height:36px; background:linear-gradient(135deg,var(--primary),var(--primary-dark)); border-radius:10px; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:0.8rem; color:#fff; }
-        .logo-text { font-weight:800; font-size:1.1rem; background:linear-gradient(135deg,var(--primary),var(--accent)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
-        .topbar-right { display:flex; align-items:center; gap:8px; }
-        .top-btn { padding:7px 14px; border-radius:8px; font-size:0.78rem; font-weight:600; cursor:pointer; transition:all 0.2s; border:none; font-family:inherit; }
-        .top-btn.ghost { background:transparent; border:1px solid var(--border); color:var(--text2); }
-        .top-btn.ghost:hover { border-color:var(--primary); color:var(--primary); }
-        .top-btn.primary { background:linear-gradient(135deg,var(--primary),var(--primary-dark)); color:#fff; }
-        .top-btn.sm { padding:5px 10px; font-size:0.7rem; }
-        .user-avatar { width:32px; height:32px; background:linear-gradient(135deg,var(--purple),var(--pink)); border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.75rem; cursor:pointer; }
+        /* Animated gradient orbs */
+        .orb { position: fixed; border-radius: 50%; filter: blur(100px); opacity: 0.12; pointer-events: none; z-index: 0; }
+        .orb-1 { width: 500px; height: 500px; background: var(--primary); top: -100px; left: -100px; animation: float 20s ease-in-out infinite; }
+        .orb-2 { width: 400px; height: 400px; background: var(--accent); bottom: -50px; right: -50px; animation: float 25s ease-in-out infinite reverse; }
+        .orb-3 { width: 300px; height: 300px; background: var(--pink); top: 50%; left: 50%; animation: float 18s ease-in-out infinite; }
+        @keyframes float { 0%,100% { transform: translate(0,0); } 33% { transform: translate(30px,-50px); } 66% { transform: translate(-20px,40px); } }
 
-        /* Bottom Nav (Mobile) */
-        .bottom-nav { display:none; position:fixed; bottom:0; left:0; right:0; background:var(--surface); border-top:1px solid var(--border); padding:8px 0 calc(8px + env(safe-area-inset-bottom)); z-index:100; }
-        .bottom-nav-inner { display:flex; justify-content:space-around; }
-        .bnav-item { display:flex; flex-direction:column; align-items:center; gap:2px; cursor:pointer; padding:4px 12px; border-radius:8px; transition:all 0.2s; }
-        .bnav-item.active { color:var(--primary); }
-        .bnav-item .bnav-icon { font-size:1.2rem; }
-        .bnav-item .bnav-label { font-size:0.6rem; font-weight:600; }
+        .wrapper { position: relative; z-index: 1; }
 
-        /* Main Layout */
-        .main { max-width:1000px; margin:0 auto; padding:16px; padding-bottom:80px; }
+        /* Nav */
+        .nav { position: sticky; top: 0; z-index: 100; background: rgba(3,7,18,0.85); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
+        .nav-inner { max-width: 1000px; margin: 0 auto; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; }
+        .brand { display: flex; align-items: center; gap: 10px; }
+        .brand-icon { width: 38px; height: 38px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 0.9rem; }
+        .brand span { font-size: 1.15rem; font-weight: 900; background: linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .nav-actions { display: flex; gap: 8px; }
+        .n-btn { padding: 7px 14px; border-radius: 8px; font-size: 0.75rem; font-weight: 600; text-decoration: none; transition: all 0.2s; cursor: pointer; }
+        .n-btn.ghost { color: var(--muted); border: 1px solid var(--border); background: transparent; }
+        .n-btn.ghost:hover { color: var(--primary); border-color: var(--primary); }
+        .n-btn.solid { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: #fff; border: none; }
 
-        /* Search */
-        .search-box { position:relative; margin-bottom:20px; }
-        .search-box input { width:100%; padding:12px 16px 12px 42px; background:var(--surface); border:1px solid var(--border); border-radius:12px; color:#fff; font-size:0.9rem; outline:none; font-family:inherit; }
-        .search-box input:focus { border-color:var(--primary); }
-        .search-box input::placeholder { color:var(--muted); }
-        .search-box .s-icon { position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--muted); font-size:0.9rem; }
+        .page { max-width: 1000px; margin: 0 auto; padding: 20px; }
 
-        /* Banner/Slider */
-        .banner { background:linear-gradient(135deg,rgba(249,115,22,0.15),rgba(6,182,212,0.1)); border:1px solid rgba(249,115,22,0.2); border-radius:16px; padding:24px; margin-bottom:24px; display:flex; align-items:center; justify-content:space-between; overflow:hidden; position:relative; }
-        .banner-text h2 { font-size:1.3rem; font-weight:800; margin-bottom:6px; }
-        .banner-text h2 span { color:var(--primary); }
-        .banner-text p { color:var(--text2); font-size:0.82rem; margin-bottom:12px; }
-        .banner-btn { padding:8px 18px; background:var(--primary); color:#fff; border:none; border-radius:8px; font-weight:700; font-size:0.8rem; cursor:pointer; font-family:inherit; }
-        .banner-emoji { font-size:4rem; opacity:0.8; }
+        /* Hero */
+        .hero { text-align: center; padding: 50px 0 35px; }
+        .hero-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(249,115,22,0.1); border: 1px solid rgba(249,115,22,0.25); padding: 6px 14px; border-radius: 50px; font-size: 0.72rem; color: var(--primary); font-weight: 600; margin-bottom: 16px; }
+        .hero-badge .pulse { width: 6px; height: 6px; background: var(--success); border-radius: 50%; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+        .hero h2 { font-size: 2.2rem; font-weight: 900; line-height: 1.2; margin-bottom: 10px; }
+        .hero h2 .grad { background: linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero p { color: var(--muted); font-size: 0.95rem; max-width: 420px; margin: 0 auto; }
+
+        /* Stats */
+        .stats { display: flex; justify-content: center; gap: 30px; margin: 25px 0 35px; flex-wrap: wrap; }
+        .stat { text-align: center; }
+        .stat .num { font-size: 1.5rem; font-weight: 900; color: var(--primary); }
+        .stat .lbl { font-size: 0.7rem; color: var(--muted); margin-top: 2px; }
 
         /* Notice */
-        .notice { background:rgba(234,179,8,0.08); border:1px solid rgba(234,179,8,0.2); border-radius:10px; padding:10px 14px; margin-bottom:20px; font-size:0.8rem; color:var(--yellow); display:none; }
-        .notice.show { display:flex; align-items:center; gap:8px; }
+        .notice { background: linear-gradient(135deg, rgba(249,115,22,0.08), rgba(6,182,212,0.05)); border: 1px solid rgba(249,115,22,0.15); border-radius: 12px; padding: 14px 18px; margin-bottom: 25px; display: flex; align-items: center; gap: 10px; font-size: 0.82rem; color: #fbbf24; animation: slideIn 0.6s ease; }
+        @keyframes slideIn { from { opacity:0; transform:translateY(-10px); } to { opacity:1; transform:translateY(0); } }
 
-        /* Section Headers */
-        .sec-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
-        .sec-head h3 { font-size:0.95rem; font-weight:700; display:flex; align-items:center; gap:6px; }
-        .sec-head .see-all { font-size:0.75rem; color:var(--primary); font-weight:600; cursor:pointer; }
+        /* Section */
+        .sec-title { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+        .sec-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-        /* Game Grid */
-        .game-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(100px,1fr)); gap:10px; margin-bottom:28px; }
-        .game-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:16px 10px; text-align:center; cursor:pointer; transition:all 0.3s; position:relative; }
-        .game-card:hover { border-color:rgba(249,115,22,0.3); transform:translateY(-3px); box-shadow:0 8px 20px rgba(0,0,0,0.3); }
-        .game-card .g-img { width:48px; height:48px; border-radius:12px; margin:0 auto 8px; display:flex; align-items:center; justify-content:center; font-size:1.8rem; }
-        .game-card .g-name { font-size:0.72rem; font-weight:600; }
-        .game-card .g-tag { position:absolute; top:6px; right:6px; background:var(--pink); color:#fff; font-size:0.5rem; padding:1px 5px; border-radius:4px; font-weight:700; }
+        /* Category Grid */
+        .cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)); gap: 10px; margin-bottom: 30px; }
+        .cat { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 20px 12px; text-align: center; cursor: pointer; transition: all 0.3s; position: relative; overflow: hidden; }
+        .cat::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--primary), var(--accent)); transform: scaleX(0); transition: transform 0.3s; }
+        .cat:hover::before { transform: scaleX(1); }
+        .cat:hover { border-color: rgba(249,115,22,0.3); transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.4); }
+        .cat .c-emoji { font-size: 2rem; margin-bottom: 10px; display: block; }
+        .cat h3 { font-size: 0.82rem; font-weight: 700; margin-bottom: 3px; }
+        .cat p { font-size: 0.65rem; color: var(--muted); }
+        .cat .c-tag { position: absolute; top: 8px; right: 8px; background: var(--pink); color: #fff; font-size: 0.55rem; padding: 2px 7px; border-radius: 6px; font-weight: 700; }
 
-        /* Popular Items */
-        .pop-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:10px; margin-bottom:28px; }
-        .pop-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:14px; cursor:pointer; transition:all 0.3s; }
-        .pop-card:hover { border-color:rgba(249,115,22,0.3); transform:translateY(-2px); }
-        .pop-top { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
-        .pop-icon { width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.3rem; flex-shrink:0; }
-        .pop-icon.ff { background:rgba(249,115,22,0.15); }
-        .pop-icon.pubg { background:rgba(139,92,246,0.15); }
-        .pop-name { font-size:0.82rem; font-weight:600; }
-        .pop-game { font-size:0.65rem; color:var(--muted); }
-        .pop-bottom { display:flex; align-items:center; justify-content:space-between; }
-        .pop-price { font-weight:800; color:var(--primary); font-size:0.95rem; }
-        .pop-old { font-size:0.7rem; color:var(--muted); text-decoration:line-through; }
-        .pop-badge { background:rgba(34,197,94,0.1); color:var(--success); font-size:0.6rem; padding:2px 6px; border-radius:4px; font-weight:600; }
+        /* Live Orders */
+        .live-orders { margin-bottom: 30px; }
+        .lo-header { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; }
+        .lo-header .live-dot { width: 8px; height: 8px; background: #ef4444; border-radius: 50%; animation: pulse 1.5s infinite; }
+        .order-card { display: flex; align-items: center; justify-content: space-between; padding: 11px 14px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 6px; transition: all 0.3s; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity:0; transform:translateX(-10px); } to { opacity:1; transform:translateX(0); } }
+        .order-card:hover { border-color: rgba(255,255,255,0.1); }
+        .oc-left { display: flex; align-items: center; gap: 10px; }
+        .oc-avatar { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 900; color: #fff; }
+        .oc-avatar.a1 { background: linear-gradient(135deg,#f97316,#ea580c); }
+        .oc-avatar.a2 { background: linear-gradient(135deg,#06b6d4,#0891b2); }
+        .oc-avatar.a3 { background: linear-gradient(135deg,#8b5cf6,#7c3aed); }
+        .oc-avatar.a4 { background: linear-gradient(135deg,#ec4899,#db2777); }
+        .oc-avatar.a5 { background: linear-gradient(135deg,#22c55e,#16a34a); }
+        .oc-name { font-size: 0.8rem; font-weight: 600; }
+        .oc-pkg { font-size: 0.68rem; color: var(--muted); }
+        .oc-right { text-align: right; }
+        .oc-price { font-size: 0.85rem; font-weight: 700; color: var(--primary); }
+        .oc-status { font-size: 0.6rem; color: var(--success); background: rgba(34,197,94,0.1); padding: 2px 8px; border-radius: 6px; display: inline-block; margin-top: 2px; }
 
-        /* Quick Actions */
-        .quick-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:28px; }
-        .quick-item { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:14px 8px; text-align:center; cursor:pointer; transition:all 0.2s; }
-        .quick-item:hover { border-color:var(--primary); }
-        .quick-item .q-icon { font-size:1.5rem; margin-bottom:4px; }
-        .quick-item .q-label { font-size:0.65rem; font-weight:600; color:var(--text2); }
-
-        /* Stats Row */
-        .stats-row { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:28px; }
-        .stat-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:16px; text-align:center; }
-        .stat-card .s-num { font-size:1.4rem; font-weight:900; color:var(--primary); }
-        .stat-card .s-label { font-size:0.68rem; color:var(--muted); margin-top:2px; }
-
-        /* Recent Orders */
-        .order-list { margin-bottom:28px; }
-        .order-item { display:flex; align-items:center; justify-content:space-between; padding:12px 14px; background:var(--surface); border:1px solid var(--border); border-radius:10px; margin-bottom:6px; }
-        .oi-left { display:flex; align-items:center; gap:10px; }
-        .oi-avatar { width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1rem; }
-        .oi-avatar.a1 { background:rgba(249,115,22,0.15); }
-        .oi-avatar.a2 { background:rgba(6,182,212,0.15); }
-        .oi-avatar.a3 { background:rgba(139,92,246,0.15); }
-        .oi-avatar.a4 { background:rgba(236,72,153,0.15); }
-        .oi-avatar.a5 { background:rgba(34,197,94,0.15); }
-        .oi-name { font-size:0.82rem; font-weight:600; }
-        .oi-desc { font-size:0.68rem; color:var(--muted); }
-        .oi-right { text-align:right; }
-        .oi-price { font-weight:700; color:var(--primary); font-size:0.85rem; }
-        .oi-status { font-size:0.6rem; padding:2px 8px; border-radius:6px; display:inline-block; margin-top:2px; }
-        .oi-status.done { color:var(--success); background:rgba(34,197,94,0.1); }
-        .oi-status.pending { color:var(--yellow); background:rgba(234,179,8,0.1); }
-
-        /* Auth Modal */
-        .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); backdrop-filter:blur(8px); z-index:200; align-items:center; justify-content:center; padding:20px; }
-        .modal-overlay.show { display:flex; }
-        .modal { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:30px; max-width:400px; width:100%; animation:popIn 0.3s ease; }
-        @keyframes popIn { from{transform:scale(0.9);opacity:0}to{transform:scale(1);opacity:1} }
-        .modal h2 { font-size:1.2rem; margin-bottom:4px; }
-        .modal .modal-sub { color:var(--muted); font-size:0.82rem; margin-bottom:20px; }
-        .modal .tab-row { display:flex; gap:4px; margin-bottom:16px; background:var(--surface2); border-radius:10px; padding:3px; }
-        .modal .tab { flex:1; padding:8px; text-align:center; border-radius:8px; font-size:0.82rem; font-weight:600; cursor:pointer; color:var(--muted); transition:all 0.2s; }
-        .modal .tab.active { background:var(--primary); color:#fff; }
-        .m-input { width:100%; padding:12px 14px; background:var(--surface2); border:1px solid var(--border); border-radius:10px; color:#fff; font-size:0.9rem; outline:none; font-family:inherit; margin-bottom:10px; }
-        .m-input:focus { border-color:var(--primary); }
-        .m-input::placeholder { color:var(--muted); }
-        .m-btn { width:100%; padding:12px; background:linear-gradient(135deg,var(--primary),var(--primary-dark)); border:none; border-radius:10px; color:#fff; font-weight:700; font-size:0.95rem; cursor:pointer; font-family:inherit; margin-top:6px; }
-        .m-btn:hover { transform:translateY(-1px); box-shadow:0 4px 15px rgba(249,115,22,0.3); }
-        .m-close { background:none; border:none; color:var(--muted); font-size:0.82rem; cursor:pointer; margin-top:10px; font-family:inherit; display:block; width:100%; text-align:center; }
-        .m-divider { display:flex; align-items:center; gap:10px; margin:14px 0; color:var(--muted); font-size:0.75rem; }
-        .m-divider::before,.m-divider::after { content:''; flex:1; height:1px; background:var(--border); }
+        /* Contact Row */
+        .contact-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 30px; }
+        .contact-card { display: flex; align-items: center; gap: 10px; padding: 14px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; text-decoration: none; color: var(--text); transition: all 0.3s; }
+        .contact-card:hover { border-color: rgba(249,115,22,0.3); transform: translateY(-2px); }
+        .cc-icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+        .cc-icon.wa { background: rgba(37,211,102,0.15); }
+        .cc-icon.ph { background: rgba(249,115,22,0.15); }
+        .cc-icon.ng { background: rgba(236,72,153,0.15); }
+        .cc-text .cc-label { font-size: 0.68rem; color: var(--muted); }
+        .cc-text .cc-val { font-size: 0.85rem; font-weight: 700; }
 
         /* Topup Page */
-        .page { display:none; }
-        .page.active { display:block; }
+        .topup-view { display: none; }
+        .topup-view.on { display: block; }
+        .home-view.off { display: none; }
 
-        /* Dashboard Page */
-        .dash-header { display:flex; align-items:center; gap:12px; margin-bottom:20px; padding:16px; background:var(--surface); border-radius:14px; border:1px solid var(--border); }
-        .dash-avatar { width:50px; height:50px; background:linear-gradient(135deg,var(--primary),var(--accent)); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.2rem; font-weight:900; flex-shrink:0; }
-        .dash-info h3 { font-size:1rem; font-weight:700; }
-        .dash-info p { font-size:0.78rem; color:var(--muted); }
-        .dash-stats { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-bottom:20px; }
-        .ds-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:16px; }
-        .ds-card .ds-label { font-size:0.7rem; color:var(--muted); margin-bottom:4px; }
-        .ds-card .ds-value { font-size:1.3rem; font-weight:800; }
-        .ds-card .ds-value.orange { color:var(--primary); }
-        .ds-card .ds-value.green { color:var(--success); }
-        .ds-card .ds-value.blue { color:var(--accent); }
-        .ds-card .ds-value.purple { color:var(--purple); }
+        .back { display: inline-flex; align-items: center; gap: 5px; padding: 7px 14px; background: var(--card); border: 1px solid var(--border); border-radius: 8px; color: var(--muted); font-size: 0.8rem; cursor: pointer; margin-bottom: 16px; transition: all 0.2s; }
+        .back:hover { color: var(--primary); border-color: var(--primary); }
 
-        /* Topup Detail Page */
-        .tp-hero { display:flex; align-items:center; gap:14px; margin-bottom:20px; }
-        .tp-hero-img { width:60px; height:60px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:2.5rem; background:var(--surface); }
-        .tp-hero-info h2 { font-size:1.1rem; font-weight:800; }
-        .tp-hero-info p { font-size:0.78rem; color:var(--muted); }
+        .tp-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 20px; margin-bottom: 14px; }
+        .tp-head { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+        .tp-num { width: 26px; height: 26px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 900; flex-shrink: 0; }
+        .tp-head h3 { font-size: 0.9rem; font-weight: 700; }
 
-        .tp-section { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:18px; margin-bottom:14px; }
-        .tp-section h3 { font-size:0.88rem; font-weight:700; margin-bottom:12px; display:flex; align-items:center; gap:6px; }
+        .inp { width: 100%; padding: 12px 14px; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 10px; color: #fff; font-size: 0.95rem; outline: none; font-family: inherit; transition: border 0.2s; }
+        .inp:focus { border-color: var(--primary); }
+        .inp::placeholder { color: #4b5563; }
+        .inp-ok { margin-top: 8px; padding: 7px 12px; background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.2); border-radius: 8px; color: var(--success); font-size: 0.8rem; display: none; }
 
-        .pkg-grid2 { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
-        .pkg2 { background:var(--surface2); border:2px solid var(--border); border-radius:10px; padding:12px 6px; text-align:center; cursor:pointer; transition:all 0.2s; }
-        .pkg2:hover { border-color:rgba(249,115,22,0.3); }
-        .pkg2.selected { border-color:var(--primary); background:rgba(249,115,22,0.06); box-shadow:0 0 12px rgba(249,115,22,0.1); }
-        .pkg2 .p-amount { font-size:0.9rem; font-weight:800; }
-        .pkg2 .p-price { font-size:0.82rem; color:var(--primary); font-weight:700; margin-top:2px; }
-        .pkg2 .p-old { font-size:0.65rem; color:var(--muted); text-decoration:line-through; }
+        .pkg-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px; }
+        .pkg { background: rgba(255,255,255,0.02); border: 2px solid var(--border); border-radius: 10px; padding: 14px 8px; text-align: center; cursor: pointer; transition: all 0.25s; }
+        .pkg:hover { border-color: rgba(6,182,212,0.3); }
+        .pkg.on { border-color: var(--accent); background: rgba(6,182,212,0.06); box-shadow: 0 0 15px rgba(6,182,212,0.1); }
+        .pkg .pk-name { font-size: 0.85rem; font-weight: 700; margin-bottom: 3px; }
+        .pkg .pk-price { font-size: 1rem; font-weight: 900; color: var(--primary); }
+        .pkg .pk-tag { font-size: 0.58rem; color: var(--success); margin-top: 2px; }
+        .pkg.pass .pk-name { color: #c084fc; }
 
-        .pay-methods { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
-        .pay-m { background:var(--surface2); border:2px solid var(--border); border-radius:10px; padding:12px; text-align:center; cursor:pointer; transition:all 0.2s; }
-        .pay-m:hover { border-color:rgba(236,72,153,0.3); }
-        .pay-m.selected { border-color:var(--pink); background:rgba(236,72,153,0.06); }
-        .pay-m .pm-icon { font-size:1.3rem; }
-        .pay-m .pm-name { font-size:0.72rem; color:var(--text2); margin-top:4px; font-weight:600; }
+        .pm-row { display: flex; gap: 8px; flex-wrap: wrap; }
+        .pm { flex: 1; min-width: 90px; padding: 12px; background: rgba(255,255,255,0.02); border: 2px solid var(--border); border-radius: 10px; text-align: center; cursor: pointer; transition: all 0.25s; }
+        .pm:hover { border-color: rgba(236,72,153,0.3); }
+        .pm.on { border-color: var(--pink); background: rgba(236,72,153,0.06); }
+        .pm .pm-i { font-size: 1.2rem; }
+        .pm .pm-n { font-size: 0.75rem; color: var(--muted); margin-top: 3px; }
 
-        .submit-btn { width:100%; padding:14px; background:linear-gradient(135deg,var(--primary),var(--primary-dark)); border:none; border-radius:12px; color:#fff; font-size:1rem; font-weight:700; cursor:pointer; font-family:inherit; transition:all 0.2s; }
-        .submit-btn:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 8px 20px rgba(249,115,22,0.3); }
-        .submit-btn:disabled { opacity:0.4; cursor:not-allowed; }
+        .go-btn { width: 100%; padding: 14px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); border: none; border-radius: 10px; color: #fff; font-size: 1rem; font-weight: 700; cursor: pointer; font-family: inherit; margin-top: 8px; transition: all 0.2s; }
+        .go-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(249,115,22,0.3); }
+        .go-btn:disabled { opacity: 0.35; cursor: not-allowed; }
 
-        .back-btn { display:inline-flex; align-items:center; gap:4px; padding:6px 12px; background:var(--surface); border:1px solid var(--border); border-radius:8px; color:var(--text2); font-size:0.78rem; cursor:pointer; margin-bottom:14px; }
-        .back-btn:hover { color:var(--primary); border-color:var(--primary); }
+        .rules-list { list-style: none; }
+        .rules-list li { font-size: 0.75rem; color: var(--muted); margin-bottom: 4px; padding-left: 16px; position: relative; }
+        .rules-list li::before { content: '•'; position: absolute; left: 0; color: var(--primary); font-weight: 900; }
 
-        /* Contact Bar */
-        .contact-bar { display:flex; gap:8px; margin-bottom:24px; }
-        .cb-item { flex:1; display:flex; align-items:center; gap:6px; padding:10px; background:var(--surface); border:1px solid var(--border); border-radius:10px; font-size:0.75rem; color:var(--text2); }
-        .cb-item .cb-icon { font-size:1rem; }
+        /* Modal */
+        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); z-index: 200; align-items: center; justify-content: center; }
+        .overlay.show { display: flex; }
+        .mdl { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 28px; max-width: 380px; width: 90%; text-align: center; animation: popIn 0.3s ease; }
+        @keyframes popIn { from { transform:scale(0.9); opacity:0; } to { transform:scale(1); opacity:1; } }
+        .mdl h3 { margin-bottom: 8px; }
+        .mdl p { color: var(--muted); font-size: 0.82rem; }
+        .mdl .pay-num { font-size: 1.4rem; font-weight: 900; color: var(--pink); margin: 8px 0; letter-spacing: 1px; }
+        .mdl small { color: var(--pink); font-size: 0.7rem; }
+        .mdl .ml { display: block; text-align: left; color: var(--muted); font-size: 0.72rem; margin-top: 12px; }
+        .mdl .mi { width: 100%; padding: 10px 12px; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 8px; color: #fff; font-size: 0.9rem; outline: none; margin-top: 4px; font-family: inherit; }
+        .mdl .mi:focus { border-color: var(--pink); }
+        .mdl .mi::placeholder { color: #4b5563; }
+        .mdl .cf-btn { width: 100%; padding: 12px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); border: none; border-radius: 10px; color: #fff; font-weight: 700; cursor: pointer; margin-top: 14px; font-family: inherit; }
+        .mdl .cn-btn { background: none; border: none; color: var(--muted); margin-top: 8px; cursor: pointer; font-size: 0.78rem; font-family: inherit; }
+        .mdl .oid { color: var(--accent); font-weight: 700; font-size: 1.1rem; }
 
-        /* Footer */
-        footer { text-align:center; padding:20px; color:#374151; font-size:0.65rem; border-top:1px solid var(--border); }
+        .wa-fab { position: fixed; bottom: 18px; right: 18px; width: 52px; height: 52px; background: #25d366; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; box-shadow: 0 4px 15px rgba(37,211,102,0.3); text-decoration: none; z-index: 50; transition: all 0.3s; }
+        .wa-fab:hover { transform: scale(1.08) rotate(-5deg); }
 
-        /* WhatsApp FAB */
-        .wa-fab { position:fixed; bottom:70px; right:16px; width:48px; height:48px; background:#25d366; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:1.3rem; box-shadow:0 4px 15px rgba(37,211,102,0.3); z-index:50; }
+        footer { text-align: center; padding: 24px; color: #374151; font-size: 0.68rem; border-top: 1px solid var(--border); margin-top: 20px; }
 
-        @media (max-width:600px) {
-            .bottom-nav { display:block; }
-            .topbar-right .top-btn:not(.sm) { display:none; }
-            .game-grid { grid-template-columns:repeat(3,1fr); }
-            .pop-grid { grid-template-columns:repeat(2,1fr); }
-            .quick-grid { grid-template-columns:repeat(4,1fr); }
-            .stats-row { grid-template-columns:repeat(3,1fr); }
-            .pkg-grid2 { grid-template-columns:repeat(3,1fr); }
-            .banner { flex-direction:column; text-align:center; }
-            .banner-emoji { font-size:2.5rem; }
-            .dash-stats { grid-template-columns:repeat(2,1fr); }
+        @media (max-width: 600px) {
+            .hero h2 { font-size: 1.6rem; }
+            .cat-grid { grid-template-columns: repeat(2, 1fr); }
+            .pkg-grid { grid-template-columns: repeat(2, 1fr); }
+            .stats { gap: 18px; }
+            .contact-row { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
 
-<!-- Top Bar -->
-<div class="topbar">
-    <div class="topbar-left">
-        <div class="logo">
-            <div class="logo-icon">SS</div>
-            <span class="logo-text">SS TOP-UP</span>
+<div class="wrapper">
+<nav class="nav">
+    <div class="nav-inner">
+        <div class="brand">
+            <div class="brand-icon">SS</div>
+            <span>SS TOP-UP</span>
+        </div>
+        <div class="nav-actions">
+            <a class="n-btn ghost" onclick="goHome()">Home</a>
+            <a class="n-btn solid" href="https://wa.me/8801606335174" target="_blank">💬 Support</a>
         </div>
     </div>
-    <div class="topbar-right">
-        <button class="top-btn ghost" onclick="showPage('home')">🏠 Home</button>
-        <button class="top-btn ghost" onclick="showPage('dashboard')" id="dashBtn" style="display:none">📊 Dashboard</button>
-        <button class="top-btn primary" id="loginBtn" onclick="showAuth()">👤 Login</button>
-        <div class="user-avatar" id="userAvatar" style="display:none" onclick="showPage('dashboard')">S</div>
+</nav>
+
+<div class="page">
+
+<!-- HOME -->
+<div class="home-view" id="homeView">
+
+    <div class="hero">
+        <div class="hero-badge"><div class="pulse"></div> Live — Delivering diamonds now</div>
+        <h2>Instant <span class="grad">Free Fire</span> Diamond<br>Top-Up in Bangladesh</h2>
+        <p>Cheapest rates. 5-minute delivery. bKash, Nagad & Rocket accepted. 24/7 service.</p>
+    </div>
+
+    <div class="stats">
+        <div class="stat"><div class="num">10K+</div><div class="lbl">Orders Delivered</div></div>
+        <div class="stat"><div class="num">5 min</div><div class="lbl">Avg. Delivery</div></div>
+        <div class="stat"><div class="num">24/7</div><div class="lbl">Always Online</div></div>
+        <div class="stat"><div class="num">4.9★</div><div class="lbl">Customer Rating</div></div>
+    </div>
+
+    <div class="notice">📢 SS TOP-UP is open 24/7! Fastest diamond delivery in Bangladesh. Order now!</div>
+
+    <div class="sec-title">🔥 SPECIAL OFFERS</div>
+    <div class="cat-grid">
+        <div class="cat" onclick="go('weekly-offer')">
+            <span class="c-tag">HOT</span>
+            <span class="c-emoji">⚡</span>
+            <h3>Weekly Offer</h3>
+            <p>From ৳47</p>
+        </div>
+        <div class="cat" onclick="go('monthly-offer')">
+            <span class="c-emoji">👑</span>
+            <h3>Monthly Offer</h3>
+            <p>Best value ৳765</p>
+        </div>
+        <div class="cat" onclick="go('550-monthly')">
+            <span class="c-tag">NEW</span>
+            <span class="c-emoji">💎</span>
+            <h3>550 Tk Monthly</h3>
+            <p>Special deal</p>
+        </div>
+    </div>
+
+    <div class="sec-title">🎮 GAMES TOPUP</div>
+    <div class="cat-grid">
+        <div class="cat" onclick="go('uid-topup')">
+            <span class="c-emoji">💎</span>
+            <h3>Diamond (UID)</h3>
+            <p>25 — 10,120 💎</p>
+        </div>
+        <div class="cat" onclick="go('weekly-monthly')">
+            <span class="c-emoji">📅</span>
+            <h3>Weekly / Monthly</h3>
+            <p>Membership pass</p>
+        </div>
+        <div class="cat" onclick="go('weekly-lite')">
+            <span class="c-emoji">✨</span>
+            <h3>Weekly Lite</h3>
+            <p>Budget ৳47</p>
+        </div>
+        <div class="cat" onclick="go('evo-access')">
+            <span class="c-emoji">🎯</span>
+            <h3>EVO Access</h3>
+            <p>Premium badge</p>
+        </div>
+        <div class="cat" onclick="go('level-up')">
+            <span class="c-emoji">⬆️</span>
+            <h3>Level Up Pass</h3>
+            <p>Rank up fast</p>
+        </div>
+    </div>
+
+    <div class="sec-title"><span class="live-dot" style="width:8px;height:8px;background:#ef4444;border-radius:50%;animation:pulse 1.5s infinite;display:inline-block;"></span> LATEST ORDERS</div>
+    <div class="live-orders" id="liveOrders">
+        <div class="order-card"><div class="oc-left"><div class="oc-avatar a1">R</div><div><div class="oc-name">Rahim_BD</div><div class="oc-pkg">520 Diamond</div></div></div><div class="oc-right"><div class="oc-price">৳315</div><div class="oc-status">✅ Delivered</div></div></div>
+        <div class="order-card"><div class="oc-left"><div class="oc-avatar a2">S</div><div><div class="oc-name">Sakib_Pro</div><div class="oc-pkg">1X Weekly</div></div></div><div class="oc-right"><div class="oc-price">৳154</div><div class="oc-status">✅ Delivered</div></div></div>
+        <div class="order-card"><div class="oc-left"><div class="oc-avatar a3">K</div><div><div class="oc-name">Karim_FF</div><div class="oc-pkg">Monthly</div></div></div><div class="oc-right"><div class="oc-price">৳765</div><div class="oc-status">✅ Delivered</div></div></div>
+        <div class="order-card"><div class="oc-left"><div class="oc-avatar a4">T</div><div><div class="oc-name">TanvirOP</div><div class="oc-pkg">2530 Diamond</div></div></div><div class="oc-right"><div class="oc-price">৳1,595</div><div class="oc-status">✅ Delivered</div></div></div>
+        <div class="order-card"><div class="oc-left"><div class="oc-avatar a5">F</div><div><div class="oc-name">FahimGG</div><div class="oc-pkg">Weekly Lite</div></div></div><div class="oc-right"><div class="oc-price">৳47</div><div class="oc-status">✅ Delivered</div></div></div>
+    </div>
+
+    <div class="sec-title">📞 CONTACT US</div>
+    <div class="contact-row">
+        <a href="https://wa.me/8801606335174" class="contact-card" target="_blank">
+            <div class="cc-icon wa">💬</div>
+            <div class="cc-text"><div class="cc-label">WhatsApp</div><div class="cc-val">01606335174</div></div>
+        </a>
+        <a href="tel:+8801606335174" class="contact-card">
+            <div class="cc-icon ph">📱</div>
+            <div class="cc-text"><div class="cc-label">bKash / Call</div><div class="cc-val">01606335174</div></div>
+        </a>
+        <a href="tel:+8801854707074" class="contact-card">
+            <div class="cc-icon ng">💳</div>
+            <div class="cc-text"><div class="cc-label">Nagad</div><div class="cc-val">01854707074</div></div>
+        </a>
     </div>
 </div>
 
-<!-- ====== HOME PAGE ====== -->
-<div class="page active" id="page-home">
-<div class="main">
+<!-- TOPUP -->
+<div class="topup-view" id="topupView">
+    <div class="back" onclick="goHome()">← Back</div>
 
-    <!-- Search -->
-    <div class="search-box">
-        <span class="s-icon">🔍</span>
-        <input type="text" placeholder="Search games, top-up, offers...">
+    <div class="tp-card">
+        <div class="tp-head"><div class="tp-num">1</div><h3>Enter Player ID</h3></div>
+        <input class="inp" type="text" id="pid" placeholder="Your Free Fire Player ID" maxlength="12" oninput="checkId()">
+        <div class="inp-ok" id="idOk"></div>
     </div>
 
-    <!-- Banner -->
-    <div class="banner">
-        <div class="banner-text">
-            <h2>Instant <span>Free Fire</span> Top-Up ⚡</h2>
-            <p>Cheapest rates in BD. 5-min delivery. bKash, Nagad & Rocket.</p>
-            <button class="banner-btn" onclick="showPage('topup');loadTopup('freefire')">Order Now →</button>
-        </div>
-        <div class="banner-emoji">💎</div>
+    <div class="tp-card">
+        <div class="tp-head"><div class="tp-num">2</div><h3>Select Package</h3></div>
+        <div class="pkg-grid" id="pkgGrid"></div>
     </div>
 
-    <!-- Notice -->
-    <div class="notice" id="notice"><span>📢</span> <span id="noticeText"></span></div>
-
-    <!-- Quick Actions -->
-    <div class="quick-grid">
-        <div class="quick-item" onclick="showPage('topup');loadTopup('freefire')">
-            <div class="q-icon">💎</div>
-            <div class="q-label">Diamond</div>
-        </div>
-        <div class="quick-item" onclick="showPage('topup');loadTopup('passes')">
-            <div class="q-icon">📅</div>
-            <div class="q-label">Pass</div>
-        </div>
-        <div class="quick-item" onclick="showPage('topup');loadTopup('specials')">
-            <div class="q-icon">🎯</div>
-            <div class="q-label">Special</div>
-        </div>
-        <div class="quick-item" onclick="showAuth()">
-            <div class="q-icon">📊</div>
-            <div class="q-label">Dashboard</div>
+    <div class="tp-card">
+        <div class="tp-head"><div class="tp-num">3</div><h3>Payment Method</h3></div>
+        <div class="pm-row">
+            <div class="pm on" data-m="bkash" onclick="setPay(this)"><div class="pm-i">📱</div><div class="pm-n">bKash</div></div>
+            <div class="pm" data-m="nagad" onclick="setPay(this)"><div class="pm-i">💳</div><div class="pm-n">Nagad</div></div>
+            <div class="pm" data-m="rocket" onclick="setPay(this)"><div class="pm-i">🚀</div><div class="pm-n">Rocket</div></div>
         </div>
     </div>
 
-    <!-- Games -->
-    <div class="sec-head">
-        <h3>🎮 Games</h3>
-    </div>
-    <div class="game-grid">
-        <div class="game-card" onclick="showPage('topup');loadTopup('freefire')">
-            <div class="g-img">🔥</div>
-            <div class="g-name">Free Fire</div>
-            <span class="g-tag">HOT</span>
-        </div>
-        <div class="game-card" onclick="showPage('topup');loadTopup('freefire')">
-            <div class="g-img">💎</div>
-            <div class="g-name">FF MAX</div>
-        </div>
-        <div class="game-card">
-            <div class="g-img">🎯</div>
-            <div class="g-name">PUBG</div>
-            <span class="g-tag">SOON</span>
-        </div>
-        <div class="game-card">
-            <div class="g-img">📱</div>
-            <div class="g-name">MLBB</div>
-            <span class="g-tag">SOON</span>
-        </div>
-        <div class="game-card">
-            <div class="g-img">⚔️</div>
-            <div class="g-name">Genshin</div>
-            <span class="g-tag">SOON</span>
-        </div>
-        <div class="game-card">
-            <div class="g-img">🎮</div>
-            <div class="g-name">Roblox</div>
-            <span class="g-tag">SOON</span>
-        </div>
+    <div class="tp-card">
+        <div class="tp-head"><div class="tp-num">4</div><h3>Rules</h3></div>
+        <ul class="rules-list">
+            <li>Bangladesh server only (ID Code top-up)</li>
+            <li>Double-check your Player ID before ordering</li>
+            <li>Delivery within 5-15 minutes</li>
+            <li>Contact WhatsApp for any issues</li>
+        </ul>
     </div>
 
-    <!-- Popular Packages -->
-    <div class="sec-head">
-        <h3>🔥 Popular Packages</h3>
-        <span class="see-all" onclick="showPage('topup');loadTopup('freefire')">See All →</span>
-    </div>
-    <div class="pop-grid" id="popGrid"></div>
-
-    <!-- Stats -->
-    <div class="stats-row">
-        <div class="stat-card"><div class="s-num">10K+</div><div class="s-label">Orders</div></div>
-        <div class="stat-card"><div class="s-num">5 min</div><div class="s-label">Delivery</div></div>
-        <div class="stat-card"><div class="s-num">4.9★</div><div class="s-label">Rating</div></div>
-    </div>
-
-    <!-- Recent Orders -->
-    <div class="sec-head">
-        <h3>⚡ Recent Orders</h3>
-    </div>
-    <div class="order-list" id="recentOrders">
-        <div class="order-item"><div class="oi-left"><div class="oi-avatar a1">💎</div><div><div class="oi-name">Rahim_BD</div><div class="oi-desc">520 Diamond • Free Fire</div></div></div><div class="oi-right"><div class="oi-price">৳580</div><div class="oi-status done">✅ Done</div></div></div>
-        <div class="order-item"><div class="oi-left"><div class="oi-avatar a2">📅</div><div><div class="oi-name">Sakib_Pro</div><div class="oi-desc">1X Weekly • Free Fire</div></div></div><div class="oi-right"><div class="oi-price">৳250</div><div class="oi-status done">✅ Done</div></div></div>
-        <div class="order-item"><div class="oi-left"><div class="oi-avatar a3">👑</div><div><div class="oi-name">Karim_FF</div><div class="oi-desc">Monthly Pass • Free Fire</div></div></div><div class="oi-right"><div class="oi-price">৳950</div><div class="oi-status done">✅ Done</div></div></div>
-        <div class="order-item"><div class="oi-left"><div class="oi-avatar a4">💎</div><div><div class="oi-name">TanvirOP</div><div class="oi-desc">2180 Diamond • Free Fire</div></div></div><div class="oi-right"><div class="oi-price">৳2,200</div><div class="oi-status pending">⏳ Processing</div></div></div>
-    </div>
-
-    <!-- Contact -->
-    <div class="contact-bar">
-        <a href="https://wa.me/8801606335174" class="cb-item"><span class="cb-icon">💬</span> WhatsApp</a>
-        <a href="tel:+8801606335174" class="cb-item"><span class="cb-icon">📱</span> 01606335174</a>
-        <a href="mailto:souravbhuiyan12245@gmail.com" class="cb-item"><span class="cb-icon">📧</span> Email</a>
-    </div>
-
-</div>
+    <button class="go-btn" id="goBtn" disabled onclick="showPay()">⚡ Pay Now</button>
 </div>
 
-<!-- ====== TOPUP PAGE ====== -->
-<div class="page" id="page-topup">
-<div class="main">
-    <div class="back-btn" onclick="showPage('home')">← Back</div>
-    
-    <div class="tp-hero" id="tpHero">
-        <div class="tp-hero-img">🔥</div>
-        <div class="tp-hero-info">
-            <h2>Free Fire Diamond</h2>
-            <p>Instant delivery • Bangladesh Server</p>
-        </div>
-    </div>
-
-    <div class="tp-section">
-        <h3>🎮 Enter Player ID</h3>
-        <input class="m-input" type="text" id="playerId" placeholder="Your Free Fire Player ID" maxlength="12" oninput="validateForm()" style="margin-bottom:0">
-    </div>
-
-    <div class="tp-section">
-        <h3>📦 Select Package</h3>
-        <div class="pkg-grid2" id="pkgGrid2"></div>
-    </div>
-
-    <div class="tp-section">
-        <h3>💳 Payment Method</h3>
-        <div class="pay-methods">
-            <div class="pay-m selected" data-m="bkash" onclick="selectPay(this)"><div class="pm-icon">📱</div><div class="pm-name">bKash</div></div>
-            <div class="pay-m" data-m="nagad" onclick="selectPay(this)"><div class="pm-icon">💳</div><div class="pm-name">Nagad</div></div>
-            <div class="pay-m" data-m="rocket" onclick="selectPay(this)"><div class="pm-icon">🚀</div><div class="pm-name">Rocket</div></div>
-        </div>
-    </div>
-
-    <button class="submit-btn" id="submitBtn" disabled onclick="showPayModal()">⚡ Proceed to Pay</button>
 </div>
-</div>
-
-<!-- ====== DASHBOARD PAGE ====== -->
-<div class="page" id="page-dashboard">
-<div class="main">
-    <div class="back-btn" onclick="showPage('home')">← Home</div>
-    
-    <div class="dash-header">
-        <div class="dash-avatar" id="dashAvatar">S</div>
-        <div class="dash-info">
-            <h3 id="dashName">User</h3>
-            <p id="dashEmail">user@email.com</p>
-        </div>
-    </div>
-
-    <div class="dash-stats">
-        <div class="ds-card"><div class="ds-label">Total Orders</div><div class="ds-value orange" id="dsTotalOrders">0</div></div>
-        <div class="ds-card"><div class="ds-label">Total Spent</div><div class="ds-value green" id="dsTotalSpent">৳0</div></div>
-        <div class="ds-card"><div class="ds-label">Completed</div><div class="ds-value blue" id="dsCompleted">0</div></div>
-        <div class="ds-card"><div class="ds-label">Pending</div><div class="ds-value purple" id="dsPending">0</div></div>
-    </div>
-
-    <div class="sec-head"><h3>📋 My Orders</h3></div>
-    <div class="order-list" id="myOrders">
-        <div style="text-align:center;padding:30px;color:var(--muted);font-size:0.85rem;">No orders yet. Start shopping! 🛒</div>
-    </div>
-
-    <button class="top-btn ghost" style="width:100%;margin-top:16px;padding:12px" onclick="logoutUser()">🚪 Logout</button>
-</div>
-</div>
-
-<!-- Auth Modal -->
-<div class="modal-overlay" id="authModal">
-    <div class="modal">
-        <h2>👋 Welcome!</h2>
-        <p class="modal-sub">Login or create account</p>
-        <div class="tab-row">
-            <div class="tab active" onclick="switchTab('login')">Login</div>
-            <div class="tab" onclick="switchTab('signup')">Sign Up</div>
-        </div>
-        <div id="loginForm">
-            <input class="m-input" type="email" id="authEmail" placeholder="📧 Email address">
-            <input class="m-input" type="password" id="authPass" placeholder="🔒 Password">
-            <button class="m-btn" onclick="doLogin()">Login →</button>
-        </div>
-        <div id="signupForm" style="display:none">
-            <input class="m-input" type="text" id="regName" placeholder="👤 Your name">
-            <input class="m-input" type="email" id="regEmail" placeholder="📧 Email address">
-            <input class="m-input" type="tel" id="regPhone" placeholder="📱 Phone number">
-            <input class="m-input" type="password" id="regPass" placeholder="🔒 Password">
-            <button class="m-btn" onclick="doSignup()">Create Account →</button>
-        </div>
-        <button class="m-close" onclick="hideAuth()">Cancel</button>
-    </div>
 </div>
 
 <!-- Pay Modal -->
-<div class="modal-overlay" id="payModal">
-    <div class="modal">
-        <h2 style="color:var(--pink)">📱 Send Payment</h2>
-        <p class="modal-sub">Send Money to:</p>
-        <div style="font-size:1.5rem;font-weight:900;color:var(--pink);text-align:center;margin:10px 0" id="payNumber">01606335174</div>
-        <p style="color:var(--danger);font-size:0.75rem;text-align:center">⚠️ Use "Send Money" — NOT "Payment"!</p>
-        <input class="m-input" type="tel" id="senderNum" placeholder="📱 Your bKash/Nagad number" maxlength="11" style="margin-top:14px">
-        <input class="m-input" type="text" id="trxId" placeholder="🧾 Transaction ID (TrxID)">
-        <button class="m-btn" onclick="confirmOrder()">✅ Confirm Order</button>
-        <button class="m-close" onclick="hideModal('payModal')">Cancel</button>
+<div class="overlay" id="payOL">
+    <div class="mdl">
+        <h3 style="color:var(--pink)">📱 Send Payment</h3>
+        <p>Send Money to:</p>
+        <div class="pay-num" id="payN">01606335174</div>
+        <small>⚠️ Use "Send Money" — NOT "Payment"!</small>
+        <label class="ml">Your Number</label>
+        <input class="mi" type="tel" id="sNum" placeholder="01XXXXXXXXX" maxlength="11">
+        <label class="ml">Transaction ID</label>
+        <input class="mi" type="text" id="tId" placeholder="Enter TrxID">
+        <button class="cf-btn" onclick="confirm()">✅ Confirm Order</button>
+        <button class="cn-btn" onclick="hide('payOL')">Cancel</button>
     </div>
 </div>
 
 <!-- Success Modal -->
-<div class="modal-overlay" id="successModal">
-    <div class="modal" style="text-align:center">
-        <div style="font-size:3.5rem">🎉</div>
-        <h2 style="color:var(--success)">Order Placed!</h2>
-        <p class="modal-sub">Order ID: <span style="color:var(--accent);font-weight:700" id="orderId">SS-000000</span></p>
-        <p style="font-size:0.82rem;color:var(--text2)">Your diamonds will arrive in 5-15 minutes!<br>We'll notify you on WhatsApp.</p>
-        <button class="m-btn" onclick="orderDone()">👍 Done</button>
+<div class="overlay" id="okOL">
+    <div class="mdl">
+        <div style="font-size:3rem">🎉</div>
+        <h3 style="color:var(--success)">Order Placed!</h3>
+        <p>Order ID:</p>
+        <div class="oid" id="oid">SS-000000</div>
+        <p style="margin-top:8px">Your diamonds will arrive in 5-15 minutes.<br>We'll contact you on WhatsApp!</p>
+        <button class="cf-btn" onclick="done()">Done 👍</button>
     </div>
 </div>
 
-<!-- Bottom Nav -->
-<div class="bottom-nav">
-    <div class="bottom-nav-inner">
-        <div class="bnav-item active" onclick="showPage('home')"><span class="bnav-icon">🏠</span><span class="bnav-label">Home</span></div>
-        <div class="bnav-item" onclick="showPage('topup');loadTopup('freefire')"><span class="bnav-icon">💎</span><span class="bnav-label">Top-Up</span></div>
-        <div class="bnav-item" onclick="checkDash()"><span class="bnav-icon">📊</span><span class="bnav-label">Dashboard</span></div>
-        <div class="bnav-item" onclick="window.open('https://wa.me/8801606335174')"><span class="bnav-icon">💬</span><span class="bnav-label">Support</span></div>
-    </div>
-</div>
-
-<a href="https://wa.me/8801606335174" class="wa-fab">💬</a>
+<a href="https://wa.me/8801606335174" class="wa-fab" target="_blank">💬</a>
 
 <footer>© 2026 SS TOP-UP — All Rights Reserved<br>Free Fire™ is a trademark of Garena.</footer>
 
 <script>
-// ===== DATA =====
-const GH_USER='souravbhuiyan12245-hue', GH_REPO='sstopup';
-const PRICES_URL=`https://raw.githubusercontent.com/${GH_USER}/${GH_REPO}/main/prices.json`;
-let prices=null, selectedPkg=null, payMethod='bkash', currentUser=null;
+const D={
+    'uid-topup':[{n:'25 💎',p:24},{n:'50 💎',p:38},{n:'115 💎',p:79},{n:'240 💎',p:158},{n:'355 💎',p:238},{n:'480 💎',p:315},{n:'610 💎',p:405},{n:'850 💎',p:560},{n:'1240 💎',p:799},{n:'2530 💎',p:1595},{n:'5060 💎',p:3190},{n:'10120 💎',p:6400,tag:'MAX'}],
+    'weekly-monthly':[{n:'Weekly Lite',p:47,t:1},{n:'1X Weekly',p:154,t:1},{n:'2X Weekly',p:312,t:1},{n:'Monthly',p:765,t:1,tag:'BEST'}],
+    'weekly-lite':[{n:'Weekly Lite',p:47,t:1}],
+    'weekly-offer':[{n:'Weekly Lite',p:47,t:1},{n:'1X Weekly',p:154,t:1},{n:'2X Weekly',p:312,t:1}],
+    'monthly-offer':[{n:'Monthly',p:765,t:1,tag:'BEST'}],
+    '550-monthly':[{n:'550Tk Monthly',p:550,t:1,tag:'🔥'}],
+    'evo-access':[{n:'EVO Access',p:199,t:1}],
+    'level-up':[{n:'Level Up Pass',p:499,t:1}]
+};
+let sel=null,pm='bkash',curCat='uid-topup';
 
-// Load prices
-async function loadPrices(){
-    try{
-        const r=await fetch(PRICES_URL+'?t='+Date.now());
-        prices=await r.json();
-        renderPopular();
-        if(prices.announcement){document.getElementById('noticeText').textContent=prices.announcement;document.getElementById('notice').classList.add('show');}
-    }catch(e){
-        prices={diamonds:{"25":{price:35,original:40},"50":{price:65,original:75},"100":{price:120,original:140},"310":{price:350,original:400},"520":{price:580,original:650},"1060":{price:1100,original:1250},"2180":{price:2200,original:2500},"5600":{price:5500,original:6200},"10120":{price:10000,original:11500}},passes:{weekly_lite:{price:120,original:140,name:"Weekly Lite"},weekly_1x:{price:250,original:290,name:"1X Weekly"},weekly_2x:{price:480,original:550,name:"2X Weekly"},monthly:{price:950,original:1100,name:"Monthly"}},specials:{evo_access:{price:850,original:1000,name:"EVO Access"},level_up:{price:450,original:550,name:"Level Up Pass"}}};
-        renderPopular();
-    }
+function go(c){
+    curCat=c;
+    document.getElementById('homeView').classList.add('off');
+    document.getElementById('topupView').classList.add('on');
+    const g=document.getElementById('pkgGrid'),items=D[c]||D['uid-topup'];
+    g.innerHTML=items.map((x,i)=>`<div class="pkg ${x.t?'pass':''}" onclick="pick(this,${i})" data-i="${i}"><div class="pk-name">${x.t?'📅':'💎'} ${x.n}</div><div class="pk-price">৳${x.p.toLocaleString()}</div>${x.tag?'<div class="pk-tag">'+x.tag+'</div>':''}</div>`).join('');
+    sel=null;document.getElementById('goBtn').disabled=true;window.scrollTo({top:0,behavior:'smooth'});
 }
-
-function renderPopular(){
-    if(!prices)return;
-    const el=document.getElementById('popGrid');
-    const items=[
-        {n:'520 Diamond',p:prices.diamonds['520'].price,o:prices.diamonds['520'].original,icon:'💎',cls:'ff'},
-        {n:'1060 Diamond',p:prices.diamonds['1060'].price,o:prices.diamonds['1060'].original,icon:'💎',cls:'ff'},
-        {n:'Monthly Pass',p:prices.passes.monthly.price,o:prices.passes.monthly.original,icon:'👑',cls:'ff'},
-        {n:'Weekly Lite',p:prices.passes.weekly_lite.price,o:prices.passes.weekly_lite.original,icon:'⚡',cls:'ff'}
-    ];
-    el.innerHTML=items.map(x=>`<div class="pop-card" onclick="showPage('topup');loadTopup('freefire')">
-        <div class="pop-top"><div class="pop-icon ${x.cls}">${x.icon}</div><div><div class="pop-name">${x.n}</div><div class="pop-game">Free Fire</div></div></div>
-        <div class="pop-bottom"><div><span class="pop-price">৳${x.p}</span> <span class="pop-old">৳${x.o}</span></div><div class="pop-badge">SAVE ${Math.round((1-x.p/x.o)*100)}%</div></div>
-    </div>`).join('');
+function goHome(){
+    document.getElementById('homeView').classList.remove('off');
+    document.getElementById('topupView').classList.remove('on');
+    document.getElementById('pid').value='';document.getElementById('idOk').style.display='none';
+    sel=null;window.scrollTo({top:0,behavior:'smooth'});
 }
-
-// Pages
-function showPage(p){
-    document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
-    document.getElementById('page-'+p).classList.add('active');
-    document.querySelectorAll('.bnav-item').forEach((el,i)=>{el.classList.remove('active');if((p==='home'&&i===0)||(p==='topup'&&i===1)||(p==='dashboard'&&i===2))el.classList.add('active');});
-    window.scrollTo({top:0});
+function pick(el,i){
+    document.querySelectorAll('.pkg').forEach(e=>e.classList.remove('on'));
+    el.classList.add('on');sel=(D[curCat]||D['uid-topup'])[i];upBtn();
 }
-
-// Topup
-function loadTopup(cat){
-    if(!prices)return;
-    const grid=document.getElementById('pkgGrid2');
-    let items=[];
-    if(cat==='freefire'){
-        items=Object.keys(prices.diamonds).sort((a,b)=>+a-+b).map(k=>({n:k+' 💎',p:prices.diamonds[k].price,o:prices.diamonds[k].original}));
-    }else if(cat==='passes'){
-        items=Object.values(prices.passes).map(v=>({n:'📅 '+v.name,p:v.price,o:v.original}));
-    }else if(cat==='specials'){
-        items=Object.values(prices.specials).map(v=>({n:'🎯 '+v.name,p:v.price,o:v.original}));
-    }
-    grid.innerHTML=items.map((x,i)=>`<div class="pkg2" onclick="selectPkg(this,${i})" data-i="${i}">
-        <div class="p-amount">${x.n}</div><div class="p-price">৳${x.p}</div><div class="p-old">৳${x.o}</div>
-    </div>`).join('');
-    window._pkgItems=items;selectedPkg=null;validateForm();
+function setPay(el){document.querySelectorAll('.pm').forEach(e=>e.classList.remove('on'));el.classList.add('on');pm=el.dataset.m;}
+function checkId(){
+    const v=document.getElementById('pid').value.trim(),ok=document.getElementById('idOk');
+    if(v.length>=8){ok.style.display='block';ok.textContent='✅ Player ID: '+v;}else{ok.style.display='none';}
+    upBtn();
 }
-
-function selectPkg(el,i){
-    document.querySelectorAll('.pkg2').forEach(e=>e.classList.remove('selected'));
-    el.classList.add('selected');
-    selectedPkg=window._pkgItems[i];
-    validateForm();
+function upBtn(){document.getElementById('goBtn').disabled=!(document.getElementById('pid').value.trim().length>=8&&sel);}
+function showPay(){
+    if(!sel)return;
+    document.getElementById('payN').textContent=pm==='nagad'?'01854707074':'01606335174';
+    document.getElementById('payOL').classList.add('show');
 }
-function selectPay(el){
-    document.querySelectorAll('.pay-m').forEach(e=>e.classList.remove('selected'));
-    el.classList.add('selected');
-    payMethod=el.dataset.m;
-}
-function validateForm(){
-    const pid=document.getElementById('playerId').value.trim();
-    document.getElementById('submitBtn').disabled=!(pid.length>=8&&selectedPkg);
-}
-
-// Pay
-function showPayModal(){
-    document.getElementById('payNumber').textContent=payMethod==='nagad'?'01854707074':'01606335174';
-    document.getElementById('payModal').classList.add('show');
-}
-function hideModal(id){document.getElementById(id).classList.remove('show');}
-
-function confirmOrder(){
-    const s=document.getElementById('senderNum').value.trim();
-    const t=document.getElementById('trxId').value.trim();
-    if(!s||s.length<11){alert('⚠️ সঠিক নম্বর দাও!');return;}
-    if(!t){alert('⚠️ Transaction ID দাও!');return;}
-    const oid='SS-'+Date.now().toString().slice(-6);
-    document.getElementById('orderId').textContent=oid;
-    const pid=document.getElementById('playerId').value.trim();
-    const pn=payMethod==='nagad'?'Nagad':payMethod==='rocket'?'Rocket':'bKash';
-    const msg=encodeURIComponent(`🆕 NEW ORDER!\n📋 ${oid}\n💎 ${selectedPkg.n}\n💰 ৳${selectedPkg.p}\n🎮 ID: ${pid}\n💳 ${pn}\n📱 ${s}\n🧾 ${t}\n⏰ ${new Date().toLocaleString()}`);
+function hide(id){document.getElementById(id).classList.remove('show');}
+function confirm(){
+    const s=document.getElementById('sNum').value.trim(),t=document.getElementById('tId').value.trim();
+    if(!s||s.length<11){alert('⚠️ Enter valid number!');return;}
+    if(!t){alert('⚠️ Enter Transaction ID!');return;}
+    const o='SS-'+Date.now().toString().slice(-6);
+    document.getElementById('oid').textContent=o;
+    const pid=document.getElementById('pid').value.trim();
+    const pn=pm==='nagad'?'Nagad':pm==='rocket'?'Rocket':'bKash';
+    const msg=encodeURIComponent(`🆕 NEW ORDER!\n📋 ${o}\n💎 ${sel.n}\n💰 ৳${sel.p}\n🎮 ID: ${pid}\n💳 ${pn}\n📱 ${s}\n🧾 ${t}\n⏰ ${new Date().toLocaleString()}`);
     window.open(`https://wa.me/8801606335174?text=${msg}`,'_blank');
-    // Save order locally
-    if(currentUser){
-        const orders=JSON.parse(localStorage.getItem('ss_orders_'+currentUser.email)||'[]');
-        orders.unshift({id:oid,pkg:selectedPkg.n,price:selectedPkg.p,pid:pid,pay:pn,date:new Date().toLocaleDateString(),status:'pending'});
-        localStorage.setItem('ss_orders_'+currentUser.email,JSON.stringify(orders));
-    }
-    hideModal('payModal');
-    document.getElementById('successModal').classList.add('show');
-}
-
-function orderDone(){
-    hideModal('successModal');
-    selectedPkg=null;
-    document.querySelectorAll('.pkg2').forEach(e=>e.classList.remove('selected'));
-    document.getElementById('playerId').value='';
-    document.getElementById('senderNum').value='';
-    document.getElementById('trxId').value='';
-    document.getElementById('submitBtn').disabled=true;
-    showPage('home');
-}
-
-// Auth
-function showAuth(){document.getElementById('authModal').classList.add('show');}
-function hideAuth(){document.getElementById('authModal').classList.remove('show');}
-function switchTab(t){
-    document.getElementById('loginForm').style.display=t==='login'?'block':'none';
-    document.getElementById('signupForm').style.display=t==='signup'?'block':'none';
-    document.querySelectorAll('.tab').forEach((el,i)=>{el.classList.toggle('active',(t==='login'&&i===0)||(t==='signup'&&i===1));});
-}
-
-function doSignup(){
-    const name=document.getElementById('regName').value.trim();
-    const email=document.getElementById('regEmail').value.trim();
-    const phone=document.getElementById('regPhone').value.trim();
-    const pass=document.getElementById('regPass').value;
-    if(!name||!email||!pass){alert('সব ফিল্ড পূরণ করো!');return;}
-    const users=JSON.parse(localStorage.getItem('ss_users')||'{}');
-    if(users[email]){alert('এই email আগে থেকে আছে! Login করো।');return;}
-    users[email]={name,email,phone,pass,joined:new Date().toLocaleDateString()};
-    localStorage.setItem('ss_users',JSON.stringify(users));
-    currentUser=users[email];
-    localStorage.setItem('ss_current',email);
-    onLogin();
-    hideAuth();
-}
-
-function doLogin(){
-    const email=document.getElementById('authEmail').value.trim();
-    const pass=document.getElementById('authPass').value;
-    const users=JSON.parse(localStorage.getItem('ss_users')||'{}');
-    if(!users[email]||users[email].pass!==pass){alert('❌ Email বা Password ভুল!');return;}
-    currentUser=users[email];
-    localStorage.setItem('ss_current',email);
-    onLogin();
-    hideAuth();
-}
-
-function onLogin(){
-    document.getElementById('loginBtn').style.display='none';
-    document.getElementById('dashBtn').style.display='inline-block';
-    document.getElementById('userAvatar').style.display='flex';
-    document.getElementById('userAvatar').textContent=currentUser.name[0].toUpperCase();
-    document.getElementById('dashAvatar').textContent=currentUser.name[0].toUpperCase();
-    document.getElementById('dashName').textContent=currentUser.name;
-    document.getElementById('dashEmail').textContent=currentUser.email;
-    loadDashboard();
-}
-
-function loadDashboard(){
-    if(!currentUser)return;
-    const orders=JSON.parse(localStorage.getItem('ss_orders_'+currentUser.email)||'[]');
-    document.getElementById('dsTotalOrders').textContent=orders.length;
-    document.getElementById('dsTotalSpent').textContent='৳'+orders.reduce((a,o)=>a+o.price,0).toLocaleString();
-    document.getElementById('dsCompleted').textContent=orders.filter(o=>o.status==='done').length;
-    document.getElementById('dsPending').textContent=orders.filter(o=>o.status==='pending').length;
-    
-    const el=document.getElementById('myOrders');
-    if(orders.length===0){el.innerHTML='<div style="text-align:center;padding:30px;color:var(--muted);font-size:0.85rem;">No orders yet 🛒</div>';return;}
+    hide('payOL');document.getElementById('okOL').classList.add('show');
+    // Add live order
+    const lo=document.getElementById('liveOrders');
     const colors=['a1','a2','a3','a4','a5'];
-    el.innerHTML=orders.map((o,i)=>`<div class="order-item">
-        <div class="oi-left"><div class="oi-avatar ${colors[i%5]}">💎</div><div><div class="oi-name">${o.id}</div><div class="oi-desc">${o.pkg} • ${o.date}</div></div></div>
-        <div class="oi-right"><div class="oi-price">৳${o.price}</div><div class="oi-status ${o.status==='done'?'done':'pending'}">${o.status==='done'?'✅ Done':'⏳ Pending'}</div></div>
-    </div>`).join('');
+    const d=document.createElement('div');d.className='order-card';
+    d.innerHTML=`<div class="oc-left"><div class="oc-avatar ${colors[Math.floor(Math.random()*5)]}">${s.slice(-1)}</div><div><div class="oc-name">***${s.slice(-4)}</div><div class="oc-pkg">${sel.n}</div></div></div><div class="oc-right"><div class="oc-price">৳${sel.p.toLocaleString()}</div><div class="oc-status" style="color:#eab308;background:rgba(234,179,8,0.1)">⏳ Processing</div></div>`;
+    lo.insertBefore(d,lo.firstChild);if(lo.children.length>5)lo.removeChild(lo.lastChild);
 }
-
-function logoutUser(){
-    localStorage.removeItem('ss_current');
-    currentUser=null;
-    document.getElementById('loginBtn').style.display='inline-block';
-    document.getElementById('dashBtn').style.display='none';
-    document.getElementById('userAvatar').style.display='none';
-    showPage('home');
+function done(){
+    hide('okOL');sel=null;
+    document.querySelectorAll('.pkg').forEach(e=>e.classList.remove('on'));
+    document.getElementById('pid').value='';document.getElementById('idOk').style.display='none';
+    document.getElementById('sNum').value='';document.getElementById('tId').value='';
+    document.getElementById('goBtn').disabled=true;goHome();
 }
-
-function checkDash(){
-    if(currentUser){showPage('dashboard');loadDashboard();}
-    else showAuth();
-}
-
-// Auto-login
-const saved=localStorage.getItem('ss_current');
-if(saved){
-    const users=JSON.parse(localStorage.getItem('ss_users')||'{}');
-    if(users[saved]){currentUser=users[saved];onLogin();}
-}
-
-// Init
-loadPrices();
 </script>
 </body>
 </html>
