@@ -618,10 +618,63 @@
 <!-- Orders Section -->
 <div class="status-section" id="ordersSection">
     <div class="section-title">📋 My Orders</div>
-    <div id="ordersList">
-        <div style="text-align:center;padding:40px 20px;color:var(--text-muted);">
-            <i class="fas fa-inbox" style="font-size:2.5rem;margin-bottom:12px;display:block;opacity:0.3;"></i>
-            <p>No orders yet</p>
+    <p style="color:var(--text-muted);font-size:0.8rem;margin-bottom:14px;">Your recent 10 orders at a glance</p>
+    <div id="ordersList"></div>
+</div>
+
+<!-- Add Money Section -->
+<div class="status-section" id="addMoneySection">
+    <div class="section-title">💰 Add Money</div>
+    <div class="status-card">
+        <div style="text-align:center;margin-bottom:16px;">
+            <div style="font-size:2.5rem;margin-bottom:8px;">💳</div>
+            <div style="font-size:0.85rem;color:var(--text-muted);">Current Balance</div>
+            <div style="font-size:2rem;font-weight:800;color:var(--primary);" id="balanceDisplay">৳0</div>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Enter Amount</label>
+            <input class="form-input" type="number" id="addMoneyAmount" placeholder="Amount (৳)" inputmode="numeric">
+        </div>
+        <div class="form-group">
+            <label class="form-label">💳 Payment Method</label>
+            <div class="payment-options">
+                <div class="payment-option selected" onclick="selectAddPayment(this,'bkash')">
+                    <div class="pay-icon bkash-icon">b</div>
+                    <div>
+                        <div class="pay-name">bKash</div>
+                        <div class="pay-num">01606335174</div>
+                    </div>
+                </div>
+                <div class="payment-option" onclick="selectAddPayment(this,'nagad')">
+                    <div class="pay-icon nagad-icon">N</div>
+                    <div>
+                        <div class="pay-name">Nagad</div>
+                        <div class="pay-num">01854707074</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="form-label">📱 Your Number</label>
+            <input class="form-input" type="tel" id="addMoneyPhone" placeholder="01XXXXXXXXX" inputmode="numeric">
+        </div>
+        <div class="form-group">
+            <label class="form-label">🧾 Transaction ID</label>
+            <input class="form-input" type="text" id="addMoneyTrx" placeholder="Enter Transaction ID">
+        </div>
+        <button class="submit-btn" onclick="submitAddMoney()">
+            <i class="fas fa-plus-circle"></i> Add Money
+        </button>
+    </div>
+    <div class="status-card" style="margin-top:14px;">
+        <h4 style="font-size:0.85rem;margin-bottom:10px;">📖 How to Add Money</h4>
+        <div style="font-size:0.8rem;color:var(--text-muted);line-height:1.8;">
+            1️⃣ Enter the amount you want to add<br>
+            2️⃣ Select bKash or Nagad<br>
+            3️⃣ Send money to the number shown<br>
+            4️⃣ Enter your phone number & Transaction ID<br>
+            5️⃣ Click "Add Money" button<br>
+            6️⃣ Balance will be added within 5-10 minutes ✅
         </div>
     </div>
 </div>
@@ -739,17 +792,25 @@
 
 <!-- Bottom Nav -->
 <div class="bottom-nav">
-    <button class="nav-item active" onclick="showHome()">
+    <button class="nav-item active" id="navHome" onclick="showHome()">
         <i class="fas fa-home"></i>
         Home
     </button>
-    <button class="nav-item" onclick="showOrders()">
+    <button class="nav-item" id="navAddMoney" onclick="showAddMoney()">
+        <i class="fas fa-wallet"></i>
+        Add Money
+    </button>
+    <button class="nav-item" id="navOrders" onclick="showOrders()">
         <i class="fas fa-receipt"></i>
-        Orders
+        My Orders
     </button>
     <button class="nav-item" onclick="window.open('https://wa.me/8801606335174','_blank')">
         <i class="fab fa-whatsapp"></i>
         Help
+    </button>
+    <button class="nav-item" id="navAccount" onclick="showAccount()">
+        <i class="fas fa-user"></i>
+        Account
     </button>
 </div>
 
@@ -942,11 +1003,16 @@ function submitOrder() {
     }
     
     // Send to WhatsApp
-    const msg = `🛒 *SS TOP-UP নতুন Orders!*%0A%0A🎮 UID: ${uid}%0A📦 Item: ${item}%0A💰 Price: ৳${price}%0A💳 Payment: ${selectedPayment}%0A📱 Number: ${phone}%0A🧾 TrxID: ${trx}`;
+    const msg = `🛒 *SS TOP-UP New Order!*%0A%0A🎮 UID: ${uid}%0A📦 Item: ${item}%0A💰 Price: ৳${price}%0A💳 Payment: ${selectedPayment}%0A📱 Number: ${phone}%0A🧾 TrxID: ${trx}`;
     
     window.open(`https://wa.me/${WA_NUMBER}?text=${msg}`, '_blank');
     
-    showToast('✅ Orders পাঠানো হচ্ছে WhatsApp এ!');
+    // Save order to localStorage
+    const orders = getOrders();
+    orders.push({ uid, item, price, payment: selectedPayment, date: new Date().toLocaleString(), status: 'Pending' });
+    localStorage.setItem('ss_orders', JSON.stringify(orders));
+    
+    showToast('✅ Order sent to WhatsApp!');
     
     setTimeout(() => {
         closeModal();
@@ -957,19 +1023,86 @@ function submitOrder() {
     }, 1000);
 }
 
-function showHome() {
-    document.getElementById('homeContent').style.display = 'block';
+function hideAllSections() {
+    document.getElementById('homeContent').style.display = 'none';
     document.getElementById('ordersSection').classList.remove('show');
+    document.getElementById('addMoneySection').classList.remove('show');
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    document.querySelectorAll('.nav-item')[0].classList.add('active');
+}
+
+function showHome() {
+    hideAllSections();
+    document.getElementById('homeContent').style.display = 'block';
+    document.getElementById('navHome').classList.add('active');
 }
 
 function showOrders() {
-    document.getElementById('homeContent').style.display = 'none';
+    hideAllSections();
     document.getElementById('ordersSection').classList.add('show');
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    document.querySelectorAll('.nav-item')[1].classList.add('active');
+    document.getElementById('navOrders').classList.add('active');
+    renderOrders();
 }
+
+function showAddMoney() {
+    hideAllSections();
+    document.getElementById('addMoneySection').classList.add('show');
+    document.getElementById('navAddMoney').classList.add('active');
+}
+
+function showAccount() {
+    window.open('https://wa.me/8801606335174?text=Hi!%20I%20need%20help%20with%20my%20account.', '_blank');
+}
+
+let addPaymentMethod = 'bkash';
+function selectAddPayment(el, method) {
+    document.querySelectorAll('#addMoneySection .payment-option').forEach(p => p.classList.remove('selected'));
+    el.classList.add('selected');
+    addPaymentMethod = method;
+}
+
+function submitAddMoney() {
+    const amount = document.getElementById('addMoneyAmount').value.trim();
+    const phone = document.getElementById('addMoneyPhone').value.trim();
+    const trx = document.getElementById('addMoneyTrx').value.trim();
+    
+    if (!amount) { showToast('❌ Enter amount!'); return; }
+    if (!phone) { showToast('❌ Enter phone number!'); return; }
+    if (!trx) { showToast('❌ Enter Transaction ID!'); return; }
+    
+    const msg = `💰 *SS TOP-UP Add Money Request*%0A%0A💵 Amount: ৳${amount}%0A💳 Payment: ${addPaymentMethod}%0A📱 Number: ${phone}%0A🧾 TrxID: ${trx}`;
+    window.open(`https://wa.me/${WA_NUMBER}?text=${msg}`, '_blank');
+    showToast('✅ Request sent to WhatsApp!');
+}
+
+// Orders stored in localStorage
+function getOrders() {
+    try { return JSON.parse(localStorage.getItem('ss_orders') || '[]'); } catch(e) { return []; }
+}
+
+function renderOrders() {
+    const orders = getOrders();
+    const el = document.getElementById('ordersList');
+    if (orders.length === 0) {
+        el.innerHTML = '<div style="text-align:center;padding:40px 20px;color:var(--text-muted);"><i class="fas fa-inbox" style="font-size:2.5rem;margin-bottom:12px;display:block;opacity:0.3;"></i><p>No orders yet</p></div>';
+        return;
+    }
+    el.innerHTML = orders.slice(-10).reverse().map(o => {
+        const colors = ['#6C3CE1','#F59E0B','#EC4899','#22C55E','#EF4444','#06B6D4'];
+        const color = colors[Math.abs(hashCode(o.uid)) % colors.length];
+        const initial = (o.item || 'O')[0].toUpperCase();
+        const statusClass = o.status === 'Completed' ? 'badge-done' : 'badge-pending';
+        return `<div class="status-card" style="display:flex;align-items:center;gap:12px;padding:14px 16px;">
+            <div style="width:42px;height:42px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1rem;flex-shrink:0;">${initial}</div>
+            <div style="flex:1;min-width:0;">
+                <div style="font-weight:700;font-size:0.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">UID: ${o.uid}</div>
+                <div style="font-size:0.75rem;color:var(--text-muted);">${o.item} • ৳${o.price}</div>
+            </div>
+            <span class="status-badge ${statusClass}">${o.status || 'Pending'}</span>
+        </div>`;
+    }).join('');
+}
+
+function hashCode(s) { let h=0; for(let i=0;i<s.length;i++) h=((h<<5)-h)+s.charCodeAt(i)|0; return h; }
 
 function showToast(msg) {
     const t = document.getElementById('toast');
