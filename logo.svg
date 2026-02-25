@@ -1,87 +1,152 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
   <defs>
-    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#1a1a2e"/>
-      <stop offset="100%" style="stop-color:#0f0f1a"/>
+    <linearGradient id="bg1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0c0c1d"/>
+      <stop offset="50%" style="stop-color:#111128"/>
+      <stop offset="100%" style="stop-color:#0a0a1a"/>
     </linearGradient>
-    <linearGradient id="orangeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#f97316"/>
-      <stop offset="100%" style="stop-color:#ea580c"/>
+    <linearGradient id="fire1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff8c00"/>
+      <stop offset="50%" style="stop-color:#f97316"/>
+      <stop offset="100%" style="stop-color:#dc2626"/>
     </linearGradient>
-    <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#06b6d4"/>
-      <stop offset="100%" style="stop-color:#0891b2"/>
+    <linearGradient id="fire2" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#fbbf24"/>
+      <stop offset="100%" style="stop-color:#f97316"/>
     </linearGradient>
-    <linearGradient id="diamondGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#22d3ee"/>
-      <stop offset="50%" style="stop-color:#06b6d4"/>
+    <linearGradient id="gem1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#67e8f9"/>
+      <stop offset="30%" style="stop-color:#22d3ee"/>
+      <stop offset="70%" style="stop-color:#06b6d4"/>
       <stop offset="100%" style="stop-color:#0284c7"/>
     </linearGradient>
-    <linearGradient id="shineGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.4"/>
-      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0"/>
+    <linearGradient id="gem2" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#a5f3fc"/>
+      <stop offset="100%" style="stop-color:#06b6d4"/>
     </linearGradient>
-    <filter id="glow2">
-      <feGaussianBlur stdDeviation="6" result="blur"/>
+    <linearGradient id="gem3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0891b2"/>
+      <stop offset="100%" style="stop-color:#065f73"/>
+    </linearGradient>
+    <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f97316"/>
+      <stop offset="50%" style="stop-color:#06b6d4"/>
+      <stop offset="100%" style="stop-color:#f97316"/>
+    </linearGradient>
+    <filter id="bigGlow">
+      <feGaussianBlur stdDeviation="12" result="blur"/>
       <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
     </filter>
-    <filter id="shadow">
-      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#000" flood-opacity="0.5"/>
-    </filter>
-    <filter id="orangeGlow">
-      <feGaussianBlur stdDeviation="8" result="blur"/>
-      <feFlood flood-color="#f97316" flood-opacity="0.4"/>
+    <filter id="textGlow">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feFlood flood-color="#f97316" flood-opacity="0.6"/>
       <feComposite in2="blur" operator="in"/>
       <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
     </filter>
+    <filter id="cyanGlow">
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feFlood flood-color="#06b6d4" flood-opacity="0.5"/>
+      <feComposite in2="blur" operator="in"/>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="drop">
+      <feDropShadow dx="0" dy="3" stdDeviation="6" flood-color="#000" flood-opacity="0.6"/>
+    </filter>
+    <clipPath id="roundClip">
+      <rect width="512" height="512" rx="110"/>
+    </clipPath>
   </defs>
-  
+
   <!-- Background -->
-  <rect width="512" height="512" rx="100" fill="url(#bgGrad)"/>
+  <rect width="512" height="512" rx="110" fill="url(#bg1)"/>
   
-  <!-- Outer ring -->
-  <circle cx="256" cy="256" r="230" fill="none" stroke="url(#orangeGrad)" stroke-width="3" opacity="0.3"/>
+  <!-- Background glow effects -->
+  <circle cx="256" cy="200" r="180" fill="#f97316" opacity="0.04"/>
+  <circle cx="200" cy="180" r="120" fill="#06b6d4" opacity="0.05"/>
+  <circle cx="320" cy="220" r="100" fill="#f97316" opacity="0.03"/>
   
-  <!-- Inner glow circle -->
-  <circle cx="256" cy="220" r="120" fill="url(#orangeGrad)" opacity="0.06"/>
+  <!-- Animated ring -->
+  <circle cx="256" cy="210" r="155" fill="none" stroke="url(#ringGrad)" stroke-width="1.5" opacity="0.2" stroke-dasharray="15 10"/>
   
-  <!-- Diamond -->
-  <g filter="url(#glow2)">
-    <!-- Diamond body -->
-    <polygon points="256,70 330,170 256,290 182,170" fill="url(#diamondGrad)"/>
-    <!-- Diamond top facet -->
-    <polygon points="256,70 330,170 256,150 182,170" fill="url(#shineGrad)"/>
-    <!-- Diamond left facet -->
-    <polygon points="182,170 256,150 256,290" fill="#0891b2" opacity="0.6"/>
-    <!-- Diamond right facet -->
-    <polygon points="330,170 256,150 256,290" fill="#06b6d4" opacity="0.8"/>
-    <!-- Diamond outline -->
-    <polygon points="256,70 330,170 256,290 182,170" fill="none" stroke="#fff" stroke-width="1.5" opacity="0.3"/>
-    <line x1="256" y1="70" x2="256" y2="290" stroke="#fff" stroke-width="1" opacity="0.2"/>
-    <line x1="182" y1="170" x2="330" y2="170" stroke="#fff" stroke-width="1" opacity="0.2"/>
+  <!-- Outer border -->
+  <rect x="6" y="6" width="500" height="500" rx="106" fill="none" stroke="url(#ringGrad)" stroke-width="2" opacity="0.15"/>
+
+  <!-- Diamond with glow -->
+  <g filter="url(#cyanGlow)">
+    <!-- Diamond main body -->
+    <polygon points="256,55 345,175 256,310 167,175" fill="url(#gem1)"/>
   </g>
   
+  <!-- Diamond facets -->
+  <!-- Top crown -->
+  <polygon points="256,55 345,175 256,155 167,175" fill="url(#gem2)" opacity="0.9"/>
+  <!-- Left facet -->
+  <polygon points="167,175 256,155 256,310" fill="url(#gem3)" opacity="0.8"/>
+  <!-- Right facet -->  
+  <polygon points="345,175 256,155 256,310" fill="url(#gem1)" opacity="0.7"/>
+  <!-- Top highlight -->
+  <polygon points="256,55 300,130 256,120 212,130" fill="#fff" opacity="0.25"/>
+  <!-- Edge lines -->
+  <polygon points="256,55 345,175 256,310 167,175" fill="none" stroke="#a5f3fc" stroke-width="1.2" opacity="0.4"/>
+  <line x1="256" y1="55" x2="256" y2="310" stroke="#a5f3fc" stroke-width="0.8" opacity="0.25"/>
+  <line x1="167" y1="175" x2="345" y2="175" stroke="#a5f3fc" stroke-width="0.8" opacity="0.25"/>
+  
+  <!-- Inner shine -->
+  <ellipse cx="240" cy="140" rx="25" ry="15" fill="#fff" opacity="0.15" transform="rotate(-20,240,140)"/>
+
   <!-- SS Text -->
-  <g filter="url(#orangeGlow)">
-    <text x="256" y="210" font-family="Arial Black, Impact, sans-serif" font-size="90" font-weight="900" fill="#fff" text-anchor="middle" letter-spacing="8">SS</text>
+  <g filter="url(#textGlow)">
+    <text x="256" y="218" font-family="'Arial Black','Impact',sans-serif" font-size="95" font-weight="900" fill="#ffffff" text-anchor="middle" letter-spacing="10" filter="url(#drop)">SS</text>
   </g>
   
-  <!-- TOP-UP Text -->
-  <rect x="126" y="330" width="260" height="48" rx="24" fill="url(#orangeGrad)" filter="url(#shadow)"/>
-  <text x="256" y="362" font-family="Arial Black, Impact, sans-serif" font-size="30" font-weight="900" fill="#fff" text-anchor="middle" letter-spacing="6">TOP-UP</text>
-  
-  <!-- Lightning bolt accent -->
-  <g transform="translate(370, 100)" filter="url(#glow2)">
-    <polygon points="12,0 0,18 8,18 4,32 18,12 10,12" fill="#f97316"/>
+  <!-- Underline bar -->
+  <rect x="185" y="235" width="142" height="4" rx="2" fill="url(#fire1)" opacity="0.8"/>
+
+  <!-- TOP-UP Badge -->
+  <g filter="url(#drop)">
+    <rect x="130" y="340" width="252" height="54" rx="27" fill="url(#fire1)"/>
+    <rect x="132" y="342" width="248" height="50" rx="25" fill="none" stroke="#fbbf24" stroke-width="1" opacity="0.3"/>
+    <text x="256" y="375" font-family="'Arial Black','Impact',sans-serif" font-size="28" font-weight="900" fill="#ffffff" text-anchor="middle" letter-spacing="8">TOP-UP</text>
   </g>
+
+  <!-- Lightning bolts -->
+  <g transform="translate(385,80) scale(1.4)" filter="url(#textGlow)">
+    <polygon points="12,0 0,18 8,16 4,32 18,12 10,14" fill="#fbbf24"/>
+  </g>
+  <g transform="translate(95,85) scale(1.1)" filter="url(#textGlow)">
+    <polygon points="12,0 0,18 8,16 4,32 18,12 10,14" fill="#fbbf24"/>
+  </g>
+
+  <!-- Sparkle stars -->
+  <g fill="#fff" opacity="0.7">
+    <!-- Star 1 -->
+    <g transform="translate(420,160)">
+      <rect x="-1" y="-6" width="2" height="12" rx="1"/>
+      <rect x="-6" y="-1" width="12" height="2" rx="1"/>
+    </g>
+    <!-- Star 2 -->
+    <g transform="translate(85,200)">
+      <rect x="-0.8" y="-5" width="1.6" height="10" rx="0.8"/>
+      <rect x="-5" y="-0.8" width="10" height="1.6" rx="0.8"/>
+    </g>
+    <!-- Star 3 -->
+    <g transform="translate(400,300)">
+      <rect x="-0.6" y="-4" width="1.2" height="8" rx="0.6"/>
+      <rect x="-4" y="-0.6" width="8" height="1.2" rx="0.6"/>
+    </g>
+    <!-- Star 4 -->
+    <g transform="translate(110,310)">
+      <rect x="-0.6" y="-4" width="1.2" height="8" rx="0.6"/>
+      <rect x="-4" y="-0.6" width="8" height="1.2" rx="0.6"/>
+    </g>
+  </g>
+
+  <!-- Floating diamond particles -->
+  <polygon points="420,250 425,242 430,250 425,258" fill="#06b6d4" opacity="0.4"/>
+  <polygon points="80,270 84,264 88,270 84,276" fill="#f97316" opacity="0.4"/>
+  <polygon points="370,340 373,335 376,340 373,345" fill="#22d3ee" opacity="0.3"/>
+  <polygon points="140,350 143,345 146,350 143,355" fill="#fbbf24" opacity="0.3"/>
   
-  <!-- Small diamond accents -->
-  <polygon points="100,320 108,306 116,320 108,334" fill="#06b6d4" opacity="0.5"/>
-  <polygon points="396,320 404,306 412,320 404,334" fill="#06b6d4" opacity="0.5"/>
-  
-  <!-- Sparkle dots -->
-  <circle cx="140" cy="120" r="3" fill="#f97316" opacity="0.6"/>
-  <circle cx="380" cy="140" r="2.5" fill="#06b6d4" opacity="0.5"/>
-  <circle cx="120" cy="250" r="2" fill="#f97316" opacity="0.4"/>
-  <circle cx="400" cy="230" r="2" fill="#06b6d4" opacity="0.4"/>
+  <!-- Bottom glow -->
+  <ellipse cx="256" cy="420" rx="120" ry="20" fill="#f97316" opacity="0.06"/>
 </svg>
