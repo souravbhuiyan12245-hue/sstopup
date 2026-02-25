@@ -159,35 +159,36 @@
             margin-bottom: 20px;
         }
         .offer-card {
-            background: linear-gradient(145deg, var(--primary), #4F46E5);
+            background: linear-gradient(145deg, #1a1a2e, #16213e);
             border-radius: 16px;
-            padding: 20px 16px;
+            padding: 0;
             text-align: center;
             color: #fff;
             cursor: pointer;
             transition: all 0.3s;
             position: relative;
             overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.08);
+            min-height: 140px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
         }
         .offer-card::before {
             content: '';
             position: absolute;
-            top: -30px;
-            right: -30px;
-            width: 80px;
-            height: 80px;
-            background: rgba(255,255,255,0.15);
-            border-radius: 50%;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(ellipse at top center, rgba(139,92,246,0.25) 0%, transparent 70%);
+            pointer-events: none;
         }
         .offer-card::after {
             content: '';
             position: absolute;
-            bottom: -20px;
-            left: -20px;
-            width: 60px;
-            height: 60px;
-            background: rgba(255,255,255,0.08);
-            border-radius: 50%;
+            bottom: 0; left: 0; right: 0;
+            height: 50%;
+            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+            pointer-events: none;
         }
         .offer-card:active { transform: scale(0.96); }
         .offer-card { animation: fadeInUp 0.5s ease both; }
@@ -195,19 +196,13 @@
         .offer-card:nth-child(2) { animation-delay: 0.2s; }
         .offer-card:nth-child(3) { animation-delay: 0.3s; }
         .offer-card:nth-child(4) { animation-delay: 0.4s; }
-        .offer-card .icon { animation: bounce 2s ease infinite; }
-        .offer-card .icon { font-size: 2.8rem; margin-bottom: 10px; display: block; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2)); }
-        .offer-card .title { font-size: 0.88rem; font-weight: 800; text-shadow: 0 1px 3px rgba(0,0,0,0.2); }
-        .offer-card .sub { font-size: 0.75rem; opacity: 0.9; margin-top: 4px; font-weight: 600; }
-        .offer-card.gold {
-            background: linear-gradient(145deg, #F59E0B, #D97706);
-        }
-        .offer-card.pink {
-            background: linear-gradient(145deg, #EC4899, #DB2777);
-        }
-        .offer-card.green {
-            background: linear-gradient(145deg, #22C55E, #16A34A);
-        }
+        .offer-card .icon { font-size: 2.8rem; margin-bottom: 6px; display: block; filter: drop-shadow(0 4px 12px rgba(255,100,50,0.4)); position: relative; z-index: 2; }
+        .offer-card .title { font-size: 0.88rem; font-weight: 800; text-shadow: 0 2px 8px rgba(0,0,0,0.6); position: relative; z-index: 2; padding: 0 8px; }
+        .offer-card .sub { font-size: 0.75rem; opacity: 0.9; margin-top: 2px; margin-bottom: 12px; font-weight: 600; position: relative; z-index: 2; text-shadow: 0 1px 4px rgba(0,0,0,0.5); }
+        .offer-card.card-red::before { background: radial-gradient(ellipse at top center, rgba(239,68,68,0.3) 0%, transparent 70%); }
+        .offer-card.card-gold::before { background: radial-gradient(ellipse at top center, rgba(245,158,11,0.3) 0%, transparent 70%); }
+        .offer-card.card-pink::before { background: radial-gradient(ellipse at top center, rgba(236,72,153,0.3) 0%, transparent 70%); }
+        .offer-card.card-cyan::before { background: radial-gradient(ellipse at top center, rgba(14,165,233,0.3) 0%, transparent 70%); }
 
         /* Game Section */
         .game-header {
@@ -241,19 +236,19 @@
             margin-bottom: 24px;
         }
         .product-card {
-            background: var(--white);
-            border-radius: 18px;
+            background: linear-gradient(145deg, #1a1a2e, #16213e);
+            border-radius: 16px;
             padding: 0;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s;
-            border: none;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.3);
             position: relative;
             overflow: hidden;
             animation: fadeInUp 0.5s ease both;
         }
-        .product-card:active { transform: scale(0.95); box-shadow: 0 8px 30px rgba(0,0,0,0.15); }
+        .product-card:active { transform: scale(0.95); box-shadow: 0 8px 30px rgba(0,0,0,0.4); }
         .product-card:nth-child(1) { animation-delay: 0.1s; }
         .product-card:nth-child(2) { animation-delay: 0.2s; }
         .product-card:nth-child(3) { animation-delay: 0.3s; }
@@ -262,7 +257,7 @@
         .product-card .card-icon {
             width: 100%;
             height: 90px;
-            background: linear-gradient(145deg, var(--primary-light), var(--primary));
+            background: linear-gradient(145deg, #0f0f23, #1a1a3e);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -270,45 +265,33 @@
             color: #fff;
             position: relative;
             overflow: hidden;
-            animation: shimmer 3s ease infinite;
         }
         .product-card .card-icon::before {
             content: '';
             position: absolute;
-            top: -25px;
-            right: -25px;
-            width: 70px;
-            height: 70px;
-            background: rgba(255,255,255,0.12);
-            border-radius: 50%;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(ellipse at center, rgba(139,92,246,0.2) 0%, transparent 70%);
         }
         .product-card .card-icon::after {
             content: '';
             position: absolute;
-            bottom: -20px;
-            left: -15px;
-            width: 50px;
-            height: 50px;
-            background: rgba(255,255,255,0.08);
-            border-radius: 50%;
-        }
-        @keyframes shimmer {
-            0%, 100% { filter: brightness(1); }
-            50% { filter: brightness(1.15); }
+            bottom: 0; left: 0; right: 0;
+            height: 40%;
+            background: linear-gradient(to top, rgba(0,0,0,0.5), transparent);
         }
         .product-card .card-text {
             padding: 10px 8px 14px;
-            background: #fff;
+            background: linear-gradient(to bottom, #1a1a2e, #12122a);
         }
         .product-card .card-title {
             font-size: 0.74rem;
             font-weight: 700;
-            color: var(--text);
+            color: #fff;
             line-height: 1.3;
         }
         .product-card .card-sub {
             font-size: 0.62rem;
-            color: var(--text-muted);
+            color: rgba(255,255,255,0.5);
             margin-top: 3px;
         }
         .product-card .tag {
@@ -324,7 +307,7 @@
             z-index: 2;
             animation: tagPulse 1.5s ease infinite;
         }
-        .product-card .tag.hot { background: var(--accent); }
+        .product-card .tag.hot { background: #EF4444; }
         .product-card .tag.new { background: var(--success); }
         @keyframes tagPulse {
             0%, 100% { opacity: 1; transform: scale(1); }
@@ -714,22 +697,22 @@
     <!-- Special Offers -->
     <div class="section-title">🔥 SPECIAL OFFER <span class="badge">HOT</span></div>
     <div class="offers-scroll">
-        <div class="offer-card" onclick="openModal('weekly_lite')" style="background:linear-gradient(145deg,#7C3AED,#4338CA);">
+        <div class="offer-card" onclick="openModal('weekly_lite')">
             <span class="icon">📦✨</span>
             <div class="title">Weekly Lite</div>
             <div class="sub" id="offerWeeklyLite">৳120</div>
         </div>
-        <div class="offer-card" onclick="openModal('weekly_1x')" style="background:linear-gradient(145deg,#F59E0B,#DC2626);">
+        <div class="offer-card card-red" onclick="openModal('weekly_1x')">
             <span class="icon">👑🔥</span>
             <div class="title">1X Weekly</div>
             <div class="sub" id="offerWeekly1x">৳250</div>
         </div>
-        <div class="offer-card" onclick="openModal('monthly')" style="background:linear-gradient(145deg,#EC4899,#9333EA);">
+        <div class="offer-card card-pink" onclick="openModal('monthly')">
             <span class="icon">🏆💫</span>
             <div class="title">Monthly</div>
             <div class="sub" id="offerMonthly">৳950</div>
         </div>
-        <div class="offer-card" onclick="openModal('weekly_2x')" style="background:linear-gradient(145deg,#22C55E,#0EA5E9);">
+        <div class="offer-card card-cyan" onclick="openModal('weekly_2x')">
             <span class="icon">⚡💎</span>
             <div class="title">2X Weekly</div>
             <div class="sub" id="offerWeekly2x">৳480</div>
@@ -744,14 +727,14 @@
     <div class="product-grid">
         <div class="product-card" onclick="openModal('diamond')">
             <span class="tag hot">HOT</span>
-            <div class="card-icon" style="background:linear-gradient(145deg,#4F46E5,#7C3AED,#EC4899);">💎</div>
+            <div class="card-icon">💎</div>
             <div class="card-text">
                 <div class="card-title">UID TopUp</div>
                 <div class="card-sub">Buy Diamonds</div>
             </div>
         </div>
         <div class="product-card" onclick="openModal('weekly_lite')">
-            <div class="card-icon" style="background:linear-gradient(145deg,#7C3AED,#4338CA);">📦✨</div>
+            <div class="card-icon">📦✨</div>
             <div class="card-text">
                 <div class="card-title">Weekly Lite</div>
                 <div class="card-sub">Weekly Lite</div>
@@ -759,21 +742,21 @@
         </div>
         <div class="product-card" onclick="openModal('weekly_monthly')">
             <span class="tag hot">HOT</span>
-            <div class="card-icon" style="background:linear-gradient(145deg,#F59E0B,#EF4444);">👑🔥</div>
+            <div class="card-icon">👑🔥</div>
             <div class="card-text">
                 <div class="card-title">Weekly Monthly</div>
                 <div class="card-sub">Weekly / Monthly</div>
             </div>
         </div>
         <div class="product-card" onclick="openModal('evo_access')">
-            <div class="card-icon" style="background:linear-gradient(145deg,#DC2626,#9333EA);">🛡️⚡</div>
+            <div class="card-icon">🛡️⚡</div>
             <div class="card-text">
                 <div class="card-title">EVO Access</div>
                 <div class="card-sub">EVO Access</div>
             </div>
         </div>
         <div class="product-card" onclick="openModal('level_up')">
-            <div class="card-icon" style="background:linear-gradient(145deg,#0EA5E9,#6366F1);">⚔️🎮</div>
+            <div class="card-icon">⚔️🎮</div>
             <div class="card-text">
                 <div class="card-title">Level Up</div>
                 <div class="card-sub">Level Up Pass</div>
