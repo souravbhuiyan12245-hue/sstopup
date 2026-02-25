@@ -692,8 +692,8 @@
 
 <!-- Orders Section -->
 <div class="status-section" id="ordersSection">
-    <div class="section-title">📋 My Orders</div>
-    <p style="color:var(--text-muted);font-size:0.8rem;margin-bottom:14px;">Your recent 10 orders at a glance</p>
+    <div class="section-title">📋 Latest Orders</div>
+    <p style="color:var(--text-muted);font-size:0.8rem;margin-bottom:14px;">Your recent <span style="color:var(--danger);font-weight:700;">10 orders</span> at a glance</p>
     <div id="ordersList"></div>
 </div>
 
@@ -1254,30 +1254,42 @@ async function submitAddMoney() {
     }
 }
 
+// Demo orders
+const DEMO_ORDERS = [
+    { name: 'Sakib Gaming', item: '1X Weekly', price: 250, status: 'Running', uid: '8374629105' },
+    { name: 'Rifat Boss', item: '520 Diamond', price: 580, status: 'Completed', uid: '7291038456' },
+    { name: 'Nayeem FF', item: 'Monthly', price: 950, status: 'Completed', uid: '6182934750' },
+    { name: 'Tanvir Pro', item: 'Weekly Lite', price: 120, status: 'Completed', uid: '9081726354' },
+    { name: 'Rahat King', item: 'Level Up Pass', price: 450, status: 'Completed', uid: '5039182746' },
+    { name: 'Fahim Star', item: '100 Diamond', price: 120, status: 'Running', uid: '4028193756' },
+    { name: 'Arif Hunter', item: 'EVO Access', price: 850, status: 'Completed', uid: '3019284756' },
+    { name: 'Mizan BD', item: '2X Weekly', price: 480, status: 'Completed', uid: '2091837465' },
+];
+
 // Orders stored in localStorage
 function getOrders() {
     try { return JSON.parse(localStorage.getItem('ss_orders') || '[]'); } catch(e) { return []; }
 }
 
 function renderOrders() {
-    const orders = getOrders();
+    const userOrders = getOrders();
+    const allOrders = [...DEMO_ORDERS, ...userOrders];
     const el = document.getElementById('ordersList');
-    if (orders.length === 0) {
-        el.innerHTML = '<div style="text-align:center;padding:40px 20px;color:var(--text-muted);"><i class="fas fa-inbox" style="font-size:2.5rem;margin-bottom:12px;display:block;opacity:0.3;"></i><p>No orders yet</p></div>';
-        return;
-    }
-    el.innerHTML = orders.slice(-10).reverse().map(o => {
-        const colors = ['#6C3CE1','#F59E0B','#EC4899','#22C55E','#EF4444','#06B6D4'];
-        const color = colors[Math.abs(hashCode(o.uid)) % colors.length];
-        const initial = (o.item || 'O')[0].toUpperCase();
-        const statusClass = o.status === 'Completed' ? 'badge-done' : 'badge-pending';
-        return `<div class="status-card" style="display:flex;align-items:center;gap:12px;padding:14px 16px;">
-            <div style="width:42px;height:42px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1rem;flex-shrink:0;">${initial}</div>
+    
+    el.innerHTML = allOrders.slice(-10).reverse().map(o => {
+        const colors = ['#06B6D4','#F59E0B','#8B5CF6','#EC4899','#EF4444','#22C55E','#6366F1','#14B8A6'];
+        const nameOrUid = o.name || ('UID: ' + o.uid);
+        const color = colors[Math.abs(hashCode(nameOrUid)) % colors.length];
+        const initial = nameOrUid[0].toUpperCase();
+        const isRunning = o.status === 'Running';
+        const statusColor = isRunning ? 'background:#3B82F6;color:#fff;' : o.status === 'Completed' ? 'background:#22C55E;color:#fff;' : 'background:#FEF3C7;color:#92400E;';
+        return `<div style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:#fff;border-radius:14px;margin-bottom:8px;border:1px solid var(--border);box-shadow:var(--shadow);">
+            <div style="width:44px;height:44px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1.1rem;flex-shrink:0;">${initial}</div>
             <div style="flex:1;min-width:0;">
-                <div style="font-weight:700;font-size:0.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">UID: ${o.uid}</div>
-                <div style="font-size:0.75rem;color:var(--text-muted);">${o.item} • ৳${o.price}</div>
+                <div style="font-weight:700;font-size:0.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${nameOrUid}</div>
+                <div style="font-size:0.76rem;color:var(--text-muted);margin-top:2px;">${o.item} - ৳${o.price}</div>
             </div>
-            <span class="status-badge ${statusClass}">${o.status || 'Pending'}</span>
+            <span style="padding:4px 12px;border-radius:20px;font-size:0.7rem;font-weight:700;${statusColor}">${o.status || 'Pending'}</span>
         </div>`;
     }).join('');
 }
