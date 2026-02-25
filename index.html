@@ -602,21 +602,11 @@
             <div class="card-title">উইকলি লাইট</div>
             <div class="card-sub">Weekly Lite</div>
         </div>
-        <div class="product-card" onclick="openModal('weekly_1x')">
-            <div class="card-icon" style="background:linear-gradient(145deg,#F59E0B,#D97706)">👑</div>
-            <div class="card-title">১X উইকলি</div>
-            <div class="card-sub">1X Weekly</div>
-        </div>
-        <div class="product-card" onclick="openModal('weekly_2x')">
-            <span class="tag new">NEW</span>
-            <div class="card-icon" style="background:linear-gradient(145deg,#22C55E,#16A34A)">⚡</div>
-            <div class="card-title">২X উইকলি</div>
-            <div class="card-sub">2X Weekly</div>
-        </div>
-        <div class="product-card" onclick="openModal('monthly')">
-            <div class="card-icon" style="background:linear-gradient(145deg,#EC4899,#DB2777)">🏆</div>
-            <div class="card-title">মান্থলি</div>
-            <div class="card-sub">Monthly</div>
+        <div class="product-card" onclick="openModal('weekly_monthly')">
+            <span class="tag hot">HOT</span>
+            <div class="card-icon" style="background:linear-gradient(145deg,#F59E0B,#D97706)">📅</div>
+            <div class="card-title">উইকলি মান্থলি</div>
+            <div class="card-sub">Weekly / Monthly</div>
         </div>
         <div class="product-card" onclick="openModal('evo_access')">
             <div class="card-icon" style="background:linear-gradient(145deg,#EF4444,#DC2626)">🎯</div>
@@ -659,6 +649,12 @@
         <div class="form-group" id="diamondSelectGroup">
             <label class="form-label">💎 ডায়মন্ড সিলেক্ট করুন</label>
             <div class="diamond-grid" id="diamondGrid"></div>
+        </div>
+
+        <!-- Weekly/Monthly Select -->
+        <div class="form-group" id="wmSelectGroup" style="display:none;">
+            <label class="form-label">📅 প্যাকেজ সিলেক্ট করুন</label>
+            <div class="diamond-grid" id="wmGrid"></div>
         </div>
 
         <!-- Pass Info (for pass type) -->
@@ -794,12 +790,21 @@ function openModal(type) {
     const diamondGroup = document.getElementById('diamondSelectGroup');
     const passGroup = document.getElementById('passInfoGroup');
     
+    // Hide all select groups first
+    diamondGroup.style.display = 'none';
+    passGroup.style.display = 'none';
+    document.getElementById('wmSelectGroup').style.display = 'none';
+    
     if (type === 'diamond') {
         document.getElementById('modalTitle').textContent = '💎 ডায়মন্ড টপআপ';
         document.getElementById('modalSub').textContent = 'আপনার UID দিন এবং ডায়মন্ড সিলেক্ট করুন';
         diamondGroup.style.display = 'block';
-        passGroup.style.display = 'none';
         renderDiamonds();
+    } else if (type === 'weekly_monthly') {
+        document.getElementById('modalTitle').textContent = '📅 উইকলি / মান্থলি';
+        document.getElementById('modalSub').textContent = 'প্যাকেজ সিলেক্ট করুন এবং UID দিন';
+        document.getElementById('wmSelectGroup').style.display = 'block';
+        renderWeeklyMonthly();
     } else {
         let name = type, price = 0;
         if (prices && prices.passes && prices.passes[type]) {
@@ -811,7 +816,6 @@ function openModal(type) {
         }
         document.getElementById('modalTitle').textContent = '📅 ' + name;
         document.getElementById('modalSub').textContent = 'আপনার UID দিন এবং পেমেন্ট করুন';
-        diamondGroup.style.display = 'none';
         passGroup.style.display = 'block';
         document.getElementById('passName').textContent = name;
         document.getElementById('passPrice').textContent = '৳' + price;
@@ -843,6 +847,39 @@ function renderDiamonds() {
     });
 }
 
+let selectedWM = null;
+
+function renderWeeklyMonthly() {
+    if (!prices || !prices.passes) return;
+    const grid = document.getElementById('wmGrid');
+    grid.innerHTML = '';
+    const items = [
+        { key: 'weekly_1x', icon: '👑' },
+        { key: 'weekly_2x', icon: '⚡' },
+        { key: 'monthly', icon: '🏆' }
+    ];
+    items.forEach(item => {
+        const p = prices.passes[item.key];
+        if (!p) return;
+        grid.innerHTML += `
+            <div class="diamond-option" onclick="selectWM(this,'${item.key}')">
+                <span class="dm-icon">${item.icon}</span>
+                ${p.name}
+                <div class="dm-price">৳${p.price}</div>
+                <div class="dm-original">৳${p.original}</div>
+            </div>`;
+    });
+    selectedWM = null;
+}
+
+function selectWM(el, key) {
+    document.querySelectorAll('#wmGrid .diamond-option').forEach(d => d.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedWM = key;
+    const price = prices.passes[key].price;
+    document.getElementById('totalAmount').textContent = '৳' + price;
+}
+
 function selectDiamond(el, key) {
     document.querySelectorAll('.diamond-option').forEach(d => d.classList.remove('selected'));
     el.classList.add('selected');
@@ -871,6 +908,10 @@ function submitOrder() {
         if (!selectedDiamond) { showToast('❌ ডায়মন্ড সিলেক্ট করুন!'); return; }
         item = selectedDiamond + ' Diamond';
         price = prices.diamonds[selectedDiamond].price;
+    } else if (currentType === 'weekly_monthly') {
+        if (!selectedWM) { showToast('❌ প্যাকেজ সিলেক্ট করুন!'); return; }
+        item = prices.passes[selectedWM].name;
+        price = prices.passes[selectedWM].price;
     } else if (prices.passes[currentType]) {
         item = prices.passes[currentType].name;
         price = prices.passes[currentType].price;
