@@ -805,26 +805,7 @@
                         <div class="pay-num">Send Money</div>
                     </div>
                 </div>
-                <div class="payment-option" onclick="selectPayment(this,'rocket')">
-                    <div class="pay-icon rocket-icon">R</div>
-                    <div>
-                        <div class="pay-name">Rocket</div>
-                        <div class="pay-num">Send Money</div>
-                    </div>
-                </div>
             </div>
-        </div>
-
-        <!-- Phone Number -->
-        <div class="form-group">
-            <label class="form-label">📱 Your Number (Send Money from)</label>
-            <input class="form-input" type="tel" id="phoneInput" placeholder="01XXXXXXXXX" inputmode="numeric">
-        </div>
-
-        <!-- Transaction ID -->
-        <div class="form-group">
-            <label class="form-label">🧾 Transaction ID</label>
-            <input class="form-input" type="text" id="trxInput" placeholder="Enter Transaction ID">
         </div>
 
         <!-- Total -->
@@ -833,8 +814,30 @@
             <span class="amount" id="totalAmount">৳0</span>
         </div>
 
-        <button class="submit-btn" onclick="submitOrder()">
-            <i class="fas fa-paper-plane"></i> Confirm Order
+        <!-- bKash Style Payment Instructions -->
+        <div id="paymentInstructions" style="background:#E2136E;border-radius:14px;padding:18px 16px;margin-top:14px;color:#fff;">
+            <div style="font-weight:700;font-size:0.9rem;margin-bottom:12px;">🧾 Transaction ID দিন</div>
+            <input class="form-input" type="text" id="trxInput" placeholder="Transaction ID দিন" style="background:rgba(255,255,255,0.95);color:#333;border:none;margin-bottom:14px;">
+            
+            <div style="font-size:0.78rem;line-height:2;">
+                <div>📱 Dial <b>*247#</b> অথবা bKash App ওপেন করুন</div>
+                <div>👉 <span style="background:#FFD700;color:#000;padding:1px 6px;border-radius:4px;font-weight:700;">Send Money</span> তে ক্লিক করুন</div>
+                <div>📞 নম্বর: <b id="payNumber">01606335174</b> <button onclick="copyNumber()" style="background:rgba(255,255,255,0.25);border:none;color:#fff;padding:3px 10px;border-radius:6px;font-size:0.7rem;font-weight:700;cursor:pointer;margin-left:6px;">Copy</button></div>
+                <div>💰 Amount: <span style="color:#FFD700;font-weight:800;" id="payAmount">৳0</span></div>
+                <div>🔐 আপনার bKash PIN দিয়ে কনফার্ম করুন</div>
+                <div>✅ bKash থেকে কনফার্মেশন মেসেজ আসবে</div>
+                <div>📝 <b>Transaction ID</b> উপরে বসিয়ে VERIFY করুন</div>
+            </div>
+        </div>
+
+        <!-- Phone Number -->
+        <div class="form-group" style="margin-top:14px;">
+            <label class="form-label">📱 Your Number</label>
+            <input class="form-input" type="tel" id="phoneInput" placeholder="01XXXXXXXXX" inputmode="numeric">
+        </div>
+
+        <button class="submit-btn" onclick="submitOrder()" style="background:linear-gradient(135deg,#E2136E,#C4105A);">
+            <i class="fas fa-check-circle"></i> VERIFY & Confirm Order
         </button>
     </div>
 </div>
@@ -1070,6 +1073,7 @@ async function openModal(type) {
         document.getElementById('passName').textContent = name;
         document.getElementById('passPrice').textContent = '৳' + price;
         document.getElementById('totalAmount').textContent = '৳' + price;
+        document.getElementById('payAmount').textContent = '৳' + price;
     }
     
     modal.classList.add('show');
@@ -1128,20 +1132,45 @@ function selectWM(el, key) {
     selectedWM = key;
     const price = prices.passes[key].price;
     document.getElementById('totalAmount').textContent = '৳' + price;
+    document.getElementById('payAmount').textContent = '৳' + price;
 }
 
 function selectDiamond(el, key) {
-    document.querySelectorAll('.diamond-option').forEach(d => d.classList.remove('selected'));
+    document.querySelectorAll('#diamondGrid .diamond-option').forEach(d => d.classList.remove('selected'));
     el.classList.add('selected');
     selectedDiamond = key;
     const price = prices.diamonds[key].price;
     document.getElementById('totalAmount').textContent = '৳' + price;
+    document.getElementById('payAmount').textContent = '৳' + price;
 }
 
 function selectPayment(el, method) {
-    document.querySelectorAll('.payment-option').forEach(p => p.classList.remove('selected'));
+    document.querySelectorAll('#modalOverlay .payment-option').forEach(p => p.classList.remove('selected'));
     el.classList.add('selected');
     selectedPayment = method;
+    
+    const instrBox = document.getElementById('paymentInstructions');
+    const numEl = document.getElementById('payNumber');
+    if (method === 'bkash') {
+        instrBox.style.background = '#E2136E';
+        numEl.textContent = '01606335174';
+    } else if (method === 'nagad') {
+        instrBox.style.background = '#F6921E';
+        numEl.textContent = '01854707074';
+    }
+}
+
+function copyNumber() {
+    const num = document.getElementById('payNumber').textContent;
+    navigator.clipboard.writeText(num).then(() => showToast('✅ Number copied!')).catch(() => {
+        const t = document.createElement('textarea');
+        t.value = num;
+        document.body.appendChild(t);
+        t.select();
+        document.execCommand('copy');
+        document.body.removeChild(t);
+        showToast('✅ Number copied!');
+    });
 }
 
 async function submitOrder() {
