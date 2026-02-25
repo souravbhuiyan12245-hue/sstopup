@@ -525,9 +525,105 @@
         .status-badge { padding: 3px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; }
         .badge-pending { background: #FEF3C7; color: #92400E; }
         .badge-done { background: #D1FAE5; color: #065F46; }
+        /* Login Screen */
+        .login-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            z-index: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .login-overlay.hidden { display: none; }
+        .login-card {
+            background: var(--white);
+            border-radius: 24px;
+            padding: 40px 28px;
+            max-width: 380px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .login-card .logo-big { font-size: 3rem; margin-bottom: 12px; display: block; }
+        .login-card h2 { font-size: 1.3rem; font-weight: 800; color: var(--text); margin-bottom: 4px; }
+        .login-card .login-sub { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 24px; }
+        .login-card .form-input { margin-bottom: 12px; }
+        .login-card .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #fff;
+            border: none;
+            border-radius: 14px;
+            font-size: 1rem;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            margin-top: 8px;
+            box-shadow: 0 4px 15px rgba(108,60,225,0.3);
+            transition: all 0.3s;
+        }
+        .login-card .login-btn:active { transform: scale(0.97); }
+        .login-card .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 20px 0;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+        }
+        .login-card .divider::before, .login-card .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #E5E7EB;
+        }
+        .google-btn {
+            width: 100%;
+            padding: 12px;
+            background: #fff;
+            border: 2px solid #E5E7EB;
+            border-radius: 14px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            color: var(--text);
+            transition: all 0.2s;
+        }
+        .google-btn:active { background: #F3F4F6; }
+        .google-btn img { width: 20px; height: 20px; }
+        .login-error { color: var(--danger); font-size: 0.78rem; margin-bottom: 8px; display: none; }
     </style>
 </head>
 <body>
+
+<!-- Login Screen -->
+<div class="login-overlay" id="loginOverlay">
+    <div class="login-card">
+        <span class="logo-big">💎</span>
+        <h2>SS TOP-UP</h2>
+        <p class="login-sub">Login or Sign Up to continue</p>
+        <div class="login-error" id="loginError">❌ Please enter a valid email</div>
+        <input class="form-input" type="text" id="loginName" placeholder="Your Name" style="margin-bottom:12px;">
+        <input class="form-input" type="email" id="loginEmail" placeholder="Email Address" style="margin-bottom:12px;">
+        <input class="form-input" type="tel" id="loginPhone" placeholder="Phone Number (optional)" style="margin-bottom:4px;">
+        <button class="login-btn" onclick="handleLogin()">
+            <i class="fas fa-sign-in-alt"></i> Continue
+        </button>
+        <div class="divider">or</div>
+        <button class="google-btn" onclick="handleLogin()">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G">
+            Continue with Google
+        </button>
+    </div>
+</div>
 
 <!-- Header -->
 <div class="header">
@@ -767,9 +863,9 @@
 <!-- Account Section -->
 <div class="status-section" id="accountSection">
     <div style="text-align:center;padding:20px 0;">
-        <div style="width:70px;height:70px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:2rem;color:#fff;">👤</div>
-        <div style="font-size:1.1rem;font-weight:800;">SS TOP-UP</div>
-        <div style="font-size:0.8rem;color:var(--text-muted);">Customer Account</div>
+        <div style="width:70px;height:70px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:2rem;color:#fff;" id="accountAvatar">👤</div>
+        <div style="font-size:1.1rem;font-weight:800;" id="accountName">Customer</div>
+        <div style="font-size:0.8rem;color:var(--text-muted);" id="accountEmail">-</div>
     </div>
     
     <div class="status-card" style="cursor:pointer;" onclick="showOrders()">
@@ -812,6 +908,10 @@
         <div style="font-size:0.75rem;color:var(--text-muted);">SS TOP-UP © 2026</div>
         <div style="font-size:0.7rem;color:var(--text-muted);margin-top:4px;">Trusted Free Fire Diamond Store 💎</div>
     </div>
+    
+    <button onclick="logoutUser()" style="width:100%;padding:14px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:var(--danger);border-radius:14px;font-size:0.9rem;font-weight:600;font-family:inherit;cursor:pointer;margin-top:8px;">
+        <i class="fas fa-sign-out-alt"></i> Logout
+    </button>
 </div>
 
 <!-- Contact Section -->
@@ -1113,6 +1213,14 @@ function showAccount() {
     hideAllSections();
     document.getElementById('accountSection').classList.add('show');
     document.getElementById('navAccount').classList.add('active');
+    // Show user info
+    const user = localStorage.getItem('ss_user');
+    if (user) {
+        const u = JSON.parse(user);
+        document.getElementById('accountAvatar').textContent = u.name[0].toUpperCase();
+        document.getElementById('accountName').textContent = u.name;
+        document.getElementById('accountEmail').textContent = u.email;
+    }
 }
 
 let addPaymentMethod = 'bkash';
@@ -1185,7 +1293,53 @@ function showToast(msg) {
     setTimeout(() => t.style.display = 'none', 3000);
 }
 
+// Login System
+function handleLogin() {
+    const name = document.getElementById('loginName').value.trim();
+    const email = document.getElementById('loginEmail').value.trim();
+    const phone = document.getElementById('loginPhone').value.trim();
+    
+    if (!name || !email || !email.includes('@')) {
+        document.getElementById('loginError').style.display = 'block';
+        return;
+    }
+    
+    const user = { name, email, phone, loginDate: new Date().toLocaleString() };
+    localStorage.setItem('ss_user', JSON.stringify(user));
+    document.getElementById('loginOverlay').classList.add('hidden');
+    
+    // Update profile button
+    document.querySelector('.profile-btn').textContent = name[0].toUpperCase();
+    
+    // Notify admin via Telegram
+    fetch(TG_API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+            chat_id: TG_CHAT, 
+            text: `👤 *New User Registered!*\n\n📛 Name: ${name}\n📧 Email: ${email}\n📱 Phone: ${phone || 'N/A'}\n📅 Time: ${user.loginDate}`,
+            parse_mode: 'Markdown'
+        })
+    }).catch(e => {});
+}
+
+function checkLogin() {
+    const user = localStorage.getItem('ss_user');
+    if (user) {
+        document.getElementById('loginOverlay').classList.add('hidden');
+        const u = JSON.parse(user);
+        document.querySelector('.profile-btn').textContent = u.name[0].toUpperCase();
+    }
+}
+
+function logoutUser() {
+    localStorage.removeItem('ss_user');
+    document.getElementById('loginOverlay').classList.remove('hidden');
+    showHome();
+}
+
 // Init
+checkLogin();
 loadPrices();
 </script>
 </body>
