@@ -757,8 +757,9 @@
 <div class="toast" id="toast"></div>
 
 <script>
-const BLOB_ID = '019c8f52-b33c-7283-adb7-4c62866d9a4d';
-const API = `https://jsonblob.com/api/jsonBlob/${BLOB_ID}`;
+const REPO = 'souravbhuiyan12245-hue/sstopup';
+const API_READ = `https://raw.githubusercontent.com/${REPO}/main/prices.json`;
+const GH_API = `https://api.github.com/repos/${REPO}/contents/prices.json`;
 const WA_NUMBER = '8801606335174';
 
 let prices = null;
@@ -770,7 +771,7 @@ let currentType = 'diamond';
 async function loadPrices() {
     for (let i = 0; i < 3; i++) {
         try {
-            const r = await fetch(API + '?t=' + Date.now(), { cache: 'no-store', mode: 'cors' });
+            const r = await fetch(API_READ + '?t=' + Date.now(), { cache: 'no-store' });
             prices = await r.json();
             updateUI();
             return;
