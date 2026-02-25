@@ -770,7 +770,7 @@ let currentType = 'diamond';
 async function loadPrices() {
     for (let i = 0; i < 3; i++) {
         try {
-            const r = await fetch(API, { cache: 'no-store' });
+            const r = await fetch(API + '?t=' + Date.now(), { cache: 'no-store', mode: 'cors' });
             prices = await r.json();
             updateUI();
             return;
@@ -800,7 +800,10 @@ function updateUI() {
 }
 
 async function openModal(type) {
-    if (!prices) await loadPrices();
+    if (!prices) {
+        await loadPrices();
+        if (!prices) { alert('Data loading failed. Please refresh the page.'); return; }
+    }
     currentType = type;
     const modal = document.getElementById('modalOverlay');
     const diamondGroup = document.getElementById('diamondSelectGroup');
