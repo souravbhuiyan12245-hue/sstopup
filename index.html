@@ -943,6 +943,13 @@
     </div>
 </div>
 
+<!-- Latest Orders on Homepage -->
+<div class="content" style="padding-top:0;">
+    <div class="section-title">📋 Latest Orders</div>
+    <p style="color:var(--text-muted);font-size:0.78rem;margin-bottom:12px;">Recent <span style="color:var(--danger);font-weight:700;">10 orders</span> at a glance</p>
+    <div id="homeOrdersList"></div>
+</div>
+
 <!-- Help FAB -->
 <a class="help-fab" href="https://wa.me/8801606335174" target="_blank">
     <i class="fab fa-whatsapp"></i>
@@ -1283,27 +1290,35 @@ function getOrders() {
     try { return JSON.parse(localStorage.getItem('ss_orders') || '[]'); } catch(e) { return []; }
 }
 
+function renderOrderCard(o) {
+    const colors = ['#06B6D4','#F59E0B','#8B5CF6','#EC4899','#EF4444','#22C55E','#6366F1','#14B8A6'];
+    const nameOrUid = o.name || ('UID: ' + o.uid);
+    const color = colors[Math.abs(hashCode(nameOrUid)) % colors.length];
+    const initial = nameOrUid[0].toUpperCase();
+    const statusColor = o.status === 'Running' ? 'background:#3B82F6;color:#fff;' : o.status === 'Completed' ? 'background:#22C55E;color:#fff;' : 'background:#FEF3C7;color:#92400E;';
+    return `<div style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:#fff;border-radius:14px;margin-bottom:8px;border:1px solid var(--border);box-shadow:var(--shadow);">
+        <div style="width:44px;height:44px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1.1rem;flex-shrink:0;">${initial}</div>
+        <div style="flex:1;min-width:0;">
+            <div style="font-weight:700;font-size:0.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${nameOrUid}</div>
+            <div style="font-size:0.76rem;color:var(--text-muted);margin-top:2px;">${o.item} - ৳${o.price}</div>
+        </div>
+        <span style="padding:4px 12px;border-radius:20px;font-size:0.7rem;font-weight:700;${statusColor}">${o.status || 'Pending'}</span>
+    </div>`;
+}
+
+function renderHomeOrders() {
+    const el = document.getElementById('homeOrdersList');
+    el.innerHTML = DEMO_ORDERS.map(o => renderOrderCard(o)).join('');
+}
+
 function renderOrders() {
     const userOrders = getOrders();
-    const allOrders = [...DEMO_ORDERS, ...userOrders];
     const el = document.getElementById('ordersList');
-    
-    el.innerHTML = allOrders.slice(-10).reverse().map(o => {
-        const colors = ['#06B6D4','#F59E0B','#8B5CF6','#EC4899','#EF4444','#22C55E','#6366F1','#14B8A6'];
-        const nameOrUid = o.name || ('UID: ' + o.uid);
-        const color = colors[Math.abs(hashCode(nameOrUid)) % colors.length];
-        const initial = nameOrUid[0].toUpperCase();
-        const isRunning = o.status === 'Running';
-        const statusColor = isRunning ? 'background:#3B82F6;color:#fff;' : o.status === 'Completed' ? 'background:#22C55E;color:#fff;' : 'background:#FEF3C7;color:#92400E;';
-        return `<div style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:#fff;border-radius:14px;margin-bottom:8px;border:1px solid var(--border);box-shadow:var(--shadow);">
-            <div style="width:44px;height:44px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1.1rem;flex-shrink:0;">${initial}</div>
-            <div style="flex:1;min-width:0;">
-                <div style="font-weight:700;font-size:0.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${nameOrUid}</div>
-                <div style="font-size:0.76rem;color:var(--text-muted);margin-top:2px;">${o.item} - ৳${o.price}</div>
-            </div>
-            <span style="padding:4px 12px;border-radius:20px;font-size:0.7rem;font-weight:700;${statusColor}">${o.status || 'Pending'}</span>
-        </div>`;
-    }).join('');
+    if (userOrders.length === 0) {
+        el.innerHTML = '<div style="text-align:center;padding:40px 20px;color:var(--text-muted);"><i class="fas fa-inbox" style="font-size:2.5rem;margin-bottom:12px;display:block;opacity:0.3;"></i><p>No orders yet</p></div>';
+        return;
+    }
+    el.innerHTML = userOrders.slice(-10).reverse().map(o => renderOrderCard(o)).join('');
 }
 
 function hashCode(s) { let h=0; for(let i=0;i<s.length;i++) h=((h<<5)-h)+s.charCodeAt(i)|0; return h; }
@@ -1367,6 +1382,7 @@ function logoutUser() {
 // Init
 checkLogin();
 loadPrices();
+renderHomeOrders();
 </script>
 </body>
 </html>
