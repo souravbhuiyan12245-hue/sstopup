@@ -61,7 +61,7 @@
   },
   "specials": {
     "evo_access": {
-      "price": 250,
+      "price": 9999,
       "original": 1000,
       "name": "EVO Access"
     },
