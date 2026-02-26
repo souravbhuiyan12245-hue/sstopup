@@ -39,22 +39,22 @@
   },
   "passes": {
     "weekly_lite": {
-      "price": 45,
+      "price": 43,
       "original": 140,
       "name": "Weekly Lite"
     },
     "weekly_1x": {
-      "price": 158,
+      "price": 155,
       "original": 290,
       "name": "1X Weekly"
     },
     "weekly_2x": {
-      "price": 316,
+      "price": 310,
       "original": 550,
       "name": "2X Weekly"
     },
     "monthly": {
-      "price": 775,
+      "price": 780,
       "original": 1100,
       "name": "Monthly"
     }
@@ -72,5 +72,5 @@
     }
   },
   "announcement": "",
-  "updated": "25/02/2026"
+  "updated": "26/02/2026"
 }
