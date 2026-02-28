@@ -1,24 +1,75 @@
 {
   "diamonds": {
-    "25": { "price": 35, "original": 40 },
-    "50": { "price": 65, "original": 75 },
-    "100": { "price": 120, "original": 140 },
-    "310": { "price": 350, "original": 400 },
-    "520": { "price": 580, "original": 650 },
-    "1060": { "price": 1100, "original": 1250 },
-    "2180": { "price": 2200, "original": 2500 },
-    "5600": { "price": 5500, "original": 6200 },
-    "10120": { "price": 10000, "original": 11500 }
+    "25": {
+      "price": 35,
+      "original": 40
+    },
+    "50": {
+      "price": 65,
+      "original": 75
+    },
+    "100": {
+      "price": 120,
+      "original": 140
+    },
+    "310": {
+      "price": 350,
+      "original": 400
+    },
+    "520": {
+      "price": 580,
+      "original": 650
+    },
+    "1060": {
+      "price": 1100,
+      "original": 1250
+    },
+    "2180": {
+      "price": 2200,
+      "original": 2500
+    },
+    "5600": {
+      "price": 5500,
+      "original": 6200
+    },
+    "10120": {
+      "price": 10000,
+      "original": 11500
+    }
   },
   "passes": {
-    "weekly_lite": { "price": 120, "original": 140, "name": "Weekly Lite" },
-    "weekly_1x": { "price": 250, "original": 290, "name": "1X Weekly" },
-    "weekly_2x": { "price": 480, "original": 550, "name": "2X Weekly" },
-    "monthly": { "price": 950, "original": 1100, "name": "Monthly" }
+    "weekly_lite": {
+      "price": 48,
+      "original": 140,
+      "name": "Weekly Lite"
+    },
+    "weekly_1x": {
+      "price": 155,
+      "original": 290,
+      "name": "1X Weekly"
+    },
+    "weekly_2x": {
+      "price": 480,
+      "original": 550,
+      "name": "2X Weekly"
+    },
+    "monthly": {
+      "price": 750,
+      "original": 1100,
+      "name": "Monthly"
+    }
   },
   "specials": {
-    "evo_access": { "price": 850, "original": 1000, "name": "EVO Access" },
-    "level_up": { "price": 450, "original": 550, "name": "Level Up Pass" }
+    "evo_access": {
+      "price": 850,
+      "original": 1000,
+      "name": "EVO Access"
+    },
+    "level_up": {
+      "price": 450,
+      "original": 550,
+      "name": "Level Up Pass"
+    }
   },
   "announcement": "",
   "updated": "2026-02-28"
