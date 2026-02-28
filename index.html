@@ -821,24 +821,50 @@
             <label class="form-label">📱 তোমার নম্বর</label>
             <input class="form-input" type="tel" id="addMoneyPhone" placeholder="01XXXXXXXXX" inputmode="numeric">
         </div>
-        <div class="form-group">
-            <label class="form-label">🧾 Transaction ID</label>
-            <input class="form-input" type="text" id="addMoneyTrx" placeholder="Transaction ID দিন">
+
+        <!-- bKash/Nagad Payment Instructions Card -->
+        <div id="addMoneyInstructions" style="border-radius:16px;padding:20px 18px;margin-top:8px;margin-bottom:16px;color:#fff;background:#E2136E;">
+            <div style="font-weight:800;font-size:1rem;margin-bottom:16px;text-align:center;">ট্রান্সজেকশন আইডি দিন</div>
+            <input class="form-input" type="text" id="addMoneyTrx" placeholder="ট্রান্সজেকশন আইডি দিন" style="background:rgba(255,255,255,0.95);color:#333;border:none;margin-bottom:18px;text-align:center;font-size:0.95rem;">
+            
+            <div style="font-size:0.82rem;line-height:2.2;" id="addMoneySteps">
+                <div style="display:flex;align-items:flex-start;gap:8px;">
+                    <span>•</span>
+                    <span><b>*247#</b> ডায়াল করে আপনার bKash মোবাইল মেনুতে যান অথবা bKash অ্যাপে যান।</span>
+                </div>
+                <div style="display:flex;align-items:flex-start;gap:8px;">
+                    <span>•</span>
+                    <span><span style="background:#FFD700;color:#000;padding:2px 8px;border-radius:4px;font-weight:800;">"Send Money"</span> -এ ক্লিক করুন।</span>
+                </div>
+                <div style="display:flex;align-items:flex-start;gap:8px;">
+                    <span>•</span>
+                    <span>প্রাপক নম্বর হিসেবে এই নম্বরটি লিখুনঃ<br>
+                        <span style="font-size:1.1rem;font-weight:800;color:#FFD700;" id="addPayNumber">01606335174</span>
+                        <button onclick="copyAddNumber()" style="background:rgba(255,255,255,0.25);border:none;color:#fff;padding:4px 14px;border-radius:8px;font-size:0.75rem;font-weight:700;cursor:pointer;margin-left:8px;">📋 Copy</button>
+                    </span>
+                </div>
+                <div style="display:flex;align-items:flex-start;gap:8px;">
+                    <span>•</span>
+                    <span>টাকার পরিমাণঃ <span style="font-weight:800;color:#FFD700;" id="addPayAmountDisplay">০</span></span>
+                </div>
+                <div style="display:flex;align-items:flex-start;gap:8px;">
+                    <span>•</span>
+                    <span>নিশ্চিত করতে এখন আপনার bKash মোবাইল মেনু পিন লিখুন।</span>
+                </div>
+                <div style="display:flex;align-items:flex-start;gap:8px;">
+                    <span>•</span>
+                    <span>সবকিছু ঠিক থাকলে, আপনি bKash থেকে একটি নিশ্চিতকরণ বার্তা পাবেন।</span>
+                </div>
+                <div style="display:flex;align-items:flex-start;gap:8px;">
+                    <span>•</span>
+                    <span>এখন উপরের বক্সে আপনার <b>Transaction ID</b> দিন এবং নিচের <b style="color:#FFD700;">VERIFY</b> বাটনে ক্লিক করুন।</span>
+                </div>
+            </div>
         </div>
-        <button class="submit-btn" onclick="submitAddMoney()">
-            <i class="fas fa-plus-circle"></i> টাকা যোগ করুন
+
+        <button class="submit-btn" onclick="submitAddMoney()" style="background:linear-gradient(135deg,#E2136E,#C4105A);font-size:1.1rem;padding:16px;letter-spacing:1px;">
+            VERIFY
         </button>
-    </div>
-    <div class="status-card" style="margin-top:14px;">
-        <h4 style="font-size:0.85rem;margin-bottom:10px;">📖 কিভাবে টাকা যোগ করবেন</h4>
-        <div style="font-size:0.8rem;color:var(--text-muted);line-height:1.8;">
-            1️⃣ কত টাকা যোগ করতে চান লিখুন<br>
-            2️⃣ bKash অথবা Nagad সিলেক্ট করুন<br>
-            3️⃣ দেখানো নম্বরে Send Money করুন<br>
-            4️⃣ আপনার ফোন নম্বর ও Transaction ID দিন<br>
-            5️⃣ "টাকা যোগ করুন" বাটনে ক্লিক করুন<br>
-            6️⃣ ৫-১০ মিনিটের মধ্যে ব্যালেন্স যোগ হবে ✅
-        </div>
     </div>
 </div>
 
@@ -1410,7 +1436,40 @@ function selectAddPayment(el, method) {
     document.querySelectorAll('#addMoneySection .payment-option').forEach(p => p.classList.remove('selected'));
     el.classList.add('selected');
     addPaymentMethod = method;
+    
+    const instrBox = document.getElementById('addMoneyInstructions');
+    const numEl = document.getElementById('addPayNumber');
+    const stepsEl = document.getElementById('addMoneySteps');
+    
+    if (method === 'bkash') {
+        instrBox.style.background = '#E2136E';
+        numEl.textContent = '01606335174';
+        stepsEl.querySelectorAll('span')[2].innerHTML = '<b>*247#</b> ডায়াল করে আপনার bKash মোবাইল মেনুতে যান অথবা bKash অ্যাপে যান।';
+    } else if (method === 'nagad') {
+        instrBox.style.background = '#F6921E';
+        numEl.textContent = '01854707074';
+        stepsEl.querySelectorAll('span')[2].innerHTML = 'Nagad অ্যাপ ওপেন করুন অথবা <b>*167#</b> ডায়াল করুন।';
+    }
 }
+
+function copyAddNumber() {
+    const num = document.getElementById('addPayNumber').textContent;
+    navigator.clipboard.writeText(num).then(() => showToast('✅ নম্বর কপি হয়েছে!')).catch(() => {
+        const t = document.createElement('textarea'); t.value = num; document.body.appendChild(t); t.select(); document.execCommand('copy'); document.body.removeChild(t);
+        showToast('✅ নম্বর কপি হয়েছে!');
+    });
+}
+
+// Update amount display when typing
+document.addEventListener('DOMContentLoaded', () => {
+    const amtInput = document.getElementById('addMoneyAmount');
+    if (amtInput) {
+        amtInput.addEventListener('input', () => {
+            const display = document.getElementById('addPayAmountDisplay');
+            if (display) display.textContent = amtInput.value ? '৳' + amtInput.value : '০';
+        });
+    }
+});
 
 async function submitAddMoney() {
     const amount = document.getElementById('addMoneyAmount').value.trim();
