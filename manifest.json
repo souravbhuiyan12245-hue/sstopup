@@ -1,0 +1,18 @@
+{
+  "name": "SS TOP-UP | Diamond Store",
+  "short_name": "SS TOP-UP",
+  "description": "Free Fire Diamond Store - Best Price",
+  "start_url": "/sstopup/",
+  "display": "standalone",
+  "background_color": "#F5F3FF",
+  "theme_color": "#6C3CE1",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "images/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
