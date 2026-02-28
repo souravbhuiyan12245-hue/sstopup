@@ -1234,10 +1234,11 @@ function updateUI() {
     if (!prices) return;
     if (prices.passes) {
         const p = prices.passes;
-        if (p.weekly_lite) document.getElementById('offerWeeklyLite').textContent = '৳' + p.weekly_lite.price;
-        if (p.weekly_1x) document.getElementById('offerWeekly1x').textContent = '৳' + p.weekly_1x.price;
-        if (p.weekly_2x) document.getElementById('offerWeekly2x').textContent = '৳' + p.weekly_2x.price;
-        if (p.monthly) document.getElementById('offerMonthly').textContent = '৳' + p.monthly.price;
+        const el = (id) => document.getElementById(id);
+        if (p.weekly_lite && el('offerWeeklyLite')) el('offerWeeklyLite').textContent = '৳' + p.weekly_lite.price;
+        if (p.weekly_1x && el('offerWeekly1x')) el('offerWeekly1x').textContent = '৳' + p.weekly_1x.price;
+        if (p.weekly_2x && el('offerWeekly2x')) el('offerWeekly2x').textContent = '৳' + p.weekly_2x.price;
+        if (p.monthly && el('offerMonthly')) el('offerMonthly').textContent = '৳' + p.monthly.price;
     }
     if (prices.announcement) {
         document.getElementById('announceText').textContent = prices.announcement;
