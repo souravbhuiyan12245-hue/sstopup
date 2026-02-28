@@ -159,11 +159,16 @@
             <div id="dPrices"></div>
         </div>
         <div class="card">
+            <h3>🔥 Special Offer (Home Page)</h3>
+            <p style="font-size:0.75rem;color:var(--muted);margin-bottom:12px;">এই দামগুলো Home পেজের SPECIAL OFFER কার্ডে দেখায়</p>
+            <div id="offerPrices"></div>
+        </div>
+        <div class="card">
             <h3>📅 Weekly / Monthly</h3>
             <div id="pPrices"></div>
         </div>
         <div class="card">
-            <h3>⭐ Special</h3>
+            <h3>⭐ Special Items</h3>
             <div id="sPrices"></div>
         </div>
     </div>
@@ -251,6 +256,10 @@ function renderP(){
     Object.keys(P.diamonds).sort((a,b)=>+a-+b).forEach(k=>{const d=P.diamonds[k];
         dE.innerHTML+=`<div class="pr"><div class="name">💎 ${k}<small>was ৳${d.original}</small></div><span class="tk">৳</span><input type="number" value="${d.price}" data-t="diamonds" data-k="${k}" oninput="dirty()"></div>`;
     });
+    const oE=document.getElementById('offerPrices');oE.innerHTML='';
+    ['monthly','weekly_1x'].forEach(k=>{if(P.passes[k]){const p=P.passes[k];
+        oE.innerHTML+=`<div class="pr"><div class="name">🔥 ${p.name}<small>was ৳${p.original}</small></div><span class="tk">৳</span><input type="number" value="${p.price}" data-t="passes" data-k="${k}" oninput="dirty()"></div>`;
+    }});
     const pE=document.getElementById('pPrices');pE.innerHTML='';
     Object.keys(P.passes).forEach(k=>{const p=P.passes[k];
         pE.innerHTML+=`<div class="pr"><div class="name">📅 ${p.name}<small>was ৳${p.original}</small></div><span class="tk">৳</span><input type="number" value="${p.price}" data-t="passes" data-k="${k}" oninput="dirty()"></div>`;
