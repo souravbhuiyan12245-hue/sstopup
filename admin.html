@@ -1,464 +1,330 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SS TOP-UP — Admin Panel</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <title>SS TOP-UP — Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
-            --primary: #f97316;
-            --primary-dark: #ea580c;
-            --accent: #06b6d4;
-            --bg: #030712;
-            --card: #111827;
-            --border: rgba(255,255,255,0.06);
-            --text: #e5e7eb;
-            --muted: #6b7280;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --primary: #6C3CE1;
+            --primary-light: #8B5CF6;
+            --text: #1e293b;
+            --muted: #94a3b8;
+            --border: #e2e8f0;
             --success: #22c55e;
-            --pink: #ec4899;
             --danger: #ef4444;
+            --warning: #f59e0b;
+            --blue: #3b82f6;
+            --shadow: 0 1px 3px rgba(0,0,0,0.08);
+            --shadow-lg: 0 4px 16px rgba(0,0,0,0.1);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
-        .login-screen { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
-        .login-box { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 40px 30px; max-width: 360px; width: 100%; text-align: center; }
-        .login-box h2 { font-size: 1.5rem; margin-bottom: 6px; }
-        .login-box .sub { color: var(--muted); font-size: 0.85rem; margin-bottom: 24px; }
-        .login-box .brand { font-size: 2rem; margin-bottom: 16px; display: block; }
+        /* Login */
+        .login { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; background: linear-gradient(135deg, #6C3CE1, #4F46E5); }
+        .login.hide { display: none; }
+        .login-card { background: #fff; border-radius: 24px; padding: 48px 32px; max-width: 380px; width: 100%; text-align: center; box-shadow: var(--shadow-lg); }
+        .login-card .logo { font-size: 3rem; margin-bottom: 16px; }
+        .login-card h2 { font-size: 1.3rem; font-weight: 800; margin-bottom: 4px; }
+        .login-card p { font-size: 0.82rem; color: var(--muted); margin-bottom: 28px; }
+        .login-card .err { color: var(--danger); font-size: 0.8rem; margin-bottom: 12px; display: none; }
 
-        .inp { width: 100%; padding: 12px 14px; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 10px; color: #fff; font-size: 0.95rem; outline: none; font-family: inherit; transition: border 0.2s; margin-bottom: 12px; }
-        .inp:focus { border-color: var(--primary); }
-        .inp::placeholder { color: #4b5563; }
+        input, textarea { width: 100%; padding: 14px 16px; border: 2px solid var(--border); border-radius: 14px; font-size: 0.92rem; font-family: inherit; outline: none; transition: border 0.2s; background: #f8fafc; margin-bottom: 12px; color: var(--text); }
+        input:focus, textarea:focus { border-color: var(--primary); background: #fff; }
+        input::placeholder, textarea::placeholder { color: #cbd5e1; }
+        textarea { resize: vertical; min-height: 70px; }
 
-        .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-size: 0.95rem; font-weight: 700; cursor: pointer; font-family: inherit; transition: all 0.2s; }
-        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: #fff; }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(249,115,22,0.3); }
-        .btn-success { background: linear-gradient(135deg, var(--success), #16a34a); color: #fff; }
+        .btn { width: 100%; padding: 14px; border: none; border-radius: 14px; font-size: 0.95rem; font-weight: 700; cursor: pointer; font-family: inherit; transition: all 0.2s; }
+        .btn:active { transform: scale(0.97); }
+        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: #fff; box-shadow: 0 4px 12px rgba(108,60,225,0.3); }
+        .btn-success { background: var(--success); color: #fff; }
         .btn-danger { background: var(--danger); color: #fff; }
-        .btn-sm { width: auto; padding: 6px 14px; font-size: 0.75rem; display: inline-block; }
+        .btn-sm { width: auto; padding: 8px 14px; font-size: 0.75rem; border-radius: 10px; display: inline-flex; align-items: center; gap: 4px; }
 
-        .error { color: var(--danger); font-size: 0.8rem; margin-bottom: 10px; display: none; }
+        /* Dashboard */
+        .dash { display: none; max-width: 500px; margin: 0 auto; padding: 0 16px 100px; }
+        .dash.show { display: block; }
 
-        .admin-panel { display: none; max-width: 600px; margin: 0 auto; padding: 20px; padding-bottom: 100px; }
+        .top-bar { position: sticky; top: 0; z-index: 50; background: rgba(248,250,252,0.95); backdrop-filter: blur(12px); padding: 16px 0; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+        .top-bar h1 { font-size: 1.1rem; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+        .top-bar .out { background: none; border: 1px solid var(--border); padding: 8px 14px; border-radius: 10px; font-size: 0.75rem; color: var(--muted); cursor: pointer; font-family: inherit; }
 
-        .admin-nav { position: sticky; top: 0; z-index: 100; background: rgba(3,7,18,0.95); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; margin: -20px -20px 20px; }
-        .admin-nav h2 { font-size: 1rem; display: flex; align-items: center; gap: 8px; }
-        .admin-nav .badge { background: var(--danger); color: #fff; font-size: 0.6rem; padding: 2px 8px; border-radius: 20px; }
-        .logout-btn { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: var(--danger); padding: 6px 12px; border-radius: 8px; font-size: 0.75rem; cursor: pointer; font-family: inherit; }
+        /* Tabs */
+        .tabs { display: flex; gap: 8px; margin-bottom: 20px; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 4px; }
+        .tab { padding: 10px 18px; background: var(--card); border: 1.5px solid var(--border); border-radius: 12px; font-size: 0.8rem; font-weight: 600; cursor: pointer; white-space: nowrap; color: var(--muted); font-family: inherit; transition: all 0.2s; box-shadow: var(--shadow); }
+        .tab.on { background: var(--primary); color: #fff; border-color: var(--primary); box-shadow: 0 4px 12px rgba(108,60,225,0.25); }
 
-        .tabs { display: flex; gap: 6px; margin-bottom: 20px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-        .tab { padding: 8px 16px; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 10px; font-size: 0.8rem; font-weight: 600; cursor: pointer; white-space: nowrap; color: var(--muted); transition: all 0.2s; font-family: inherit; }
-        .tab.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+        .panel { display: none; }
+        .panel.on { display: block; }
 
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
+        .card { background: var(--card); border-radius: 18px; padding: 20px; margin-bottom: 14px; box-shadow: var(--shadow); border: 1px solid var(--border); }
+        .card h3 { font-size: 0.92rem; font-weight: 700; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
 
-        .section { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 20px; margin-bottom: 16px; }
-        .section h3 { font-size: 0.9rem; font-weight: 700; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+        /* Stats */
+        .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 16px; }
+        .stat { background: var(--card); border-radius: 16px; padding: 16px; text-align: center; box-shadow: var(--shadow); border: 1px solid var(--border); }
+        .stat .n { font-size: 1.5rem; font-weight: 800; }
+        .stat .l { font-size: 0.68rem; color: var(--muted); margin-top: 2px; }
 
-        .price-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
-        .price-row:last-child { border-bottom: none; }
-        .price-label { flex: 1; font-size: 0.85rem; font-weight: 600; }
-        .price-label small { display: block; color: var(--muted); font-size: 0.7rem; font-weight: 400; }
-        .price-input { width: 90px; padding: 8px 10px; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 8px; color: #fff; font-size: 0.9rem; outline: none; font-family: inherit; text-align: right; }
-        .price-input:focus { border-color: var(--primary); }
-        .tk { color: var(--muted); font-size: 0.8rem; }
+        /* Price Row */
+        .pr { display: flex; align-items: center; gap: 10px; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
+        .pr:last-child { border-bottom: none; }
+        .pr .name { flex: 1; font-size: 0.85rem; font-weight: 600; }
+        .pr .name small { display: block; font-size: 0.7rem; color: var(--muted); font-weight: 400; }
+        .pr input { width: 90px; padding: 10px; border: 2px solid var(--border); border-radius: 10px; font-size: 0.9rem; text-align: right; background: #f8fafc; color: var(--text); outline: none; font-family: inherit; }
+        .pr input:focus { border-color: var(--primary); }
+        .pr .tk { color: var(--muted); font-size: 0.8rem; }
 
-        .order-card { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 10px; }
-        .order-card .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .order-card .uid { font-weight: 700; font-size: 0.9rem; }
-        .order-card .info { font-size: 0.78rem; color: var(--muted); line-height: 1.6; }
-        .order-card .actions { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
-        .status-badge { padding: 3px 10px; border-radius: 20px; font-size: 0.65rem; font-weight: 700; }
-        .badge-pending { background: rgba(245,158,11,0.15); color: #f59e0b; }
-        .badge-running { background: rgba(59,130,246,0.15); color: #3b82f6; }
-        .badge-completed { background: rgba(34,197,94,0.15); color: #22c55e; }
+        /* Order */
+        .ord { background: #f8fafc; border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 10px; }
+        .ord .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .ord .uid { font-weight: 700; font-size: 0.88rem; }
+        .ord .det { font-size: 0.78rem; color: var(--muted); line-height: 1.7; }
+        .ord .det b { color: var(--text); }
+        .ord .acts { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.65rem; font-weight: 700; }
+        .b-pen { background: #fef3c7; color: #92400e; }
+        .b-run { background: #dbeafe; color: #1e40af; }
+        .b-done { background: #dcfce7; color: #166534; }
+        .b-rej { background: #fee2e2; color: #991b1b; }
 
-        .announce-input { width: 100%; padding: 10px 14px; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 10px; color: #fff; font-size: 0.85rem; outline: none; font-family: inherit; resize: vertical; min-height: 60px; }
-        .announce-input:focus { border-color: var(--primary); }
-        .announce-input::placeholder { color: #4b5563; }
+        .save-float { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--primary); color: #fff; padding: 14px 32px; border-radius: 16px; font-size: 0.9rem; font-weight: 700; cursor: pointer; border: none; font-family: inherit; box-shadow: 0 8px 24px rgba(108,60,225,0.35); display: none; z-index: 100; }
+        .save-float.show { display: block; animation: popIn 0.3s ease; }
+        @keyframes popIn { from { transform: translateX(-50%) translateY(20px); opacity: 0; } to { transform: translateX(-50%) translateY(0); opacity: 1; } }
 
-        .save-bar { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(3,7,18,0.95); backdrop-filter: blur(20px); border-top: 1px solid var(--border); padding: 14px 20px; display: none; z-index: 100; }
-        .save-bar.show { display: block; }
-        .save-bar .inner { max-width: 600px; margin: 0 auto; display: flex; gap: 10px; }
-        .save-bar .btn { flex: 1; }
-
-        .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: var(--success); color: #fff; padding: 12px 20px; border-radius: 10px; font-size: 0.85rem; font-weight: 600; z-index: 200; display: none; animation: slideIn 0.3s ease; }
-        .toast.error { background: var(--danger); }
-        @keyframes slideIn { from { opacity:0; transform:translateX(-50%) translateY(-10px); } to { opacity:1; transform:translateX(-50%) translateY(0); } }
-
-        .loading { text-align: center; padding: 40px; color: var(--muted); font-size: 0.85rem; }
-        .empty { text-align: center; padding: 40px; color: var(--muted); }
-        .empty .icon { font-size: 2rem; margin-bottom: 8px; }
+        .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: var(--success); color: #fff; padding: 12px 24px; border-radius: 14px; font-size: 0.85rem; font-weight: 600; z-index: 200; display: none; box-shadow: var(--shadow-lg); }
+        .toast.err { background: var(--danger); }
     </style>
 </head>
 <body>
 
 <!-- Login -->
-<div class="login-screen" id="loginScreen">
-    <div class="login-box">
-        <span class="brand">🔐</span>
-        <h2>SS TOP-UP Admin</h2>
-        <p class="sub">পাসওয়ার্ড দিয়ে লগইন করো</p>
-        <div class="error" id="loginError">❌ ভুল পাসওয়ার্ড!</div>
-        <input class="inp" type="password" id="passInput" placeholder="Password..." onkeypress="if(event.key==='Enter')login()">
-        <button class="btn btn-primary" onclick="login()">🔓 Login</button>
+<div class="login" id="loginPage">
+    <div class="login-card">
+        <div class="logo">💎</div>
+        <h2>SS TOP-UP</h2>
+        <p>Admin Panel</p>
+        <div class="err" id="err">Wrong password!</div>
+        <input type="password" id="pw" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()">
+        <button class="btn btn-primary" onclick="doLogin()"><i class="fas fa-lock-open"></i> Login</button>
     </div>
 </div>
 
-<!-- Admin Panel -->
-<div class="admin-panel" id="adminPanel">
-    <div class="admin-nav">
-        <h2>⚙️ Admin Panel <span class="badge">ADMIN</span></h2>
-        <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+<!-- Dashboard -->
+<div class="dash" id="dash">
+    <div class="top-bar">
+        <h1>💎 SS TOP-UP</h1>
+        <button class="out" onclick="doLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
     </div>
 
     <div class="tabs">
-        <button class="tab active" onclick="switchTab('orders')">📋 Orders</button>
-        <button class="tab" onclick="switchTab('prices')">💰 Prices</button>
-        <button class="tab" onclick="switchTab('addmoney')">💳 Add Money</button>
-        <button class="tab" onclick="switchTab('settings')">⚙️ Settings</button>
+        <div class="tab on" onclick="go('orders',this)">📋 Orders</div>
+        <div class="tab" onclick="go('prices',this)">💰 Prices</div>
+        <div class="tab" onclick="go('settings',this)">⚙️ Settings</div>
     </div>
 
-    <!-- Orders Tab -->
-    <div class="tab-content active" id="tab-orders">
-        <div class="section">
-            <h3>📋 অর্ডার ম্যানেজ করো</h3>
-            <div style="display:flex;gap:6px;margin-bottom:14px;">
-                <button class="btn btn-sm btn-primary" onclick="filterOrders('all')" id="filterAll" style="opacity:1;">All</button>
-                <button class="btn btn-sm" onclick="filterOrders('Pending')" id="filterPending" style="background:rgba(245,158,11,0.15);color:#f59e0b;">Pending</button>
-                <button class="btn btn-sm" onclick="filterOrders('Running')" id="filterRunning" style="background:rgba(59,130,246,0.15);color:#3b82f6;">Running</button>
-                <button class="btn btn-sm" onclick="filterOrders('Completed')" id="filterCompleted" style="background:rgba(34,197,94,0.15);color:#22c55e;">Completed</button>
+    <!-- Orders -->
+    <div class="panel on" id="p-orders">
+        <div class="stats">
+            <div class="stat"><div class="n" id="sTotal" style="color:var(--primary);">0</div><div class="l">Total</div></div>
+            <div class="stat"><div class="n" id="sPen" style="color:var(--warning);">0</div><div class="l">Pending</div></div>
+            <div class="stat"><div class="n" id="sDone" style="color:var(--success);">0</div><div class="l">Completed</div></div>
+            <div class="stat"><div class="n" id="sRev" style="color:var(--primary);">৳0</div><div class="l">Revenue</div></div>
+        </div>
+        <div class="card">
+            <h3>📋 Orders</h3>
+            <div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;">
+                <button class="btn btn-sm btn-primary" onclick="filt('all')">All</button>
+                <button class="btn btn-sm" style="background:#fef3c7;color:#92400e;" onclick="filt('Pending')">Pending</button>
+                <button class="btn btn-sm" style="background:#dbeafe;color:#1e40af;" onclick="filt('Running')">Running</button>
+                <button class="btn btn-sm" style="background:#dcfce7;color:#166534;" onclick="filt('Completed')">Done</button>
             </div>
-            <div id="ordersContainer"><div class="loading">⏳ Loading orders...</div></div>
+            <div id="orderBox"><p style="color:var(--muted);font-size:0.82rem;text-align:center;padding:20px;">Loading...</p></div>
         </div>
     </div>
 
-    <!-- Prices Tab -->
-    <div class="tab-content" id="tab-prices">
-        <div class="section">
+    <!-- Prices -->
+    <div class="panel" id="p-prices">
+        <div class="card">
             <h3>📢 Announcement</h3>
-            <textarea class="announce-input" id="announcement" placeholder="কোনো notice লিখো... (খালি রাখলে দেখাবে না)" oninput="markChanged()"></textarea>
+            <textarea id="ann" placeholder="Notice text (empty = hidden)" oninput="dirty()"></textarea>
         </div>
-        <div class="section">
-            <h3>💎 Diamond Prices</h3>
-            <div id="diamondPrices"></div>
+        <div class="card">
+            <h3>💎 Diamonds</h3>
+            <div id="dPrices"></div>
         </div>
-        <div class="section">
-            <h3>📅 Pass / Membership</h3>
-            <div id="passPrices"></div>
+        <div class="card">
+            <h3>📅 Weekly / Monthly</h3>
+            <div id="pPrices"></div>
         </div>
-        <div class="section">
-            <h3>🎯 Special Items</h3>
-            <div id="specialPrices"></div>
-        </div>
-    </div>
-
-    <!-- Add Money Tab -->
-    <div class="tab-content" id="tab-addmoney">
-        <div class="section">
-            <h3>💳 Add Money Requests</h3>
-            <div id="addMoneyContainer"><div class="loading">⏳ Loading...</div></div>
+        <div class="card">
+            <h3>⭐ Special</h3>
+            <div id="sPrices"></div>
         </div>
     </div>
 
-    <!-- Settings Tab -->
-    <div class="tab-content" id="tab-settings">
-        <div class="section">
-            <h3>🔑 GitHub Token</h3>
-            <p style="font-size:0.78rem;color:var(--muted);margin-bottom:12px;">GitHub Personal Access Token (repo scope needed)</p>
-            <input class="inp" type="password" id="ghTokenInput" placeholder="ghp_xxxxxxxxxxxx" style="margin-bottom:8px;">
-            <button class="btn btn-primary" onclick="saveToken()">💾 Save Token</button>
+    <!-- Settings -->
+    <div class="panel" id="p-settings">
+        <div class="card">
+            <h3><i class="fas fa-key"></i> GitHub Token</h3>
+            <p style="font-size:0.78rem;color:var(--muted);margin-bottom:12px;">Prices & orders save করতে লাগবে</p>
+            <input type="password" id="ghTok" placeholder="ghp_xxxxxxxxxxxx">
+            <button class="btn btn-primary" onclick="saveTok()"><i class="fas fa-save"></i> Save Token</button>
         </div>
-        <div class="section">
-            <h3>🔒 পাসওয়ার্ড চেঞ্জ করো</h3>
-            <input class="inp" type="password" id="oldPass" placeholder="Current password">
-            <input class="inp" type="password" id="newPass" placeholder="New password">
-            <input class="inp" type="password" id="confirmPass" placeholder="Confirm new password">
-            <button class="btn btn-primary" onclick="changePassword()">🔄 Change Password</button>
+        <div class="card">
+            <h3><i class="fas fa-lock"></i> Change Password</h3>
+            <input type="password" id="curPw" placeholder="Current password">
+            <input type="password" id="newPw" placeholder="New password">
+            <input type="password" id="conPw" placeholder="Confirm new password">
+            <button class="btn btn-primary" onclick="changePw()"><i class="fas fa-sync"></i> Change Password</button>
         </div>
-        <div class="section">
-            <h3>ℹ️ Info</h3>
-            <div style="font-size:0.8rem;color:var(--muted);line-height:1.8;">
-                Repo: souravbhuiyan12245-hue/sstopup<br>
-                Data: data/orders.json, prices.json<br>
-                <span id="lastUpdated"></span>
-            </div>
+        <div class="card" style="text-align:center;">
+            <p style="font-size:0.75rem;color:var(--muted);">SS TOP-UP Admin Panel v2.0</p>
+            <p style="font-size:0.7rem;color:var(--muted);margin-top:4px;">sstopupofficial@gmail.com</p>
         </div>
     </div>
 </div>
 
-<!-- Save Bar -->
-<div class="save-bar" id="saveBar">
-    <div class="inner">
-        <button class="btn btn-success" onclick="savePrices()">💾 Save Prices</button>
-    </div>
-</div>
+<!-- Save Float -->
+<button class="save-float" id="saveBtn" onclick="savePrices()"><i class="fas fa-save"></i> Save Prices</button>
 
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
 <script>
-const REPO = 'souravbhuiyan12245-hue/sstopup';
-const GH_API_BASE = `https://api.github.com/repos/${REPO}/contents/`;
-const RAW_BASE = `https://raw.githubusercontent.com/${REPO}/main/`;
-// Default password hash: admin123
-const DEFAULT_PASS_HASH = '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9';
+const REPO='souravbhuiyan12245-hue/sstopup';
+const GH=`https://api.github.com/repos/${REPO}/contents/`;
+const RAW=`https://raw.githubusercontent.com/${REPO}/main/`;
+const DEFHASH='240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9';
 
-let pricesData = null;
-let ordersData = [];
-let changed = false;
-let currentFilter = 'all';
-let ordersSha = null;
-let pricesSha = null;
+let P=null,O=[],cf='all',oSha=null,pSha=null,changed=false;
 
-function getToken() { return localStorage.getItem('ss_admin_gh_token') || ''; }
-function getPassHash() { return localStorage.getItem('ss_admin_pass_hash') || DEFAULT_PASS_HASH; }
+const tok=()=>localStorage.getItem('ss_gh')||'';
+const ph=()=>localStorage.getItem('ss_ph')||DEFHASH;
+const h=async s=>{const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')};
 
-async function sha256(msg) {
-    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(msg));
-    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+async function doLogin(){
+    const v=document.getElementById('pw').value;
+    if(await h(v)===ph()){
+        document.getElementById('loginPage').classList.add('hide');
+        document.getElementById('dash').classList.add('show');
+        sessionStorage.setItem('a','1');
+        init();
+    }else{document.getElementById('err').style.display='block';document.getElementById('pw').value='';}
+}
+function doLogout(){sessionStorage.removeItem('a');location.reload();}
+if(sessionStorage.getItem('a')){document.getElementById('loginPage').classList.add('hide');document.getElementById('dash').classList.add('show');init();}
+
+function go(name,el){
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+    el.classList.add('on');
+    document.getElementById('p-'+name).classList.add('on');
+    document.getElementById('saveBtn').classList.toggle('show',name==='prices'&&changed);
 }
 
-async function login() {
-    const p = document.getElementById('passInput').value;
-    const hash = await sha256(p);
-    if (hash === getPassHash()) {
-        document.getElementById('loginScreen').style.display = 'none';
-        document.getElementById('adminPanel').style.display = 'block';
-        sessionStorage.setItem('admin', '1');
-        loadAll();
-    } else {
-        document.getElementById('loginError').style.display = 'block';
-        document.getElementById('passInput').value = '';
-    }
+async function init(){
+    document.getElementById('ghTok').value=tok();
+    await Promise.all([loadP(),loadO()]);
 }
 
-function logout() { sessionStorage.removeItem('admin'); location.reload(); }
-
-if (sessionStorage.getItem('admin')) {
-    document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('adminPanel').style.display = 'block';
-    loadAll();
+async function loadP(){
+    try{const r=await fetch(RAW+'data/prices.json?t='+Date.now(),{cache:'no-store'});if(r.ok){P=await r.json();renderP();}}catch(e){}
+    try{const t=tok();if(t){const r=await fetch(GH+'data/prices.json',{headers:{Authorization:'token '+t}});if(r.ok){pSha=(await r.json()).sha;}}}catch(e){}
 }
 
-function switchTab(name) {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-    event.target.classList.add('active');
-    document.getElementById('tab-' + name).classList.add('active');
-    document.getElementById('saveBar').classList.toggle('show', name === 'prices' && changed);
+async function loadO(){
+    try{const r=await fetch(RAW+'data/orders.json?t='+Date.now(),{cache:'no-store'});if(r.ok)O=await r.json();else O=[];}catch(e){O=[];}
+    try{const t=tok();if(t){const r=await fetch(GH+'data/orders.json',{headers:{Authorization:'token '+t}});if(r.ok){oSha=(await r.json()).sha;}}}catch(e){}
+    renderO();
 }
 
-async function loadAll() {
-    const token = getToken();
-    // Load token into settings field
-    document.getElementById('ghTokenInput').value = token;
-    await Promise.all([loadPrices(), loadOrders()]);
-}
-
-async function loadPrices() {
-    try {
-        const r = await fetch(RAW_BASE + 'prices.json?t=' + Date.now(), { cache: 'no-store' });
-        if (r.ok) { pricesData = await r.json(); renderPrices(); }
-    } catch(e) { console.error('Load prices failed', e); }
-    // Get SHA
-    try {
-        const token = getToken();
-        if (token) {
-            const r = await fetch(GH_API_BASE + 'prices.json', { headers: { Authorization: 'token ' + token } });
-            if (r.ok) { const d = await r.json(); pricesSha = d.sha; }
-        }
-    } catch(e) {}
-}
-
-async function loadOrders() {
-    try {
-        const r = await fetch(RAW_BASE + 'data/orders.json?t=' + Date.now(), { cache: 'no-store' });
-        if (r.ok) { ordersData = await r.json(); } else { ordersData = []; }
-    } catch(e) { ordersData = []; }
-    // Get SHA
-    try {
-        const token = getToken();
-        if (token) {
-            const r = await fetch(GH_API_BASE + 'data/orders.json', { headers: { Authorization: 'token ' + token } });
-            if (r.ok) { const d = await r.json(); ordersSha = d.sha; }
-        }
-    } catch(e) {}
-    renderOrders();
-}
-
-function renderPrices() {
-    if (!pricesData) return;
-    document.getElementById('announcement').value = pricesData.announcement || '';
-
-    const dEl = document.getElementById('diamondPrices');
-    dEl.innerHTML = '';
-    const dKeys = Object.keys(pricesData.diamonds).sort((a,b) => Number(a) - Number(b));
-    dKeys.forEach(k => {
-        const d = pricesData.diamonds[k];
-        dEl.innerHTML += `<div class="price-row"><div class="price-label">💎 ${k} Diamond<small>Original: ৳${d.original}</small></div><span class="tk">৳</span><input class="price-input" type="number" value="${d.price}" data-type="diamonds" data-key="${k}" oninput="markChanged()"></div>`;
+function renderP(){
+    if(!P)return;
+    document.getElementById('ann').value=P.announcement||'';
+    const dE=document.getElementById('dPrices');dE.innerHTML='';
+    Object.keys(P.diamonds).sort((a,b)=>+a-+b).forEach(k=>{const d=P.diamonds[k];
+        dE.innerHTML+=`<div class="pr"><div class="name">💎 ${k}<small>was ৳${d.original}</small></div><span class="tk">৳</span><input type="number" value="${d.price}" data-t="diamonds" data-k="${k}" oninput="dirty()"></div>`;
     });
-
-    const pEl = document.getElementById('passPrices');
-    pEl.innerHTML = '';
-    Object.keys(pricesData.passes).forEach(k => {
-        const p = pricesData.passes[k];
-        pEl.innerHTML += `<div class="price-row"><div class="price-label">📅 ${p.name}<small>Original: ৳${p.original}</small></div><span class="tk">৳</span><input class="price-input" type="number" value="${p.price}" data-type="passes" data-key="${k}" oninput="markChanged()"></div>`;
+    const pE=document.getElementById('pPrices');pE.innerHTML='';
+    Object.keys(P.passes).forEach(k=>{const p=P.passes[k];
+        pE.innerHTML+=`<div class="pr"><div class="name">📅 ${p.name}<small>was ৳${p.original}</small></div><span class="tk">৳</span><input type="number" value="${p.price}" data-t="passes" data-k="${k}" oninput="dirty()"></div>`;
     });
-
-    const sEl = document.getElementById('specialPrices');
-    sEl.innerHTML = '';
-    Object.keys(pricesData.specials).forEach(k => {
-        const s = pricesData.specials[k];
-        sEl.innerHTML += `<div class="price-row"><div class="price-label">🎯 ${s.name}<small>Original: ৳${s.original}</small></div><span class="tk">৳</span><input class="price-input" type="number" value="${s.price}" data-type="specials" data-key="${k}" oninput="markChanged()"></div>`;
+    const sE=document.getElementById('sPrices');sE.innerHTML='';
+    Object.keys(P.specials).forEach(k=>{const s=P.specials[k];
+        sE.innerHTML+=`<div class="pr"><div class="name">⭐ ${s.name}<small>was ৳${s.original}</small></div><span class="tk">৳</span><input type="number" value="${s.price}" data-t="specials" data-k="${k}" oninput="dirty()"></div>`;
     });
-
-    document.getElementById('lastUpdated').textContent = 'Last updated: ' + (pricesData.updated || 'N/A');
 }
 
-function renderOrders() {
-    const container = document.getElementById('ordersContainer');
-    let filtered = ordersData;
-    if (currentFilter !== 'all') filtered = ordersData.filter(o => o.status === currentFilter);
+function renderO(){
+    const c=document.getElementById('orderBox');
+    const pen=O.filter(o=>o.status==='Pending'||!o.status).length;
+    const done=O.filter(o=>o.status==='Completed').length;
+    const rev=O.filter(o=>o.status==='Completed').reduce((s,o)=>s+(o.price||0),0);
+    document.getElementById('sTotal').textContent=O.length;
+    document.getElementById('sPen').textContent=pen;
+    document.getElementById('sDone').textContent=done;
+    document.getElementById('sRev').textContent='৳'+rev;
 
-    if (!filtered.length) {
-        container.innerHTML = '<div class="empty"><div class="icon">📭</div>কোনো অর্ডার নেই</div>';
-        return;
-    }
-
-    container.innerHTML = filtered.slice().reverse().map((o, i) => {
-        const idx = ordersData.indexOf(o);
-        const badgeClass = o.status === 'Completed' ? 'badge-completed' : o.status === 'Running' ? 'badge-running' : 'badge-pending';
-        return `<div class="order-card">
-            <div class="top">
-                <span class="uid">🎮 ${o.uid || 'N/A'}</span>
-                <span class="status-badge ${badgeClass}">${o.status || 'Pending'}</span>
-            </div>
-            <div class="info">
-                📦 ${o.item} — ৳${o.price}<br>
-                💳 ${o.payment || 'N/A'} | 📱 ${o.phone || 'N/A'}<br>
-                🧾 TrxID: ${o.trxId || 'N/A'}<br>
-                📅 ${o.date || 'N/A'}
-            </div>
-            <div class="actions">
-                ${o.status !== 'Running' ? `<button class="btn btn-sm" style="background:rgba(59,130,246,0.15);color:#3b82f6;" onclick="setStatus(${idx},'Running')">▶ Running</button>` : ''}
-                ${o.status !== 'Completed' ? `<button class="btn btn-sm btn-success" onclick="setStatus(${idx},'Completed')">✅ Complete</button>` : ''}
-                <button class="btn btn-sm btn-danger" onclick="deleteOrder(${idx})">🗑 Delete</button>
-            </div>
-        </div>`;
+    let list=cf==='all'?O:O.filter(o=>(o.status||'Pending')===cf);
+    if(!list.length){c.innerHTML='<div style="text-align:center;padding:30px;color:var(--muted);"><div style="font-size:2rem;margin-bottom:8px;">📭</div>No orders</div>';return;}
+    c.innerHTML=list.slice().reverse().map(o=>{
+        const i=O.indexOf(o);
+        const bc=o.status==='Completed'?'b-done':o.status==='Running'?'b-run':o.status==='Rejected'?'b-rej':'b-pen';
+        return`<div class="ord"><div class="top"><span class="uid">🎮 ${o.uid||'—'}</span><span class="badge ${bc}">${o.status||'Pending'}</span></div><div class="det">👤 <b>${o.name||'—'}</b><br>📦 ${o.item||'—'} — <b>৳${o.price||0}</b><br>💳 ${o.payment||'—'} | 📱 ${o.phone||'—'}<br>🧾 ${o.trxId||'—'}<br>📅 ${o.date||'—'}</div><div class="acts">${o.status!=='Completed'?`<button class="btn btn-sm btn-success" onclick="setS(${i},'Completed')">✅ Done</button>`:''} ${o.status!=='Running'&&o.status!=='Completed'?`<button class="btn btn-sm" style="background:#dbeafe;color:#1e40af;" onclick="setS(${i},'Running')">▶ Running</button>`:''} <button class="btn btn-sm btn-danger" onclick="delO(${i})">🗑</button></div></div>`;
     }).join('');
 }
 
-function filterOrders(f) {
-    currentFilter = f;
-    renderOrders();
+function filt(f){cf=f;renderO();}
+function dirty(){changed=true;document.getElementById('saveBtn').classList.add('show');}
+
+async function setS(i,s){O[i].status=s;await saveO();renderO();}
+async function delO(i){if(!confirm('Delete?'))return;O.splice(i,1);await saveO();renderO();}
+
+async function saveO(){
+    const t=tok();if(!t){msg('Set GitHub Token first!',1);return;}
+    try{
+        const sr=await fetch(GH+'data/orders.json',{headers:{Authorization:'token '+t}});
+        if(sr.ok)oSha=(await sr.json()).sha;
+        const r=await fetch(GH+'data/orders.json',{method:'PUT',headers:{Authorization:'token '+t,'Content-Type':'application/json'},
+            body:JSON.stringify({message:'orders update',content:btoa(unescape(encodeURIComponent(JSON.stringify(O,null,2)))),sha:oSha})});
+        if(r.ok){oSha=(await r.json()).content.sha;msg('✅ Saved!');}else msg('❌ Failed!',1);
+    }catch(e){msg('❌ '+e.message,1);}
 }
 
-async function setStatus(idx, status) {
-    ordersData[idx].status = status;
-    await saveOrders();
-    renderOrders();
+async function savePrices(){
+    const t=tok();if(!t){msg('Set GitHub Token first!',1);return;}
+    document.querySelectorAll('.pr input').forEach(inp=>{P[inp.dataset.t][inp.dataset.k].price=+inp.value;});
+    P.announcement=document.getElementById('ann').value.trim();
+    P.updated=new Date().toISOString().split('T')[0];
+    try{
+        const sr=await fetch(GH+'data/prices.json',{headers:{Authorization:'token '+t}});
+        if(sr.ok)pSha=(await sr.json()).sha;
+        const r=await fetch(GH+'data/prices.json',{method:'PUT',headers:{Authorization:'token '+t,'Content-Type':'application/json'},
+            body:JSON.stringify({message:'prices update',content:btoa(unescape(encodeURIComponent(JSON.stringify(P,null,2)))),sha:pSha})});
+        if(r.ok){changed=false;document.getElementById('saveBtn').classList.remove('show');msg('✅ Prices saved!');}else msg('❌ Failed!',1);
+    }catch(e){msg('❌ '+e.message,1);}
 }
 
-async function deleteOrder(idx) {
-    if (!confirm('এই অর্ডার ডিলিট করবে?')) return;
-    ordersData.splice(idx, 1);
-    await saveOrders();
-    renderOrders();
+function saveTok(){const v=document.getElementById('ghTok').value.trim();if(!v){msg('Enter token!',1);return;}localStorage.setItem('ss_gh',v);msg('✅ Token saved!');}
+
+async function changePw(){
+    const c=document.getElementById('curPw').value,n=document.getElementById('newPw').value,co=document.getElementById('conPw').value;
+    if(!c||!n){msg('Fill all fields!',1);return;}
+    if(n!==co){msg('Passwords don\'t match!',1);return;}
+    if(n.length<4){msg('Min 4 characters!',1);return;}
+    if(await h(c)!==ph()){msg('Wrong current password!',1);return;}
+    localStorage.setItem('ss_ph',await h(n));
+    document.getElementById('curPw').value='';document.getElementById('newPw').value='';document.getElementById('conPw').value='';
+    msg('✅ Password changed!');
 }
 
-async function saveOrders() {
-    const token = getToken();
-    if (!token) { showToast('❌ GitHub Token সেট করো!', true); return; }
-    try {
-        // Get fresh SHA
-        const shaR = await fetch(GH_API_BASE + 'data/orders.json', { headers: { Authorization: 'token ' + token } });
-        if (shaR.ok) { const d = await shaR.json(); ordersSha = d.sha; }
-        const content = btoa(unescape(encodeURIComponent(JSON.stringify(ordersData, null, 2))));
-        const r = await fetch(GH_API_BASE + 'data/orders.json', {
-            method: 'PUT',
-            headers: { Authorization: 'token ' + token, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: 'Update orders from admin', content, sha: ordersSha, branch: 'main' })
-        });
-        if (r.ok) { const d = await r.json(); ordersSha = d.content.sha; showToast('✅ Orders updated!'); }
-        else showToast('❌ Save failed!', true);
-    } catch(e) { showToast('❌ Error: ' + e.message, true); }
-}
-
-function markChanged() {
-    changed = true;
-    document.getElementById('saveBar').classList.add('show');
-}
-
-async function savePrices() {
-    const token = getToken();
-    if (!token) { showToast('❌ GitHub Token সেট করো!', true); return; }
-
-    document.querySelectorAll('.price-input').forEach(inp => {
-        const type = inp.dataset.type;
-        const key = inp.dataset.key;
-        pricesData[type][key].price = Number(inp.value);
-    });
-    pricesData.announcement = document.getElementById('announcement').value.trim();
-    pricesData.updated = new Date().toLocaleDateString('en-GB');
-
-    try {
-        const shaR = await fetch(GH_API_BASE + 'prices.json', { headers: { Authorization: 'token ' + token } });
-        if (shaR.ok) { const d = await shaR.json(); pricesSha = d.sha; }
-        const content = btoa(unescape(encodeURIComponent(JSON.stringify(pricesData, null, 2))));
-        const r = await fetch(GH_API_BASE + 'prices.json', {
-            method: 'PUT',
-            headers: { Authorization: 'token ' + token, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: 'Update prices from admin', content, sha: pricesSha, branch: 'main' })
-        });
-        if (r.ok) {
-            changed = false;
-            document.getElementById('saveBar').classList.remove('show');
-            showToast('✅ Prices saved!');
-        } else showToast('❌ Save failed!', true);
-    } catch(e) { showToast('❌ Error: ' + e.message, true); }
-}
-
-function saveToken() {
-    const t = document.getElementById('ghTokenInput').value.trim();
-    if (!t) { showToast('❌ Token দাও!', true); return; }
-    localStorage.setItem('ss_admin_gh_token', t);
-    showToast('✅ Token saved!');
-}
-
-async function changePassword() {
-    const old = document.getElementById('oldPass').value;
-    const nw = document.getElementById('newPass').value;
-    const cf = document.getElementById('confirmPass').value;
-    if (!old || !nw) { showToast('❌ সব ফিল্ড পূরণ করো!', true); return; }
-    if (nw !== cf) { showToast('❌ পাসওয়ার্ড মিলছে না!', true); return; }
-    if (nw.length < 4) { showToast('❌ কমপক্ষে ৪ অক্ষর দাও!', true); return; }
-    const oldHash = await sha256(old);
-    if (oldHash !== getPassHash()) { showToast('❌ বর্তমান পাসওয়ার্ড ভুল!', true); return; }
-    const newHash = await sha256(nw);
-    localStorage.setItem('ss_admin_pass_hash', newHash);
-    document.getElementById('oldPass').value = '';
-    document.getElementById('newPass').value = '';
-    document.getElementById('confirmPass').value = '';
-    showToast('✅ পাসওয়ার্ড চেঞ্জ হয়েছে!');
-}
-
-function showToast(msg, isError) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.className = 'toast' + (isError ? ' error' : '');
-    t.style.display = 'block';
-    setTimeout(() => t.style.display = 'none', 3000);
-}
-
-function loadAll() {
-    const token = getToken();
-    document.getElementById('ghTokenInput').value = token;
-    Promise.all([loadPrices(), loadOrders()]);
-}
+function msg(t,e){const el=document.getElementById('toast');el.textContent=t;el.className='toast'+(e?' err':'');el.style.display='block';setTimeout(()=>el.style.display='none',3000);}
 </script>
 </body>
 </html>
