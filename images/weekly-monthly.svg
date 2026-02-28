@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 220">
+  <defs>
+    <linearGradient id="bgWM" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e"/>
+      <stop offset="100%" style="stop-color:#0f0f23"/>
+    </linearGradient>
+    <linearGradient id="purpWM" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6d28d9"/>
+      <stop offset="100%" style="stop-color:#3b0764"/>
+    </linearGradient>
+    <linearGradient id="goldWM" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f59e0b"/>
+      <stop offset="100%" style="stop-color:#b45309"/>
+    </linearGradient>
+  </defs>
+  <rect width="300" height="220" rx="16" fill="url(#bgWM)"/>
+  <circle cx="150" cy="55" r="50" fill="rgba(168,85,247,0.12)"/>
+  <!-- Double cards -->
+  <rect x="140" y="20" width="75" height="95" rx="8" fill="url(#goldWM)" stroke="#fbbf24" stroke-width="1.5" transform="rotate(-8,177,67)"/>
+  <text x="177" y="78" text-anchor="middle" fill="#fff" font-size="32" font-weight="900" font-family="Arial" transform="rotate(-8,177,78)">M</text>
+  <rect x="85" y="25" width="75" height="95" rx="8" fill="url(#purpWM)" stroke="#a855f7" stroke-width="1.5" transform="rotate(5,122,72)"/>
+  <text x="122" y="82" text-anchor="middle" fill="#fff" font-size="32" font-weight="900" font-family="Arial" transform="rotate(5,122,82)">W</text>
+  <!-- Gem -->
+  <polygon points="150,8 155,20 150,17 145,20" fill="#c084fc" opacity="0.8"/>
+  <!-- Text -->
+  <text x="150" y="155" text-anchor="middle" font-family="Arial, sans-serif" font-size="28" font-weight="900" fill="#fff">উইকলি</text>
+  <text x="150" y="193" text-anchor="middle" font-family="Arial, sans-serif" font-size="28" font-weight="900" fill="#a78bfa">মান্থলি</text>
+</svg>

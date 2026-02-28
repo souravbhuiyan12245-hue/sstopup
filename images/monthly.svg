@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 250">
+  <defs>
+    <linearGradient id="bg3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a0a3e"/>
+      <stop offset="50%" style="stop-color:#4a1d96"/>
+      <stop offset="100%" style="stop-color:#0c0420"/>
+    </linearGradient>
+    <linearGradient id="gold3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#fde68a"/>
+      <stop offset="100%" style="stop-color:#f59e0b"/>
+    </linearGradient>
+    <filter id="glow3"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="shadow3"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000" flood-opacity="0.5"/></filter>
+  </defs>
+  <rect width="400" height="250" rx="20" fill="url(#bg3)"/>
+  <circle cx="300" cy="90" r="100" fill="rgba(245,158,11,0.1)"/>
+  <!-- Double cards -->
+  <rect x="260" y="40" width="100" height="130" rx="10" fill="#b45309" stroke="#fbbf24" stroke-width="2" transform="rotate(-10,310,105)"/>
+  <text x="310" y="115" text-anchor="middle" fill="#fff" font-size="40" font-weight="900" font-family="Arial" transform="rotate(-10,310,115)">M</text>
+  <rect x="230" y="55" width="100" height="130" rx="10" fill="#6d28d9" stroke="#a855f7" stroke-width="2" transform="rotate(5,280,120)"/>
+  <text x="280" y="130" text-anchor="middle" fill="#fff" font-size="40" font-weight="900" font-family="Arial" transform="rotate(5,280,130)">W</text>
+  <!-- Crown -->
+  <polygon points="280,25 290,45 280,40 270,45" fill="url(#gold3)" filter="url(#glow3)"/>
+  <polygon points="310,20 318,38 310,34 302,38" fill="url(#gold3)" opacity="0.7" filter="url(#glow3)"/>
+  <!-- Text -->
+  <text x="25" y="85" font-family="Arial, sans-serif" font-size="28" font-weight="900" fill="#fbbf24" filter="url(#shadow3)" letter-spacing="3">MONTHLY</text>
+  <text x="25" y="145" font-family="Arial, sans-serif" font-size="52" font-weight="900" fill="#fff" filter="url(#shadow3)" font-style="italic">Offer</text>
+  <!-- Price -->
+  <rect x="25" y="170" width="110" height="35" rx="18" fill="#f59e0b"/>
+  <text x="80" y="193" text-anchor="middle" font-family="Arial" font-size="18" font-weight="800" fill="#fff">৳950</text>
+  <!-- Badge -->
+  <rect x="330" y="10" width="60" height="24" rx="12" fill="#ec4899"/>
+  <text x="360" y="27" text-anchor="middle" font-family="Arial" font-size="11" font-weight="700" fill="#fff">BEST</text>
+</svg>

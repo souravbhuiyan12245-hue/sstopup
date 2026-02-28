@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 220">
+  <defs>
+    <linearGradient id="bgL" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e"/>
+      <stop offset="100%" style="stop-color:#0f0f23"/>
+    </linearGradient>
+    <linearGradient id="gemL" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#22c55e"/>
+      <stop offset="100%" style="stop-color:#16a34a"/>
+    </linearGradient>
+    <filter id="glowL"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <rect width="300" height="220" rx="16" fill="url(#bgL)"/>
+  <circle cx="150" cy="55" r="50" fill="rgba(34,197,94,0.1)"/>
+  <!-- Arrow up -->
+  <polygon points="150,15 190,55 170,55 170,100 130,100 130,55 110,55" fill="url(#gemL)" opacity="0.9" filter="url(#glowL)"/>
+  <!-- Stars -->
+  <circle cx="100" cy="25" r="3" fill="#fbbf24" opacity="0.7"/>
+  <circle cx="200" cy="30" r="2.5" fill="#fbbf24" opacity="0.5"/>
+  <circle cx="220" cy="55" r="2" fill="#22c55e" opacity="0.6"/>
+  <circle cx="80" cy="50" r="1.5" fill="#22c55e" opacity="0.4"/>
+  <!-- Text -->
+  <text x="150" y="148" text-anchor="middle" font-family="Arial, sans-serif" font-size="30" font-weight="900" fill="#fff">লেভেল আপ</text>
+  <text x="150" y="195" text-anchor="middle" font-family="Arial, sans-serif" font-size="36" font-weight="900" fill="#22c55e">PASS</text>
+</svg>

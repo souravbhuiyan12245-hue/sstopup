@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 250">
+  <defs>
+    <linearGradient id="bg4" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0c2340"/>
+      <stop offset="50%" style="stop-color:#1a3a5f"/>
+      <stop offset="100%" style="stop-color:#061525"/>
+    </linearGradient>
+    <linearGradient id="cyan4" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#67e8f9"/>
+      <stop offset="100%" style="stop-color:#06b6d4"/>
+    </linearGradient>
+    <filter id="glow4"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="shadow4"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000" flood-opacity="0.5"/></filter>
+  </defs>
+  <rect width="400" height="250" rx="20" fill="url(#bg4)"/>
+  <circle cx="310" cy="90" r="90" fill="rgba(6,182,212,0.12)"/>
+  <!-- Big chest -->
+  <rect x="240" y="60" width="130" height="85" rx="8" fill="#1e3a5f" stroke="#0ea5e9" stroke-width="2"/>
+  <path d="M240 75 L305 48 L370 75" fill="#162d50" stroke="#0ea5e9" stroke-width="2"/>
+  <text x="305" y="118" text-anchor="middle" fill="#67e8f9" font-size="28" font-weight="900" font-family="Arial">2X</text>
+  <!-- Many diamonds -->
+  <polygon points="260,25 268,42 260,38 252,42" fill="url(#cyan4)" filter="url(#glow4)"/>
+  <polygon points="305,15 312,30 305,27 298,30" fill="url(#cyan4)" filter="url(#glow4)"/>
+  <polygon points="350,25 356,38 350,35 344,38" fill="url(#cyan4)" opacity="0.8" filter="url(#glow4)"/>
+  <polygon points="280,35 285,46 280,43 275,46" fill="url(#cyan4)" opacity="0.6"/>
+  <polygon points="335,32 340,43 335,40 330,43" fill="url(#cyan4)" opacity="0.6"/>
+  <!-- Sparkles -->
+  <circle cx="370" cy="40" r="2" fill="#fff" opacity="0.8"/>
+  <circle cx="245" cy="30" r="1.5" fill="#67e8f9" opacity="0.7"/>
+  <!-- Text -->
+  <text x="25" y="85" font-family="Arial, sans-serif" font-size="30" font-weight="900" fill="#67e8f9" filter="url(#shadow4)">Weekly</text>
+  <text x="25" y="145" font-family="Arial, sans-serif" font-size="52" font-weight="900" fill="#fff" filter="url(#shadow4)" font-style="italic">Offer</text>
+  <!-- Price -->
+  <rect x="25" y="170" width="100" height="35" rx="18" fill="#06b6d4"/>
+  <text x="75" y="193" text-anchor="middle" font-family="Arial" font-size="18" font-weight="800" fill="#fff">৳480</text>
+  <!-- Badge -->
+  <rect x="330" y="10" width="60" height="24" rx="12" fill="#22c55e"/>
+  <text x="360" y="27" text-anchor="middle" font-family="Arial" font-size="11" font-weight="700" fill="#fff">2X ⚡</text>
+</svg>

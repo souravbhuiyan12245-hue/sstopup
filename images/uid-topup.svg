@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 220">
+  <defs>
+    <linearGradient id="bgU" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e"/>
+      <stop offset="100%" style="stop-color:#0f0f23"/>
+    </linearGradient>
+    <linearGradient id="diaU" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#60a5fa"/>
+      <stop offset="100%" style="stop-color:#7c3aed"/>
+    </linearGradient>
+    <filter id="glowU"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <rect width="300" height="220" rx="16" fill="url(#bgU)"/>
+  <circle cx="150" cy="70" r="60" fill="rgba(99,102,241,0.15)"/>
+  <!-- Character silhouette -->
+  <circle cx="80" cy="55" r="20" fill="#2d2d4e" stroke="#4a4a7a" stroke-width="1"/>
+  <rect x="60" y="75" width="40" height="50" rx="8" fill="#2d2d4e" stroke="#4a4a7a" stroke-width="1"/>
+  <!-- Big diamond -->
+  <polygon points="200,20 240,60 200,110 160,60" fill="url(#diaU)" opacity="0.9" filter="url(#glowU)"/>
+  <polygon points="200,20 240,60 200,60" fill="#93c5fd" opacity="0.7"/>
+  <polygon points="200,20 160,60 200,60" fill="#818cf8" opacity="0.7"/>
+  <!-- Small diamonds -->
+  <polygon points="130,30 135,42 130,39 125,42" fill="#60a5fa" opacity="0.6"/>
+  <polygon points="250,45 254,55 250,52 246,55" fill="#a78bfa" opacity="0.5"/>
+  <!-- Bengali text -->
+  <text x="150" y="160" text-anchor="middle" font-family="Arial, sans-serif" font-size="32" font-weight="900" fill="#fff">ইউ আইডি</text>
+  <text x="150" y="200" text-anchor="middle" font-family="Arial, sans-serif" font-size="32" font-weight="900" fill="#60a5fa">টপআপ</text>
+</svg>
