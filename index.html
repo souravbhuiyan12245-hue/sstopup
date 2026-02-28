@@ -212,8 +212,8 @@
         .offer-card .icon img { width: 100%; height: 100%; object-fit: cover; border-radius: 16px; }
         .offer-card .icon svg { width: 100%; height: 100%; border-radius: 16px; }
         .product-card .card-icon svg { width: 60px; height: 60px; position: relative; z-index: 2; }
-        .offer-card .title { display: none; }
-        .offer-card .sub { display: none; }
+        .offer-card .title { font-size: 0.88rem; font-weight: 800; text-shadow: 0 2px 8px rgba(0,0,0,0.8); position: relative; z-index: 3; padding: 0 8px; }
+        .offer-card .sub { font-size: 0.75rem; opacity: 0.9; margin-top: 2px; margin-bottom: 12px; font-weight: 600; position: relative; z-index: 3; text-shadow: 0 1px 4px rgba(0,0,0,0.7); }
         .offer-card.card-red::before { background: radial-gradient(ellipse at top center, rgba(239,68,68,0.3) 0%, transparent 70%); }
         .offer-card.card-gold::before { background: radial-gradient(ellipse at top center, rgba(245,158,11,0.3) 0%, transparent 70%); }
         .offer-card.card-pink::before { background: radial-gradient(ellipse at top center, rgba(236,72,153,0.3) 0%, transparent 70%); }
@@ -682,7 +682,7 @@
 <div class="content" id="homeContent">
 
     <!-- Special Offers -->
-    <div class="section-title">🔥 স্পেশাল অফার <span class="badge">HOT</span></div>
+    <div class="section-title">🔥 SPECIAL OFFER <span class="badge">HOT</span></div>
     <div class="offers-scroll">
         <div class="offer-card" onclick="openModal('weekly_lite')">
             <span class="icon"><img src="images/weekly-lite.svg" alt="Weekly Lite"></span>
@@ -752,8 +752,8 @@
     </div>
 
     <!-- Latest Orders (Home only) -->
-    <div class="section-title">📋 সাম্প্রতিক অর্ডার</div>
-    <p style="color:var(--text-muted);font-size:0.78rem;margin-bottom:12px;">সর্বশেষ <span style="color:var(--danger);font-weight:700;">১০টি</span> অর্ডার</p>
+    <div class="section-title">📋 Latest Orders</div>
+    <p style="color:var(--text-muted);font-size:0.78rem;margin-bottom:12px;">Last <span style="color:var(--danger);font-weight:700;">10</span> orders</p>
     <div id="homeOrdersList"><div style="text-align:center;padding:20px;color:var(--text-muted);font-size:0.8rem;">⏳ লোড হচ্ছে...</div></div>
 
     <!-- Contact Section -->
@@ -780,26 +780,26 @@
 
 <!-- Orders Section -->
 <div class="status-section" id="ordersSection">
-    <div class="section-title">📋 আমার অর্ডার</div>
-    <p style="color:var(--text-muted);font-size:0.8rem;margin-bottom:14px;">তোমার সাম্প্রতিক <span style="color:var(--danger);font-weight:700;">১০টি</span> অর্ডার</p>
+    <div class="section-title">📋 My Orders</div>
+    <p style="color:var(--text-muted);font-size:0.8rem;margin-bottom:14px;">Your recent <span style="color:var(--danger);font-weight:700;">10</span> orders</p>
     <div id="ordersList"></div>
 </div>
 
 <!-- Add Money Section -->
 <div class="status-section" id="addMoneySection">
-    <div class="section-title">💰 টাকা যোগ করুন</div>
+    <div class="section-title">💰 Add Money</div>
     <div class="status-card">
         <div style="text-align:center;margin-bottom:16px;">
             <div style="font-size:2.5rem;margin-bottom:8px;">💳</div>
-            <div style="font-size:0.85rem;color:var(--text-muted);">বর্তমান ব্যালেন্স</div>
+            <div style="font-size:0.85rem;color:var(--text-muted);">Current Balance</div>
             <div style="font-size:2rem;font-weight:800;color:var(--primary);" id="balanceDisplay">৳0</div>
         </div>
         <div class="form-group">
-            <label class="form-label">পরিমাণ লিখুন</label>
-            <input class="form-input" type="number" id="addMoneyAmount" placeholder="টাকার পরিমাণ (৳)" inputmode="numeric">
+            <label class="form-label">Enter Amount</label>
+            <input class="form-input" type="number" id="addMoneyAmount" placeholder="Amount (৳)" inputmode="numeric">
         </div>
         <div class="form-group">
-            <label class="form-label">💳 পেমেন্ট মেথড</label>
+            <label class="form-label">💳 Payment Method</label>
             <div class="payment-options">
                 <div class="payment-option selected" onclick="selectAddPayment(this,'bkash')">
                     <div class="pay-icon bkash-icon">b</div>
@@ -818,7 +818,7 @@
             </div>
         </div>
         <div class="form-group">
-            <label class="form-label">📱 তোমার নম্বর</label>
+            <label class="form-label">📱 Your Number</label>
             <input class="form-input" type="tel" id="addMoneyPhone" placeholder="01XXXXXXXXX" inputmode="numeric">
         </div>
 
@@ -872,21 +872,21 @@
 <div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
     <div class="modal">
         <div class="modal-handle"></div>
-        <h3 id="modalTitle">💎 ডায়মন্ড টপআপ</h3>
-        <p class="modal-sub" id="modalSub">তোমার Free Fire UID দাও এবং প্যাকেজ সিলেক্ট করো</p>
+        <h3 id="modalTitle">💎 Diamond TopUp</h3>
+        <p class="modal-sub" id="modalSub">Enter your Free Fire UID and select a package</p>
 
         <div class="form-group">
             <label class="form-label">🎮 Player ID (UID)</label>
-            <input class="form-input" type="text" id="uidInput" placeholder="তোমার Free Fire UID দাও" inputmode="numeric">
+            <input class="form-input" type="text" id="uidInput" placeholder="Enter your Free Fire UID" inputmode="numeric">
         </div>
 
         <div class="form-group" id="diamondSelectGroup">
-            <label class="form-label">💎 ডায়মন্ড সিলেক্ট করো</label>
+            <label class="form-label">💎 Select Diamonds</label>
             <div class="diamond-grid" id="diamondGrid"></div>
         </div>
 
         <div class="form-group" id="wmSelectGroup" style="display:none;">
-            <label class="form-label">📅 প্যাকেজ সিলেক্ট করো</label>
+            <label class="form-label">📅 Select Package</label>
             <div class="diamond-grid" id="wmGrid"></div>
         </div>
 
@@ -898,7 +898,7 @@
         </div>
 
         <div class="form-group">
-            <label class="form-label">💳 পেমেন্ট মেথড</label>
+            <label class="form-label">💳 Payment Method</label>
             <div class="payment-options">
                 <div class="payment-option selected" onclick="selectPayment(this,'bkash')">
                     <div class="pay-icon bkash-icon">b</div>
@@ -938,12 +938,12 @@
         </div>
 
         <div class="form-group" style="margin-top:14px;">
-            <label class="form-label">📱 তোমার নম্বর</label>
+            <label class="form-label">📱 Your Number</label>
             <input class="form-input" type="tel" id="phoneInput" placeholder="01XXXXXXXXX" inputmode="numeric">
         </div>
 
         <button class="submit-btn" onclick="submitOrder()" style="background:linear-gradient(135deg,#E2136E,#C4105A);">
-            <i class="fas fa-check-circle"></i> VERIFY ও অর্ডার কনফার্ম করো
+            <i class="fas fa-check-circle"></i> VERIFY & Confirm Order
         </button>
     </div>
 </div>
@@ -985,14 +985,14 @@
         </div>
         <div class="status-card" style="text-align:center;margin:0;padding:14px 10px;">
             <div style="font-size:1.3rem;font-weight:800;color:#f97316;" id="statTotalOrders">০</div>
-            <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;">মোট অর্ডার</div>
+            <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;">Total Orders</div>
         </div>
     </div>
 
     <div class="status-card" style="margin-bottom:12px;">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
             <i class="fas fa-shield-alt" style="color:var(--primary);font-size:1rem;"></i>
-            <span style="font-weight:700;font-size:0.9rem;">একাউন্ট তথ্য</span>
+            <span style="font-weight:700;font-size:0.9rem;">Account Info</span>
         </div>
         <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #F3F4F6;">
             <span style="font-size:0.82rem;color:var(--text-muted);">ব্যালেন্স</span>
@@ -1000,14 +1000,14 @@
         </div>
         <div style="display:flex;align-items:center;gap:6px;padding:10px 0;" id="verifyStatus">
             <i class="fas fa-check-circle" style="color:#3b82f6;font-size:0.9rem;"></i>
-            <span style="font-size:0.82rem;color:#3b82f6;font-weight:600;">একাউন্ট সচল</span>
+            <span style="font-size:0.82rem;color:#3b82f6;font-weight:600;">Account Active</span>
         </div>
     </div>
     
     <div class="status-card" id="profileSetupCard">
         <h4 style="font-size:0.9rem;margin-bottom:14px;">📝 প্রোফাইল সেটআপ</h4>
         <div class="form-group">
-            <input class="form-input" type="text" id="loginName" placeholder="তোমার নাম">
+            <input class="form-input" type="text" id="loginName" placeholder="Your Name">
         </div>
         <div class="form-group">
             <input class="form-input" type="email" id="loginEmail" placeholder="ইমেইল / Gmail">
@@ -1016,7 +1016,7 @@
             <input class="form-input" type="tel" id="loginPhone" placeholder="ফোন নম্বর (ঐচ্ছিক)">
         </div>
         <button class="submit-btn" onclick="handleLogin()" style="margin-top:8px;">
-            <i class="fas fa-save"></i> প্রোফাইল সেভ করো
+            <i class="fas fa-save"></i> Save Profile
         </button>
     </div>
     
@@ -1024,8 +1024,8 @@
         <div style="display:flex;align-items:center;gap:12px;">
             <i class="fas fa-receipt" style="font-size:1.2rem;color:var(--primary);"></i>
             <div style="flex:1;">
-                <div style="font-weight:600;font-size:0.9rem;">আমার অর্ডার</div>
-                <div style="font-size:0.75rem;color:var(--text-muted);">অর্ডার হিস্টোরি দেখুন</div>
+                <div style="font-weight:600;font-size:0.9rem;">My Orders</div>
+                <div style="font-size:0.75rem;color:var(--text-muted);">View your order history</div>
             </div>
             <i class="fas fa-chevron-right" style="color:var(--text-muted);font-size:0.8rem;"></i>
         </div>
@@ -1035,8 +1035,8 @@
         <div style="display:flex;align-items:center;gap:12px;">
             <i class="fas fa-wallet" style="font-size:1.2rem;color:var(--gold);"></i>
             <div style="flex:1;">
-                <div style="font-weight:600;font-size:0.9rem;">টাকা যোগ করুন</div>
-                <div style="font-size:0.75rem;color:var(--text-muted);">একাউন্টে ব্যালেন্স যোগ করুন</div>
+                <div style="font-weight:600;font-size:0.9rem;">Add Money</div>
+                <div style="font-size:0.75rem;color:var(--text-muted);">Add balance to your account</div>
             </div>
             <i class="fas fa-chevron-right" style="color:var(--text-muted);font-size:0.8rem;"></i>
         </div>
@@ -1055,15 +1055,15 @@
             </a>
             <a href="https://wa.me/8801606335174" target="_blank" style="display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--text);font-size:0.85rem;padding:8px 0;border-bottom:1px solid #F3F4F6;">
                 <div style="width:36px;height:36px;background:#25D366;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.1rem;"><i class="fab fa-whatsapp"></i></div>
-                <div><div style="font-weight:600;">WhatsApp</div><div style="font-size:0.75rem;color:var(--text-muted);">আমাদের সাথে চ্যাট করুন</div></div>
+                <div><div style="font-weight:600;">WhatsApp</div><div style="font-size:0.75rem;color:var(--text-muted);">Chat with us</div></div>
             </a>
             <a href="https://www.facebook.com/" target="_blank" style="display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--text);font-size:0.85rem;padding:8px 0;border-bottom:1px solid #F3F4F6;">
                 <div style="width:36px;height:36px;background:#1877F2;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.1rem;"><i class="fab fa-facebook-f"></i></div>
-                <div><div style="font-weight:600;">Facebook</div><div style="font-size:0.75rem;color:var(--text-muted);">আমাদের পেজ ফলো করুন</div></div>
+                <div><div style="font-weight:600;">Facebook</div><div style="font-size:0.75rem;color:var(--text-muted);">Follow our page</div></div>
             </a>
             <a href="https://t.me/sstopup_siyam_bot" target="_blank" style="display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--text);font-size:0.85rem;padding:8px 0;">
                 <div style="width:36px;height:36px;background:#0088CC;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.1rem;"><i class="fab fa-telegram-plane"></i></div>
-                <div><div style="font-weight:600;">Telegram</div><div style="font-size:0.75rem;color:var(--text-muted);">মেসেজ করুন</div></div>
+                <div><div style="font-weight:600;">Telegram</div><div style="font-size:0.75rem;color:var(--text-muted);">Message us</div></div>
             </a>
         </div>
     </div>
@@ -1087,23 +1087,23 @@
 <div class="bottom-nav">
     <button class="nav-item active" id="navHome" onclick="navigateTo('home')">
         <i class="fas fa-home"></i>
-        হোম
+        Home
     </button>
     <button class="nav-item" id="navAddMoney" onclick="navigateTo('addmoney')">
         <i class="fas fa-wallet"></i>
-        টাকা যোগ
+        Add Money
     </button>
     <button class="nav-item" id="navOrders" onclick="navigateTo('orders')">
         <i class="fas fa-receipt"></i>
-        অর্ডার
+        Orders
     </button>
     <button class="nav-item" onclick="window.open('https://wa.me/8801606335174','_blank')">
         <i class="fab fa-whatsapp"></i>
-        সাহায্য
+        Help
     </button>
     <button class="nav-item" id="navAccount" onclick="navigateTo('account')">
         <i class="fas fa-user"></i>
-        একাউন্ট
+        Account
     </button>
 </div>
 
@@ -1224,7 +1224,7 @@ async function loadHomeOrders() {
 function renderHomeOrders(orders) {
     const el = document.getElementById('homeOrdersList');
     if (!orders || orders.length === 0) {
-        el.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text-muted);font-size:0.82rem;"><div style="font-size:2rem;margin-bottom:8px;">📭</div>এখনো কোনো অর্ডার নেই</div>';
+        el.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text-muted);font-size:0.82rem;"><div style="font-size:2rem;margin-bottom:8px;">📭</div>No orders yet</div>';
         return;
     }
     const last10 = orders.slice(-10).reverse();
@@ -1265,13 +1265,13 @@ function openModal(type) {
     document.getElementById('wmSelectGroup').style.display = 'none';
     
     if (type === 'diamond') {
-        document.getElementById('modalTitle').textContent = '💎 ডায়মন্ড টপআপ';
-        document.getElementById('modalSub').textContent = 'UID দাও এবং ডায়মন্ড সিলেক্ট করো';
+        document.getElementById('modalTitle').textContent = '💎 Diamond TopUp';
+        document.getElementById('modalSub').textContent = 'UID দাও এবং Select Diamonds';
         diamondGroup.style.display = 'block';
         renderDiamonds();
     } else if (type === 'weekly_monthly') {
         document.getElementById('modalTitle').textContent = '📅 উইকলি / মান্থলি';
-        document.getElementById('modalSub').textContent = 'প্যাকেজ সিলেক্ট করো এবং UID দাও';
+        document.getElementById('modalSub').textContent = 'Select package and enter UID';
         document.getElementById('wmSelectGroup').style.display = 'block';
         renderWeeklyMonthly();
     } else {
@@ -1284,7 +1284,7 @@ function openModal(type) {
             price = prices.specials[type].price;
         }
         document.getElementById('modalTitle').textContent = '📅 ' + name;
-        document.getElementById('modalSub').textContent = 'UID দাও এবং পেমেন্ট করো';
+        document.getElementById('modalSub').textContent = 'Enter UID and make payment';
         passGroup.style.display = 'block';
         document.getElementById('passName').textContent = name;
         document.getElementById('passPrice').textContent = '৳' + price;
@@ -1377,11 +1377,11 @@ async function submitOrder() {
     
     let item = '', price = 0;
     if (currentType === 'diamond') {
-        if (!selectedDiamond) { showToast('❌ ডায়মন্ড সিলেক্ট করো!'); return; }
+        if (!selectedDiamond) { showToast('❌ Select Diamonds!'); return; }
         item = selectedDiamond + ' Diamond';
         price = prices.diamonds[selectedDiamond].price;
     } else if (currentType === 'weekly_monthly') {
-        if (!selectedWM) { showToast('❌ প্যাকেজ সিলেক্ট করো!'); return; }
+        if (!selectedWM) { showToast('❌ Select Package!'); return; }
         item = prices.passes[selectedWM].name;
         price = prices.passes[selectedWM].price;
     } else if (prices.passes[currentType]) {
@@ -1406,7 +1406,7 @@ async function submitOrder() {
     orders.push({ uid, item, price, payment: selectedPayment, phone, trxId: trx, date: new Date().toLocaleString(), status: 'Pending' });
     localStorage.setItem('ss_orders', JSON.stringify(orders));
     
-    showToast('✅ অর্ডার সফলভাবে দেওয়া হয়েছে!');
+    showToast('✅ Orders সফলভাবে দেওয়া হয়েছে!');
     
     setTimeout(() => {
         closeModal();
@@ -1425,7 +1425,7 @@ function renderOrders() {
     const userOrders = getOrders();
     const el = document.getElementById('ordersList');
     if (userOrders.length === 0) {
-        el.innerHTML = '<div style="text-align:center;padding:40px 20px;color:var(--text-muted);"><i class="fas fa-inbox" style="font-size:2.5rem;margin-bottom:12px;display:block;opacity:0.3;"></i><p>এখনো কোনো অর্ডার নেই</p></div>';
+        el.innerHTML = '<div style="text-align:center;padding:40px 20px;color:var(--text-muted);"><i class="fas fa-inbox" style="font-size:2.5rem;margin-bottom:12px;display:block;opacity:0.3;"></i><p>No orders yet</p></div>';
         return;
     }
     el.innerHTML = userOrders.slice(-10).reverse().map(o => renderOrderCard(o)).join('');
