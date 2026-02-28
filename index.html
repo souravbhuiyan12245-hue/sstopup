@@ -1184,6 +1184,7 @@ function goBack() {
 function showPage(page) {
     // Hide all
     document.getElementById('homeContent').style.display = 'none';
+    document.getElementById('siteFooter').style.display = 'none';
     document.getElementById('ordersSection').classList.remove('show');
     document.getElementById('addMoneySection').classList.remove('show');
     document.getElementById('accountSection').classList.remove('show');
@@ -1195,6 +1196,7 @@ function showPage(page) {
 
     if (page === 'home') {
         document.getElementById('homeContent').style.display = 'block';
+        document.getElementById('siteFooter').style.display = 'block';
         document.getElementById('navHome').classList.add('active');
     } else if (page === 'orders') {
         document.getElementById('ordersSection').classList.add('show');
