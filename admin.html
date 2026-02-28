@@ -151,6 +151,19 @@
     <!-- Prices -->
     <div class="panel" id="p-prices">
         <div class="card">
+            <h3>💰 Add Money Feature</h3>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+                <div>
+                    <div style="font-size:0.88rem;font-weight:600;">Add Money</div>
+                    <div style="font-size:0.72rem;color:var(--muted);">ON করলে কাস্টমার Add Money দেখবে</div>
+                </div>
+                <div style="display:flex;gap:6px;">
+                    <button class="btn btn-sm" id="amOn" onclick="toggleAM(true)" style="background:#dcfce7;color:#166534;">ON</button>
+                    <button class="btn btn-sm" id="amOff" onclick="toggleAM(false)" style="background:var(--danger);color:#fff;">OFF</button>
+                </div>
+            </div>
+        </div>
+        <div class="card">
             <h3>📢 Announcement</h3>
             <textarea id="ann" placeholder="Notice text (empty = hidden)" oninput="dirty()"></textarea>
         </div>
@@ -252,6 +265,7 @@ async function loadO(){
 function renderP(){
     if(!P)return;
     document.getElementById('ann').value=P.announcement||'';
+    updateAMButtons(P.addMoneyEnabled===true);
     const dE=document.getElementById('dPrices');dE.innerHTML='';
     Object.keys(P.diamonds).sort((a,b)=>+a-+b).forEach(k=>{const d=P.diamonds[k];
         dE.innerHTML+=`<div class="pr"><div class="name">💎 ${k}<small>was ৳${d.original}</small></div><span class="tk">৳</span><input type="number" value="${d.price}" data-t="diamonds" data-k="${k}" oninput="dirty()"></div>`;
@@ -333,6 +347,12 @@ async function changePw(){
     msg('✅ Password changed!');
 }
 
+function toggleAM(on){P.addMoneyEnabled=on;dirty();updateAMButtons(on);}
+function updateAMButtons(on){
+    const onBtn=document.getElementById('amOn'),offBtn=document.getElementById('amOff');
+    if(on){onBtn.style.background='var(--success)';onBtn.style.color='#fff';offBtn.style.background='#fee2e2';offBtn.style.color='#991b1b';}
+    else{offBtn.style.background='var(--danger)';offBtn.style.color='#fff';onBtn.style.background='#dcfce7';onBtn.style.color='#166534';}
+}
 function msg(t,e){const el=document.getElementById('toast');el.textContent=t;el.className='toast'+(e?' err':'');el.style.display='block';setTimeout(()=>el.style.display='none',3000);}
 </script>
 </body>
