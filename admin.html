@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SS TOP-UP — Admin</title>
+    <link rel="manifest" href="admin-manifest.json">
+    <meta name="theme-color" content="#6C3CE1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="SS Admin">
+    <link rel="apple-touch-icon" href="images/admin-icon.svg">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -215,6 +221,9 @@
 <div class="toast" id="toast"></div>
 
 <script>
+// Register Service Worker for PWA
+if('serviceWorker' in navigator){navigator.serviceWorker.register('admin-sw.js').catch(()=>{});}
+
 const REPO='souravbhuiyan12245-hue/sstopup';
 const GH=`https://api.github.com/repos/${REPO}/contents/`;
 const RAW=`https://raw.githubusercontent.com/${REPO}/main/`;

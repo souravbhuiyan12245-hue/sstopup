@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="100" fill="#6C3CE1"/>
+  <circle cx="256" cy="200" r="100" fill="rgba(255,255,255,0.15)"/>
+  <polygon points="256,80 320,170 256,270 192,170" fill="#38BDF8" opacity="0.9"/>
+  <polygon points="256,80 320,170 256,170" fill="rgba(255,255,255,0.3)"/>
+  <polygon points="256,80 192,170 256,170" fill="rgba(255,255,255,0.15)"/>
+  <polygon points="270,110 245,175 265,175 240,250 295,165 275,165 300,110" fill="#FBBF24" opacity="0.9"/>
+  <text x="256" y="390" text-anchor="middle" font-family="Arial" font-size="80" font-weight="900" fill="#F97316">SS</text>
+  <text x="256" y="445" text-anchor="middle" font-family="Arial" font-size="35" font-weight="700" fill="rgba(255,255,255,0.85)" letter-spacing="5">ADMIN</text>
+</svg>
