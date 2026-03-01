@@ -1,27 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<svg viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#6C3CE1"/>
-      <stop offset="100%" style="stop-color:#3B0764"/>
-    </linearGradient>
-    <linearGradient id="diamond" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#67E8F9"/>
-      <stop offset="100%" style="stop-color:#8B5CF6"/>
-    </linearGradient>
-    <filter id="glow">
-      <feGaussianBlur stdDeviation="8" result="blur"/>
-      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    <filter id="softShadow">
+      <feDropShadow dx="0" dy="8" stdDeviation="20" flood-color="#000" flood-opacity="0.4"/>
+    </filter>
+    <filter id="textShadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.2"/>
     </filter>
   </defs>
-  <rect width="512" height="512" rx="100" fill="url(#bg)"/>
-  <circle cx="256" cy="200" r="120" fill="rgba(139,92,246,0.3)" filter="url(#glow)"/>
-  <polygon points="256,60 340,170 256,310 172,170" fill="url(#diamond)" opacity="0.95"/>
-  <polygon points="256,60 340,170 256,170" fill="#93C5FD" opacity="0.8"/>
-  <polygon points="256,60 172,170 256,170" fill="#818CF8" opacity="0.8"/>
-  <polygon points="172,170 256,310 256,170" fill="#6366F1" opacity="0.9"/>
-  <polygon points="340,170 256,310 256,170" fill="#4F46E5" opacity="0.9"/>
-  <polygon points="130,120 145,150 130,145 115,150" fill="url(#diamond)" opacity="0.6"/>
-  <polygon points="382,120 397,150 382,145 367,150" fill="url(#diamond)" opacity="0.6"/>
-  <text x="256" y="410" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="90" font-weight="900" fill="#FFFFFF" letter-spacing="-2">SS</text>
-  <text x="256" y="465" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="38" font-weight="700" fill="rgba(255,255,255,0.8)" letter-spacing="6">TOP-UP</text>
+  <rect width="800" height="800" fill="#0d1117"/>
+  <circle cx="400" cy="340" r="240" fill="#000000" filter="url(#softShadow)"/>
+  <circle cx="400" cy="340" r="240" fill="none" stroke="#222" stroke-width="2"/>
+  <path d="M430 160 L350 340 L400 340 L370 520 L460 300 L408 300 Z" fill="#ffffff" opacity="0.95"/>
+  <text x="400" y="660" text-anchor="middle" font-family="'Inter','Segoe UI',sans-serif" font-size="90" font-weight="900" letter-spacing="6" fill="#ffffff" filter="url(#textShadow)">SS</text>
+  <text x="400" y="730" text-anchor="middle" font-family="'Inter','Segoe UI',sans-serif" font-size="42" font-weight="700" letter-spacing="12" fill="#8b949e">TOP-UP</text>
 </svg>
