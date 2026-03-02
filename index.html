@@ -1157,7 +1157,15 @@
 <div class="toast" id="toast"></div>
 
 <script>
-if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{});}
+if('serviceWorker' in navigator){
+  // Clear old caches and re-register
+  caches.keys().then(keys => keys.forEach(k => caches.delete(k)));
+  navigator.serviceWorker.getRegistrations().then(regs => {
+    regs.forEach(r => r.unregister());
+  }).then(() => {
+    navigator.serviceWorker.register('sw.js?v=3').catch(()=>{});
+  });
+}
 const REPO = 'souravbhuiyan12245-hue/sstopup';
 const API_READ = `https://raw.githubusercontent.com/${REPO}/main/data/prices.json`;
 const ORDERS_READ = `https://raw.githubusercontent.com/${REPO}/main/data/orders.json`;
