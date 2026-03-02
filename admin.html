@@ -387,7 +387,22 @@ async function savePrices(){
     }catch(e){msg('❌ '+e.message,1);}
 }
 
-function saveTok(){const v=document.getElementById('ghTok').value.trim();if(!v){msg('Enter token!',1);return;}localStorage.setItem('ss_gh',v);msg('✅ Token saved!');}
+function saveTok(){
+    const v=document.getElementById('ghTok').value.trim();
+    if(!v){msg('Enter token!',1);return;}
+    localStorage.setItem('ss_gh',v);
+    // Also save in siteSettings for order submission
+    if(P){
+        if(!P.siteSettings) P.siteSettings={};
+        P.siteSettings.ghToken=v;
+        saveSettingsToGH().then(ok=>{
+            if(ok) msg('✅ Token saved!');
+            else msg('✅ Token saved locally!');
+        });
+    } else {
+        msg('✅ Token saved!');
+    }
+}
 
 async function changePw(){
     const c=document.getElementById('curPw').value,n=document.getElementById('newPw').value,co=document.getElementById('conPw').value;

@@ -1524,21 +1524,72 @@ async function submitOrder() {
         price = prices.specials[currentType].price;
     }
     
-    const msg = `🛒 *SS TOP-UP New Order!*\n\n🎮 UID: \`${uid}\`\n📦 Item: ${item}\n💰 Price: ৳${price}\n💳 Payment: ${selectedPayment}\n📱 Number: ${phone}\n🧾 TrxID: ${trx}\n📅 Time: ${new Date().toLocaleString()}`;
+    const order = { 
+        name: localStorage.getItem('ss_user') || 'Unknown',
+        uid, item, price, payment: selectedPayment, 
+        phone, trxId: trx, 
+        date: new Date().toLocaleString(), 
+        status: 'Pending' 
+    };
     
-    try {
-        await fetch(getTgApi(), {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ chat_id: getTgChat(), text: msg, parse_mode: 'Markdown' })
-        });
-    } catch(e) { console.log('TG send failed', e); }
+    // Save to GitHub
+    const ghToken = prices.siteSettings?.ghToken || '';
+    let savedToGH = false;
+    if (ghToken) {
+        try {
+            const ghr = await fetch(GH_API + 'data/orders.json', { headers: { Authorization: 'token ' + ghToken } });
+            let ghOrders = [], sha = '';
+            if (ghr.ok) {
+                const ghData = await ghr.json();
+                sha = ghData.sha;
+                ghOrders = JSON.parse(decodeURIComponent(escape(atob(ghData.content))));
+            }
+            ghOrders.push(order);
+            const orderIndex = ghOrders.length - 1;
+            const saveR = await fetch(GH_API + 'data/orders.json', {
+                method: 'PUT',
+                headers: { Authorization: 'token ' + ghToken, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: 'new order', content: btoa(unescape(encodeURIComponent(JSON.stringify(ghOrders, null, 2)))), sha })
+            });
+            savedToGH = saveR.ok;
+            
+            // Send Telegram with Approve/Reject buttons
+            const tgBot = (prices.siteSettings?.tgBot) || (window.SS_TG_BOT || TG_BOT);
+            const tgChat = (prices.siteSettings?.tgChat) || (window.SS_TG_CHAT || TG_CHAT);
+            const tgUrl = 'https://api.telegram.org/bot' + tgBot + '/sendMessage';
+            const msg = '🛒 *নতুন অর্ডার\!* \#' + orderIndex + '\n\n' +
+                '👤 Name: `' + (order.name||'').replace(/([_*\[\]()~`>#+\-=|{}.!])/g,'\\$1') + '`\n' +
+                '🎮 UID: `' + uid.replace(/([_*\[\]()~`>#+\-=|{}.!])/g,'\\$1') + '`\n' +
+                '📦 Item: ' + item.replace(/([_*\[\]()~`>#+\-=|{}.!])/g,'\\$1') + '\n' +
+                '💰 Price: ৳' + price + '\n' +
+                '💳 Payment: ' + selectedPayment.replace(/([_*\[\]()~`>#+\-=|{}.!])/g,'\\$1') + '\n' +
+                '📱 Phone: `' + phone.replace(/([_*\[\]()~`>#+\-=|{}.!])/g,'\\$1') + '`\n' +
+                '🧾 TrxID: `' + trx.replace(/([_*\[\]()~`>#+\-=|{}.!])/g,'\\$1') + '`\n' +
+                '📅 ' + order.date.replace(/([_*\[\]()~`>#+\-=|{}.!])/g,'\\$1');
+            await fetch(tgUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: tgChat, text: msg, parse_mode: 'MarkdownV2' })
+            });
+        } catch(e) { console.log('GH/TG error', e); }
+    } else {
+        // Fallback: just send TG notification
+        const msg = `🛒 *SS TOP-UP New Order!*\n\n🎮 UID: \`${uid}\`\n📦 Item: ${item}\n💰 Price: ৳${price}\n💳 Payment: ${selectedPayment}\n📱 Number: ${phone}\n🧾 TrxID: ${trx}\n📅 Time: ${order.date}`;
+        try {
+            await fetch(getTgApi(), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: getTgChat(), text: msg, parse_mode: 'Markdown' })
+            });
+        } catch(e) { console.log('TG send failed', e); }
+    }
     
-    const orders = getOrders();
-    orders.push({ uid, item, price, payment: selectedPayment, phone, trxId: trx, date: new Date().toLocaleString(), status: 'Pending' });
-    localStorage.setItem('ss_orders', JSON.stringify(orders));
+    // Save to localStorage too
+    const localOrders = getOrders();
+    localOrders.push(order);
+    localStorage.setItem('ss_orders', JSON.stringify(localOrders));
     
-    showToast('✅ Orders সফলভাবে দেওয়া হয়েছে!');
+    showToast(savedToGH ? '✅ অর্ডার সফলভাবে দেওয়া হয়েছে!' : '✅ Orders সফলভাবে দেওয়া হয়েছে!');
     
     setTimeout(() => {
         closeModal();
