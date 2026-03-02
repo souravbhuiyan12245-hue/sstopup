@@ -177,6 +177,12 @@
             <h3>💎 Diamonds</h3>
             <div id="dPrices"></div>
         </div>
+            <div style="display:flex;gap:8px;margin-top:14px;align-items:center;flex-wrap:wrap;">
+                <input type="number" id="newDiaAmt" placeholder="Diamond" style="width:100px;margin-bottom:0;">
+                <input type="number" id="newDiaPrice" placeholder="Price ৳" style="width:90px;margin-bottom:0;">
+                <input type="number" id="newDiaOrig" placeholder="Original ৳" style="width:90px;margin-bottom:0;">
+                <button class="btn btn-sm btn-success" onclick="addDiamond()"><i class="fas fa-plus"></i> Add</button>
+            </div>
         <div class="card">
             <h3>🔥 Special Offer (Home Page)</h3>
             <p style="font-size:0.75rem;color:var(--muted);margin-bottom:12px;">এই দামগুলো Home পেজের SPECIAL OFFER কার্ডে দেখায়</p>
@@ -277,7 +283,7 @@ function renderP(){
     updateAMButtons(P.addMoneyEnabled===true);
     const dE=document.getElementById('dPrices');dE.innerHTML='';
     Object.keys(P.diamonds).sort((a,b)=>+a-+b).forEach(k=>{const d=P.diamonds[k];
-        dE.innerHTML+=`<div class="pr"><div class="name">💎 ${k}<small>was ৳${d.original}</small></div><span class="tk">৳</span><input type="number" value="${d.price}" data-t="diamonds" data-k="${k}" oninput="dirty()"></div>`;
+        dE.innerHTML+=`<div class="pr"><div class="name">💎 ${k}<small>was ৳${d.original}</small></div><span class="tk">৳</span><input type="number" value="${d.price}" data-t="diamonds" data-k="${k}" oninput="dirty()"><button class="btn btn-sm btn-danger" style="margin-left:4px;" onclick="delDiamond(\x27${k}\x27)"><i class="fas fa-trash"></i></button></div>`;
     });
     const oE=document.getElementById('offerPrices');oE.innerHTML='';
     ['monthly','weekly_1x'].forEach(k=>{if(P.passes[k]){const p=P.passes[k];
@@ -363,6 +369,22 @@ function updateAMButtons(on){
     else{offBtn.style.background='var(--danger)';offBtn.style.color='#fff';onBtn.style.background='#dcfce7';onBtn.style.color='#166534';}
 }
 function msg(t,e){const el=document.getElementById('toast');el.textContent=t;el.className='toast'+(e?' err':'');el.style.display='block';setTimeout(()=>el.style.display='none',3000);}
+function addDiamond(){
+    const amt=document.getElementById("newDiaAmt").value.trim();
+    const price=document.getElementById("newDiaPrice").value.trim();
+    const orig=document.getElementById("newDiaOrig").value.trim();
+    if(!amt||!price){msg("Diamond amount \u0026 price দাও!",1);return;}
+    if(P.diamonds[amt]){msg("এই diamond আগে থেকে আছে!",1);return;}
+    P.diamonds[amt]={price:+price,original:+(orig||price)};
+    dirty();renderP();msg("✅ "+amt+" diamonds added!");
+    document.getElementById("newDiaAmt").value="";
+    document.getElementById("newDiaPrice").value="";
+    document.getElementById("newDiaOrig").value="";
+}
+function delDiamond(k){
+    if(!confirm("Delete "+k+" diamonds?")){return;}
+    delete P.diamonds[k];dirty();renderP();msg("🗑 "+k+" diamonds deleted!");
+}
 </script>
 </body>
 </html>
