@@ -1170,9 +1170,10 @@ const REPO = 'souravbhuiyan12245-hue/sstopup';
 const API_READ = `https://raw.githubusercontent.com/${REPO}/main/data/prices.json`;
 const ORDERS_READ = `https://raw.githubusercontent.com/${REPO}/main/data/orders.json`;
 const GH_API = `https://api.github.com/repos/${REPO}/contents/`;
-const TG_BOT = '8292016936:AAEdAhD2Lyfy03c8P-SjbZGVG_d5b6yHzsE';
-const TG_CHAT = '8687506733';
-const TG_API = `https://api.telegram.org/bot${TG_BOT}/sendMessage`;
+let TG_BOT = '8292016936:AAEdAhD2Lyfy03c8P-SjbZGVG_d5b6yHzsE';
+let TG_CHAT = '8687506733';
+function getTgApi(){ return `https://api.telegram.org/bot${window.SS_TG_BOT||TG_BOT}/sendMessage`; }
+function getTgChat(){ return window.SS_TG_CHAT||TG_CHAT; }
 
 const DEFAULT_PRICES = {"diamonds":{"25":{"price":35,"original":40},"50":{"price":65,"original":75},"100":{"price":120,"original":140},"310":{"price":350,"original":400},"520":{"price":580,"original":650},"1060":{"price":1100,"original":1250},"2180":{"price":2200,"original":2500},"5600":{"price":5500,"original":6200},"10120":{"price":10000,"original":11500}},"passes":{"weekly_lite":{"price":120,"original":140,"name":"Weekly Lite"},"weekly_1x":{"price":250,"original":290,"name":"1X Weekly"},"weekly_2x":{"price":480,"original":550,"name":"2X Weekly"},"monthly":{"price":950,"original":1100,"name":"Monthly"}},"specials":{"evo_access":{"price":850,"original":1000,"name":"EVO Access"},"level_up":{"price":450,"original":550,"name":"Level Up Pass"}},"announcement":"","updated":"2026-02-24"};
 
@@ -1242,11 +1243,78 @@ function showPage(page) {
 }
 
 // Load prices
+
+function applySiteSettings() {
+    if (!prices || !prices.siteSettings) return;
+    const s = prices.siteSettings;
+    
+    // Update bKash numbers
+    if (s.bkash) {
+        document.querySelectorAll('.pay-num').forEach(el => {
+            if (el.textContent.trim() === '01606335174' || el.closest('[onclick*="bkash"]') || el.parentElement.querySelector('.pay-name')?.textContent === 'bKash') {
+                el.textContent = s.bkash;
+            }
+        });
+        const payNum = document.getElementById('payNumber');
+        if (payNum) payNum.textContent = s.bkash;
+        const addPayNum = document.getElementById('addPayNumber');
+        if (addPayNum) addPayNum.textContent = s.bkash;
+        // Update tel links
+        document.querySelectorAll('a[href*="01606335174"]').forEach(a => {
+            a.href = a.href.replace(/01606335174/g, s.bkash);
+        });
+        document.querySelectorAll('a[href*="8801606335174"]').forEach(a => {
+            a.href = a.href.replace(/8801606335174/g, '88' + s.bkash);
+        });
+        // Update display text
+        document.querySelectorAll('div').forEach(el => {
+            if (el.children.length === 0 && el.textContent.trim() === '01606335174') {
+                el.textContent = s.bkash;
+            }
+        });
+    }
+    
+    // Update Nagad numbers
+    if (s.nagad) {
+        document.querySelectorAll('.pay-num').forEach(el => {
+            if (el.textContent.trim() === '01854707074' || el.parentElement.querySelector('.pay-name')?.textContent === 'Nagad') {
+                el.textContent = s.nagad;
+            }
+        });
+        document.querySelectorAll('a[href*="01854707074"]').forEach(a => {
+            a.href = a.href.replace(/01854707074/g, s.nagad);
+        });
+        document.querySelectorAll('div').forEach(el => {
+            if (el.children.length === 0 && el.textContent.trim() === '01854707074') {
+                el.textContent = s.nagad;
+            }
+        });
+    }
+    
+    // Update WhatsApp
+    if (s.whatsapp) {
+        document.querySelectorAll('a[href*="wa.me"]').forEach(a => {
+            a.href = 'https://wa.me/' + s.whatsapp;
+        });
+    }
+    
+    // Update Facebook
+    if (s.facebook) {
+        document.querySelectorAll('a[href*="facebook.com"]').forEach(a => {
+            a.href = s.facebook;
+        });
+    }
+    
+    // Update Telegram bot/chat for notifications
+    if (s.tgBot) window.SS_TG_BOT = s.tgBot;
+    if (s.tgChat) window.SS_TG_CHAT = s.tgChat;
+}
+
 async function loadPrices() {
     updateUI();
     try {
         const r = await fetch(API_READ + '?t=' + Date.now(), { cache: 'no-store' });
-        if (r.ok) { prices = await r.json(); updateUI(); }
+        if (r.ok) { prices = await r.json(); updateUI(); applySiteSettings(); }
     } catch(e) { console.log('Using default prices'); }
 }
 
@@ -1459,10 +1527,10 @@ async function submitOrder() {
     const msg = `🛒 *SS TOP-UP New Order!*\n\n🎮 UID: \`${uid}\`\n📦 Item: ${item}\n💰 Price: ৳${price}\n💳 Payment: ${selectedPayment}\n📱 Number: ${phone}\n🧾 TrxID: ${trx}\n📅 Time: ${new Date().toLocaleString()}`;
     
     try {
-        await fetch(TG_API, {
+        await fetch(getTgApi(), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ chat_id: TG_CHAT, text: msg, parse_mode: 'Markdown' })
+            body: JSON.stringify({ chat_id: getTgChat(), text: msg, parse_mode: 'Markdown' })
         });
     } catch(e) { console.log('TG send failed', e); }
     
@@ -1547,10 +1615,10 @@ async function submitAddMoney() {
     const msg = `💰 *SS TOP-UP Add Money Request*\n\n💵 Amount: ৳${amount}\n💳 Payment: ${addPaymentMethod}\n📱 Number: ${phone}\n🧾 TrxID: ${trx}\n📅 Time: ${new Date().toLocaleString()}`;
     
     try {
-        await fetch(TG_API, {
+        await fetch(getTgApi(), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ chat_id: TG_CHAT, text: msg, parse_mode: 'Markdown' })
+            body: JSON.stringify({ chat_id: getTgChat(), text: msg, parse_mode: 'Markdown' })
         });
         showToast('✅ রিকোয়েস্ট পাঠানো হয়েছে!');
         document.getElementById('addMoneyAmount').value = '';
@@ -1589,10 +1657,10 @@ function handleLogin() {
     updateAccountStats();
     showToast('✅ প্রোফাইল সেভ হয়েছে!');
     
-    fetch(TG_API, {
+    fetch(getTgApi(), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ chat_id: TG_CHAT, text: `👤 *New User Registered!*\n\n📛 Name: ${name}\n📧 Email: ${email}\n📱 Phone: ${phone || 'N/A'}\n📅 Time: ${user.loginDate}`, parse_mode: 'Markdown' })
+        body: JSON.stringify({ chat_id: getTgChat(), text: `👤 *New User Registered!*\n\n📛 Name: ${name}\n📧 Email: ${email}\n📱 Phone: ${phone || 'N/A'}\n📅 Time: ${user.loginDate}`, parse_mode: 'Markdown' })
     }).catch(e => {});
 }
 

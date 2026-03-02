@@ -201,6 +201,43 @@
     <!-- Settings -->
     <div class="panel" id="p-settings">
         <div class="card">
+            <h3><i class="fas fa-mobile-alt"></i> Payment Numbers</h3>
+            <p style="font-size:0.78rem;color:var(--muted);margin-bottom:12px;">bKash, Nagad নম্বর পরিবর্তন করো</p>
+            <div style="margin-bottom:10px;">
+                <label style="font-size:0.8rem;font-weight:600;margin-bottom:4px;display:block;">bKash Number</label>
+                <input type="text" id="setBkash" placeholder="01XXXXXXXXX">
+            </div>
+            <div style="margin-bottom:10px;">
+                <label style="font-size:0.8rem;font-weight:600;margin-bottom:4px;display:block;">Nagad Number</label>
+                <input type="text" id="setNagad" placeholder="01XXXXXXXXX">
+            </div>
+            <button class="btn btn-primary" onclick="savePaymentNumbers()"><i class="fas fa-save"></i> Save Numbers</button>
+        </div>
+        <div class="card">
+            <h3><i class="fas fa-share-alt"></i> Social Links</h3>
+            <div style="margin-bottom:10px;">
+                <label style="font-size:0.8rem;font-weight:600;margin-bottom:4px;display:block;">WhatsApp Number</label>
+                <input type="text" id="setWhatsapp" placeholder="8801XXXXXXXXX">
+            </div>
+            <div style="margin-bottom:10px;">
+                <label style="font-size:0.8rem;font-weight:600;margin-bottom:4px;display:block;">Facebook Link</label>
+                <input type="text" id="setFacebook" placeholder="https://facebook.com/...">
+            </div>
+            <button class="btn btn-primary" onclick="saveSocialLinks()"><i class="fas fa-save"></i> Save Links</button>
+        </div>
+        <div class="card">
+            <h3><i class="fab fa-telegram"></i> Telegram Notification</h3>
+            <div style="margin-bottom:10px;">
+                <label style="font-size:0.8rem;font-weight:600;margin-bottom:4px;display:block;">Bot Token</label>
+                <input type="password" id="setTgBot" placeholder="123456:ABC-DEF...">
+            </div>
+            <div style="margin-bottom:10px;">
+                <label style="font-size:0.8rem;font-weight:600;margin-bottom:4px;display:block;">Chat ID</label>
+                <input type="text" id="setTgChat" placeholder="123456789">
+            </div>
+            <button class="btn btn-primary" onclick="saveTelegram()"><i class="fas fa-save"></i> Save Telegram</button>
+        </div>
+        <div class="card">
             <h3><i class="fas fa-key"></i> GitHub Token</h3>
             <p style="font-size:0.78rem;color:var(--muted);margin-bottom:12px;">Prices & orders save করতে লাগবে</p>
             <input type="password" id="ghTok" placeholder="ghp_xxxxxxxxxxxx">
@@ -264,6 +301,7 @@ function go(name,el){
 async function init(){
     document.getElementById('ghTok').value=tok();
     await Promise.all([loadP(),loadO()]);
+    loadSettings();
 }
 
 async function loadP(){
@@ -384,6 +422,57 @@ function addDiamond(){
 function delDiamond(k){
     if(!confirm("Delete "+k+" diamonds?")){return;}
     delete P.diamonds[k];dirty();renderP();msg("🗑 "+k+" diamonds deleted!");
+}
+
+// Load site settings into fields
+function loadSettings(){
+    if(!P) return;
+    const s = P.siteSettings || {};
+    document.getElementById('setBkash').value = s.bkash || '01606335174';
+    document.getElementById('setNagad').value = s.nagad || '01854707074';
+    document.getElementById('setWhatsapp').value = s.whatsapp || '8801606335174';
+    document.getElementById('setFacebook').value = s.facebook || 'https://www.facebook.com/';
+    document.getElementById('setTgBot').value = s.tgBot || '';
+    document.getElementById('setTgChat').value = s.tgChat || '';
+}
+
+async function saveSettingsToGH(){
+    const t=tok();if(!t){msg('Set GitHub Token first!',1);return false;}
+    try{
+        const sr=await fetch(GH+'data/prices.json',{headers:{Authorization:'token '+t}});
+        if(sr.ok)pSha=(await sr.json()).sha;
+        const r=await fetch(GH+'data/prices.json',{method:'PUT',headers:{Authorization:'token '+t,'Content-Type':'application/json'},
+            body:JSON.stringify({message:'settings update',content:btoa(unescape(encodeURIComponent(JSON.stringify(P,null,2)))),sha:pSha})});
+        if(r.ok){pSha=(await r.json()).content.sha;return true;}
+        return false;
+    }catch(e){return false;}
+}
+
+async function savePaymentNumbers(){
+    if(!P) return;
+    if(!P.siteSettings) P.siteSettings={};
+    P.siteSettings.bkash = document.getElementById('setBkash').value.trim();
+    P.siteSettings.nagad = document.getElementById('setNagad').value.trim();
+    if(await saveSettingsToGH()) msg('✅ Payment numbers saved!');
+    else msg('❌ Failed!',1);
+}
+
+async function saveSocialLinks(){
+    if(!P) return;
+    if(!P.siteSettings) P.siteSettings={};
+    P.siteSettings.whatsapp = document.getElementById('setWhatsapp').value.trim();
+    P.siteSettings.facebook = document.getElementById('setFacebook').value.trim();
+    if(await saveSettingsToGH()) msg('✅ Social links saved!');
+    else msg('❌ Failed!',1);
+}
+
+async function saveTelegram(){
+    if(!P) return;
+    if(!P.siteSettings) P.siteSettings={};
+    P.siteSettings.tgBot = document.getElementById('setTgBot').value.trim();
+    P.siteSettings.tgChat = document.getElementById('setTgChat').value.trim();
+    if(await saveSettingsToGH()) msg('✅ Telegram settings saved!');
+    else msg('❌ Failed!',1);
 }
 </script>
 </body>
