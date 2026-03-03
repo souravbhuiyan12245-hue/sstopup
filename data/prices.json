@@ -1,7 +1,7 @@
 {
   "diamonds": {
     "25": {
-      "price": 25,
+      "price": 30,
       "original": 40
     },
     "50": {
@@ -72,14 +72,6 @@
     }
   },
   "announcement": "আপোনাদের একটু সাপোর্ট চাই বাস, আর কিচ্ছু না.\n4 থেকে 5 মিনিটের মধ্যে আমরা ডায়মন্ড পাঠিয়ে দেই",
-  "updated": "2026-03-02",
-  "addMoneyEnabled": false,
-  "siteSettings": {
-    "bkash": "01606335174",
-    "nagad": "01854707074",
-    "whatsapp": "8801606335174",
-    "facebook": "https://www.facebook.com/",
-    "tgBot": "",
-    "tgChat": ""
-  }
+  "updated": "2026-03-03",
+  "addMoneyEnabled": false
 }
