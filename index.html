@@ -1312,11 +1312,12 @@ function applySiteSettings() {
 }
 
 async function loadPrices() {
-    updateUI();
     try {
         const r = await fetch(API_READ + '?t=' + Date.now(), { cache: 'no-store' });
-        if (r.ok) { prices = await r.json(); updateUI(); applySiteSettings(); }
+        if (r.ok) { prices = await r.json(); }
     } catch(e) { console.log('Using default prices'); }
+    updateUI();
+    applySiteSettings();
 }
 
 function updateUI() {
