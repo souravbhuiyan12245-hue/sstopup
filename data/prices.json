@@ -17,8 +17,12 @@
       "original": 160
     },
     "355": {
-      "price": 475,
+      "price": 235,
       "original": 485
+    },
+    "480": {
+      "price": 315,
+      "original": 325
     }
   },
   "passes": {
