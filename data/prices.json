@@ -1,35 +1,35 @@
 {
   "diamonds": {
     "25": {
-      "price": 24,
+      "price": 38,
       "original": 26
     },
     "50": {
-      "price": 35,
+      "price": 55,
       "original": 40
     },
     "115": {
-      "price": 75,
+      "price": 95,
       "original": 80
     },
     "240": {
-      "price": 155,
+      "price": 300,
       "original": 160
     },
     "355": {
-      "price": 235,
+      "price": 390,
       "original": 485
     },
     "480": {
-      "price": 315,
+      "price": 510,
       "original": 325
     },
     "610": {
-      "price": 400,
+      "price": 640,
       "original": 410
     },
     "850": {
-      "price": 555,
+      "price": 875,
       "original": 565
     },
     "1240": {
