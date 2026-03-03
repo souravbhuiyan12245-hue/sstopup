@@ -23,38 +23,62 @@
     "480": {
       "price": 315,
       "original": 325
+    },
+    "610": {
+      "price": 400,
+      "original": 410
+    },
+    "850": {
+      "price": 555,
+      "original": 565
+    },
+    "1240": {
+      "price": 795,
+      "original": 805
+    },
+    "2530": {
+      "price": 1590,
+      "original": 1600
+    },
+    "5060": {
+      "price": 3185,
+      "original": 3200
+    },
+    "10120": {
+      "price": 6345,
+      "original": 6360
     }
   },
   "passes": {
     "weekly_lite": {
-      "price": 48,
+      "price": 42,
       "original": 140,
       "name": "Weekly Lite"
     },
     "weekly_1x": {
-      "price": 155,
+      "price": 150,
       "original": 290,
       "name": "1X Weekly"
     },
     "weekly_2x": {
-      "price": 480,
+      "price": 300,
       "original": 550,
       "name": "2X Weekly"
     },
     "monthly": {
-      "price": 750,
+      "price": 760,
       "original": 1100,
       "name": "Monthly"
     }
   },
   "specials": {
     "evo_access": {
-      "price": 850,
+      "price": 300,
       "original": 1000,
       "name": "EVO Access"
     },
     "level_up": {
-      "price": 450,
+      "price": 410,
       "original": 550,
       "name": "Level Up Pass"
     }
