@@ -1170,6 +1170,7 @@ const REPO = 'souravbhuiyan12245-hue/sstopup';
 const API_READ = `https://raw.githubusercontent.com/${REPO}/main/data/prices.json`;
 const ORDERS_READ = `https://raw.githubusercontent.com/${REPO}/main/data/orders.json`;
 const GH_API = `https://api.github.com/repos/${REPO}/contents/`;
+const WORKER_URL = 'https://ss-topup-automation.sadmanbay2010.workers.dev';
 let TG_BOT = '8292016936:AAEdAhD2Lyfy03c8P-SjbZGVG_d5b6yHzsE';
 let TG_CHAT = '8687506733';
 function getTgApi(){ return `https://api.telegram.org/bot${window.SS_TG_BOT||TG_BOT}/sendMessage`; }
@@ -1532,64 +1533,23 @@ async function submitOrder() {
         status: 'Pending' 
     };
     
-    // Save to GitHub
-    const ghToken = prices.siteSettings?.ghToken || '';
+    // Save via Worker (GitHub + Telegram with Approve/Reject buttons)
     let savedToGH = false;
-    if (ghToken) {
-        try {
-            const ghr = await fetch(GH_API + 'data/orders.json', { headers: { Authorization: 'token ' + ghToken } });
-            let ghOrders = [], sha = '';
-            if (ghr.ok) {
-                const ghData = await ghr.json();
-                sha = ghData.sha;
-                ghOrders = JSON.parse(decodeURIComponent(escape(atob(ghData.content))));
-            }
-            ghOrders.push(order);
-            const orderIndex = ghOrders.length - 1;
-            const saveR = await fetch(GH_API + 'data/orders.json', {
-                method: 'PUT',
-                headers: { Authorization: 'token ' + ghToken, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: 'new order', content: btoa(unescape(encodeURIComponent(JSON.stringify(ghOrders, null, 2)))), sha })
-            });
-            savedToGH = saveR.ok;
-            
-            // Send Telegram with Approve/Reject buttons
-            const tgBot = (prices.siteSettings?.tgBot) || (window.SS_TG_BOT || TG_BOT);
-            const tgChat = (prices.siteSettings?.tgChat) || (window.SS_TG_CHAT || TG_CHAT);
-            const tgUrl = 'https://api.telegram.org/bot' + tgBot + '/sendMessage';
-            const msg = '🛒 *নতুন অর্ডার\!* \#' + orderIndex + '\n\n' +
-                '👤 Name: `' + (order.name||'').replace(/([_*\[\]()~`>#+\-=|{}.!])/g,'\\$1') + '`\n' +
-                '🎮 UID: `' + uid.replace(/([_*\[\]()~`>#+\-=|{}.!])/g,'\\$1') + '`\n' +
-                '📦 Item: ' + item.replace(/([_*\[\]()~`>#+\-=|{}.!])/g,'\\$1') + '\n' +
-                '💰 Price: ৳' + price + '\n' +
-                '💳 Payment: ' + selectedPayment.replace(/([_*\[\]()~`>#+\-=|{}.!])/g,'\\$1') + '\n' +
-                '📱 Phone: `' + phone.replace(/([_*\[\]()~`>#+\-=|{}.!])/g,'\\$1') + '`\n' +
-                '🧾 TrxID: `' + trx.replace(/([_*\[\]()~`>#+\-=|{}.!])/g,'\\$1') + '`\n' +
-                '📅 ' + order.date.replace(/([_*\[\]()~`>#+\-=|{}.!])/g,'\\$1');
-            await fetch(tgUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ chat_id: tgChat, text: msg, parse_mode: 'MarkdownV2' })
-            });
-        } catch(e) { console.log('GH/TG error', e); }
-    } else {
-        // Fallback: just send TG notification
-        const msg = `🛒 *SS TOP-UP New Order!*\n\n🎮 UID: \`${uid}\`\n📦 Item: ${item}\n💰 Price: ৳${price}\n💳 Payment: ${selectedPayment}\n📱 Number: ${phone}\n🧾 TrxID: ${trx}\n📅 Time: ${order.date}`;
-        try {
-            await fetch(getTgApi(), {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ chat_id: getTgChat(), text: msg, parse_mode: 'Markdown' })
-            });
-        } catch(e) { console.log('TG send failed', e); }
-    }
+    try {
+        const workerR = await fetch(WORKER_URL + '/order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(order)
+        });
+        if (workerR.ok) { const wr = await workerR.json(); savedToGH = wr.success; }
+    } catch(e) { console.log('Worker error', e); }
     
     // Save to localStorage too
     const localOrders = getOrders();
     localOrders.push(order);
     localStorage.setItem('ss_orders', JSON.stringify(localOrders));
     
-    showToast(savedToGH ? '✅ অর্ডার সফলভাবে দেওয়া হয়েছে!' : '✅ Orders সফলভাবে দেওয়া হয়েছে!');
+    showToast(savedToGH ? '✅ অর্ডার সফলভাবে দেওয়া হয়েছে!' : '✅ অর্ডার লোকালি সেভ হয়েছে!');
     
     setTimeout(() => {
         closeModal();
@@ -1663,15 +1623,11 @@ async function submitAddMoney() {
     if (!phone) { showToast('❌ ফোন নম্বর দাও!'); return; }
     if (!trx) { showToast('❌ Transaction ID দাও!'); return; }
     
-    const msg = `💰 *SS TOP-UP Add Money Request*\n\n💵 Amount: ৳${amount}\n💳 Payment: ${addPaymentMethod}\n📱 Number: ${phone}\n🧾 TrxID: ${trx}\n📅 Time: ${new Date().toLocaleString()}`;
-    
     try {
-        await fetch(getTgApi(), {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ chat_id: getTgChat(), text: msg, parse_mode: 'Markdown' })
-        });
-        showToast('✅ রিকোয়েস্ট পাঠানো হয়েছে!');
+        const data = { name: localStorage.getItem('ss_user') || 'Unknown', amount, payment: addPaymentMethod, phone, trxId: trx, date: new Date().toLocaleString() };
+        const r = await fetch(WORKER_URL + '/addmoney', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+        if (r.ok) { showToast('✅ রিকোয়েস্ট পাঠানো হয়েছে!'); }
+        else { showToast('✅ রিকোয়েস্ট পাঠানো হয়েছে!'); }
         document.getElementById('addMoneyAmount').value = '';
         document.getElementById('addMoneyPhone').value = '';
         document.getElementById('addMoneyTrx').value = '';
