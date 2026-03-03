@@ -8,17 +8,6 @@
     "phone": "83803099",
     "trxId": "Hsivkfd",
     "date": "3/3/2026, 8:57:45 PM",
-    "status": "Pending"
-  },
-  {
-    "name": "Unknown",
-    "uid": "852685054",
-    "item": "10120 Diamond",
-    "price": 6345,
-    "payment": "bkash",
-    "phone": "200581825519",
-    "trxId": "tbnynbt",
-    "date": "3/4/2026, 5:34:40 AM",
-    "status": "Pending"
+    "status": "Completed"
   }
 ]
