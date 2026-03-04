@@ -1031,6 +1031,17 @@
         </div>
     </div>
     
+    <div class="status-card" style="cursor:pointer;background:linear-gradient(135deg,#F59E0B11,#F9731611);border:1px solid rgba(249,115,22,0.2);" onclick="showRefCode()">
+        <div style="display:flex;align-items:center;gap:12px;">
+            <i class="fas fa-gift" style="font-size:1.2rem;color:var(--accent);"></i>
+            <div style="flex:1;">
+                <div style="font-weight:600;font-size:0.9rem;">🔗 রেফারেল শেয়ার করো</div>
+                <div style="font-size:0.75rem;color:var(--text-muted);">বন্ধুদের আমন্ত্রণ জানাও</div>
+            </div>
+            <i class="fas fa-share-alt" style="color:var(--accent);font-size:0.8rem;"></i>
+        </div>
+    </div>
+    
     <div class="status-card" id="accountAddMoney" style="cursor:pointer;display:none;" onclick="navigateTo('addmoney')">
         <div style="display:flex;align-items:center;gap:12px;">
             <i class="fas fa-wallet" style="font-size:1.2rem;color:var(--gold);"></i>
@@ -1672,6 +1683,9 @@ function handleLogin() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ type: 'new_user', name, email, phone: phone || 'N/A', date: user.loginDate })
     }).catch(e => {});
+    
+    // Track referral if came via ref link
+    trackReferral(name);
 }
 
 function handleProfilePhoto(input) {
@@ -1717,6 +1731,57 @@ function logoutUser() {
     showToast('লগআউট হয়েছে!');
     navigateTo('account');
 }
+
+// ===== Referral System =====
+function generateRefCode() {
+    const user = localStorage.getItem('ss_user');
+    if (!user) return null;
+    const u = JSON.parse(user);
+    // Generate code from name + random
+    let code = localStorage.getItem('ss_ref_code');
+    if (!code) {
+        const base = (u.name || 'user').replace(/\s/g,'').substring(0,4).toUpperCase();
+        code = base + Math.floor(1000 + Math.random() * 9000);
+        localStorage.setItem('ss_ref_code', code);
+    }
+    return code;
+}
+
+function checkReferral() {
+    const params = new URLSearchParams(window.location.search);
+    const ref = params.get('ref');
+    if (ref && !localStorage.getItem('ss_referred_by')) {
+        localStorage.setItem('ss_referred_by', ref);
+    }
+}
+
+function trackReferral(newUserName) {
+    const referredBy = localStorage.getItem('ss_referred_by');
+    if (!referredBy) return;
+    fetch(WORKER_URL + '/referral', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ referrer: referredBy, newUser: newUserName })
+    }).catch(e => {});
+    localStorage.removeItem('ss_referred_by');
+}
+
+function showRefCode() {
+    const code = generateRefCode();
+    if (!code) { showToast('❌ আগে প্রোফাইল সেটআপ করো!'); return; }
+    const link = window.location.origin + window.location.pathname + '?ref=' + code;
+    if (navigator.share) {
+        navigator.share({ title: 'SS TOP-UP', text: 'SS TOP-UP এ Free Fire Diamond কিনো! আমার রেফারেল লিংক:', url: link });
+    } else {
+        navigator.clipboard.writeText(link).then(() => showToast('✅ রেফারেল লিংক কপি হয়েছে!')).catch(() => {
+            const t = document.createElement('textarea'); t.value = link; document.body.appendChild(t); t.select(); document.execCommand('copy'); document.body.removeChild(t);
+            showToast('✅ রেফারেল লিংক কপি হয়েছে!');
+        });
+    }
+}
+
+// Check referral on page load
+checkReferral();
 
 // Init
 checkLogin();

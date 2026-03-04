@@ -121,6 +121,33 @@ async function handleCallback(callbackQuery, env) {
   if (saved) {
     const emoji = action === 'approve' ? '✅' : '❌';
     const st = action === 'approve' ? 'APPROVED' : 'REJECTED';
+    
+    // Auto notify customer via Telegram
+    const order = orders[index];
+    if (action === 'approve') {
+      const custMsg = `✅ *SS TOP\\-UP*\n\nআপনার অর্ডার সম্পন্ন হয়েছে\\!\n\n📦 ${esc(order.item)}\n🎮 UID: \`${esc(order.uid)}\`\n💰 ৳${order.price}\n\nধন্যবাদ SS TOP\\-UP ব্যবহার করার জন্য\\! 💎`;
+      // Send to admin chat with customer info
+      await fetch(`${TG_API_BASE}${env.TG_BOT_TOKEN}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: env.TG_CHAT_ID,
+          text: `📨 *Customer Notify:*\n📱 Phone: \`${esc(order.phone)}\`\n\nForward this to customer:\n\n${custMsg}`,
+          parse_mode: 'MarkdownV2'
+        })
+      });
+    } else {
+      await fetch(`${TG_API_BASE}${env.TG_BOT_TOKEN}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: env.TG_CHAT_ID,
+          text: `❌ *Order Rejected*\n📱 Phone: \`${esc(order.phone)}\`\nItem: ${esc(order.item)}\nUID: \`${esc(order.uid)}\``,
+          parse_mode: 'MarkdownV2'
+        })
+      });
+    }
+    
     await fetch(`${TG_API_BASE}${env.TG_BOT_TOKEN}/editMessageText`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -230,6 +257,59 @@ export default {
         });
       } catch (e) {
         return new Response(JSON.stringify({ success: false }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
+    }
+
+    // POST /referral — Track referral
+    if (url.pathname === '/referral' && request.method === 'POST') {
+      try {
+        const d = await request.json();
+        const { orders, sha } = await getOrders(env);
+        // Store referral as a special entry
+        const entry = {
+          type: 'referral',
+          referrer: d.referrer,
+          newUser: d.newUser,
+          date: new Date().toISOString(),
+          status: 'Active'
+        };
+        orders.push(entry);
+        await saveOrders(orders, sha, env);
+        
+        // Notify admin
+        await fetch(`${TG_API_BASE}${env.TG_BOT_TOKEN}/sendMessage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chat_id: env.TG_CHAT_ID,
+            text: `🔗 *Referral\\!*\n\n👤 Referrer: ${esc(d.referrer)}\n🆕 New User: ${esc(d.newUser)}\n📅 ${esc(entry.date)}`,
+            parse_mode: 'MarkdownV2'
+          })
+        });
+        
+        return new Response(JSON.stringify({ success: true }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      } catch (e) {
+        return new Response(JSON.stringify({ success: false }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
+    }
+
+    // GET /referral-stats — Get referral count for a user
+    if (url.pathname === '/referral-stats' && request.method === 'POST') {
+      try {
+        const d = await request.json();
+        const { orders } = await getOrders(env);
+        const count = orders.filter(o => o.type === 'referral' && o.referrer === d.referrer).length;
+        return new Response(JSON.stringify({ count }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      } catch (e) {
+        return new Response(JSON.stringify({ count: 0 }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         });
       }
