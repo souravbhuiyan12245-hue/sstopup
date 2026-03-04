@@ -1530,7 +1530,7 @@ async function submitOrder() {
         name: localStorage.getItem('ss_user') || 'Unknown',
         uid, item, price, payment: selectedPayment, 
         phone, trxId: trx, 
-        date: new Date().toLocaleString(), 
+        date: new Date().toISOString(), 
         status: 'Pending' 
     };
     
@@ -1543,6 +1543,13 @@ async function submitOrder() {
             body: JSON.stringify(order)
         });
         if (workerR.ok) { const wr = await workerR.json(); savedToGH = wr.success; }
+        else {
+            const errData = await workerR.json().catch(() => null);
+            if (errData && errData.limited) {
+                showToast(errData.message || '⛔ এই সপ্তাহে আপনি ইতিমধ্যে এই অফার কিনেছেন!');
+                return;
+            }
+        }
     } catch(e) { console.log('Worker error', e); }
     
     // Save to localStorage too

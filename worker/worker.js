@@ -144,6 +144,34 @@ async function answerCb(id, text, env) {
   });
 }
 
+// ===== Weekly Limit: Special offer items that are limited to once per week per UID =====
+const WEEKLY_LIMITED_ITEMS = ['1X Weekly', 'Monthly'];
+
+function isWithinLastWeek(dateStr) {
+  try {
+    const orderDate = new Date(dateStr);
+    if (isNaN(orderDate.getTime())) return false;
+    const now = new Date();
+    const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    return orderDate >= weekAgo;
+  } catch (e) { return false; }
+}
+
+function checkWeeklyLimit(orders, uid, item) {
+  if (!WEEKLY_LIMITED_ITEMS.includes(item)) return { allowed: true };
+  
+  for (const o of orders) {
+    if (o.uid === uid && o.item === item && o.status !== 'Rejected' && isWithinLastWeek(o.date)) {
+      return { 
+        allowed: false, 
+        message: `⛔ এই সপ্তাহে আপনি ইতিমধ্যে "${item}" কিনেছেন। পরের সপ্তাহে আবার কিনতে পারবেন।`,
+        lastOrderDate: o.date
+      };
+    }
+  }
+  return { allowed: true };
+}
+
 // ===== Main Handler =====
 export default {
   async fetch(request, env) {
@@ -153,15 +181,44 @@ export default {
       return new Response(null, { headers: corsHeaders });
     }
 
+    // POST /check-limit — Check if UID can buy a special offer this week
+    if (url.pathname === '/check-limit' && request.method === 'POST') {
+      try {
+        const d = await request.json();
+        const { orders } = await getOrders(env);
+        const result = checkWeeklyLimit(orders, d.uid, d.item);
+        return new Response(JSON.stringify(result), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      } catch (e) {
+        return new Response(JSON.stringify({ allowed: true }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
+    }
+
     // POST /order
     if (url.pathname === '/order' && request.method === 'POST') {
       try {
         const d = await request.json();
         const { orders, sha } = await getOrders(env);
+        
+        // Weekly limit check for special offers
+        const limitCheck = checkWeeklyLimit(orders, d.uid, d.item);
+        if (!limitCheck.allowed) {
+          return new Response(JSON.stringify({ 
+            success: false, 
+            limited: true, 
+            message: limitCheck.message 
+          }), {
+            status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        }
+        
         const order = {
           name: d.name || 'Unknown', uid: d.uid, item: d.item,
           price: d.price, payment: d.payment, phone: d.phone,
-          trxId: d.trxId, date: d.date || new Date().toLocaleString(),
+          trxId: d.trxId, date: d.date || new Date().toISOString(),
           status: 'Pending'
         };
         orders.push(order);
