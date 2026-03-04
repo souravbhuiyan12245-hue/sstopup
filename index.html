@@ -1440,7 +1440,7 @@ function renderDiamonds() {
     const keys = Object.keys(prices.diamonds).sort((a,b) => Number(a) - Number(b));
     keys.forEach(k => {
         const d = prices.diamonds[k];
-        grid.innerHTML += `<div class="diamond-option" onclick="selectDiamond(this,'${k}')"><span class="dm-icon">💎</span>${k}<div class="dm-price">৳${d.price}</div><div class="dm-original">৳${d.original}</div></div>`;
+        grid.innerHTML += `<div class="diamond-option" onclick="selectDiamond(this,'${k}')"><span class="dm-icon">💎</span>${k}<div class="dm-price">৳${d.price}</div></div>`;
     });
 }
 
@@ -1452,7 +1452,7 @@ function renderWeeklyMonthly() {
     items.forEach(item => {
         const p = prices.passes[item.key];
         if (!p) return;
-        grid.innerHTML += `<div class="diamond-option" onclick="selectWM(this,'${item.key}')"><span class="dm-icon">${item.icon}</span>${p.name}<div class="dm-price">৳${p.price}</div><div class="dm-original">৳${p.original}</div></div>`;
+        grid.innerHTML += `<div class="diamond-option" onclick="selectWM(this,'${item.key}')"><span class="dm-icon">${item.icon}</span>${p.name}<div class="dm-price">৳${p.price}</div></div>`;
     });
     selectedWM = null;
 }
