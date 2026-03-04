@@ -78,12 +78,12 @@
       "name": "EVO Access"
     },
     "level_up": {
-      "price": 410,
+      "price": 130,
       "original": 550,
       "name": "Level Up Pass"
     }
   },
   "announcement": "আপোনাদের একটু সাপোর্ট চাই বাস, আর কিচ্ছু না.\n4 থেকে 5 মিনিটের মধ্যে আমরা ডায়মন্ড পাঠিয়ে দেই",
-  "updated": "2026-03-03",
+  "updated": "2026-03-04",
   "addMoneyEnabled": false
 }
