@@ -172,6 +172,38 @@ function checkWeeklyLimit(orders, uid, item) {
   return { allowed: true };
 }
 
+// ===== TrxID Duplicate Check =====
+function isDuplicateTrxId(orders, trxId) {
+  if (!trxId) return false;
+  const normalized = trxId.trim().toUpperCase();
+  return orders.some(o => o.trxId && o.trxId.trim().toUpperCase() === normalized && o.status !== 'Rejected');
+}
+
+// ===== Rate Limiting (max 5 orders per hour per phone) =====
+function isRateLimited(orders, phone) {
+  if (!phone) return false;
+  const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+  let count = 0;
+  for (const o of orders) {
+    if (o.phone === phone && new Date(o.date) >= oneHourAgo) {
+      count++;
+      if (count >= 5) return true;
+    }
+  }
+  return false;
+}
+
+// ===== Input Validation =====
+function validateOrder(d) {
+  if (!d.uid || d.uid.length < 5 || d.uid.length > 20) return 'UID 5-20 characters হতে হবে';
+  if (!/^\d+$/.test(d.uid)) return 'UID শুধু নম্বর হতে হবে';
+  if (!d.phone || !/^01\d{9}$/.test(d.phone)) return 'সঠিক ফোন নম্বর দাও (01XXXXXXXXX)';
+  if (!d.trxId || d.trxId.length < 4) return 'সঠিক Transaction ID দাও';
+  if (!d.item) return 'Item select করো';
+  if (!d.price || d.price <= 0) return 'Invalid price';
+  return null;
+}
+
 // ===== Main Handler =====
 export default {
   async fetch(request, env) {
@@ -179,6 +211,28 @@ export default {
 
     if (request.method === 'OPTIONS') {
       return new Response(null, { headers: corsHeaders });
+    }
+
+    // POST /notify — Route notifications through worker (hide TG token from frontend)
+    if (url.pathname === '/notify' && request.method === 'POST') {
+      try {
+        const d = await request.json();
+        if (d.type === 'new_user' && d.name) {
+          const msg = `👤 *New User Registered\\!*\n\n📛 Name: ${esc(d.name)}\n📧 Email: ${esc(d.email || 'N/A')}\n📱 Phone: ${esc(d.phone || 'N/A')}\n📅 ${esc(d.date || '')}`;
+          await fetch(`${TG_API_BASE}${env.TG_BOT_TOKEN}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chat_id: env.TG_CHAT_ID, text: msg, parse_mode: 'MarkdownV2' })
+          });
+        }
+        return new Response(JSON.stringify({ success: true }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      } catch (e) {
+        return new Response(JSON.stringify({ success: false }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
     }
 
     // POST /check-limit — Check if UID can buy a special offer this week
@@ -201,14 +255,42 @@ export default {
     if (url.pathname === '/order' && request.method === 'POST') {
       try {
         const d = await request.json();
+        
+        // Input validation
+        const validErr = validateOrder(d);
+        if (validErr) {
+          return new Response(JSON.stringify({ success: false, limited: true, message: '❌ ' + validErr }), {
+            status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        }
+        
         const { orders, sha } = await getOrders(env);
+        
+        // TrxID duplicate check
+        if (isDuplicateTrxId(orders, d.trxId)) {
+          return new Response(JSON.stringify({ 
+            success: false, limited: true, 
+            message: '⛔ এই Transaction ID আগেই ব্যবহার করা হয়েছে! সঠিক TrxID দাও।' 
+          }), {
+            status: 409, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        }
+        
+        // Rate limiting
+        if (isRateLimited(orders, d.phone)) {
+          return new Response(JSON.stringify({ 
+            success: false, limited: true, 
+            message: '⛔ অনেক বেশি অর্ডার দিয়েছো! ১ ঘণ্টা পর আবার চেষ্টা করো।' 
+          }), {
+            status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        }
         
         // Weekly limit check for special offers
         const limitCheck = checkWeeklyLimit(orders, d.uid, d.item);
         if (!limitCheck.allowed) {
           return new Response(JSON.stringify({ 
-            success: false, 
-            limited: true, 
+            success: false, limited: true, 
             message: limitCheck.message 
           }), {
             status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' }

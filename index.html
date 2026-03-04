@@ -1171,10 +1171,7 @@ const API_READ = `https://raw.githubusercontent.com/${REPO}/main/data/prices.jso
 const ORDERS_READ = `https://raw.githubusercontent.com/${REPO}/main/data/orders.json`;
 const GH_API = `https://api.github.com/repos/${REPO}/contents/`;
 const WORKER_URL = 'https://ss-topup-automation.souravbhuiyan73.workers.dev';
-let TG_BOT = '8292016936:AAEdAhD2Lyfy03c8P-SjbZGVG_d5b6yHzsE';
-let TG_CHAT = '8687506733';
-function getTgApi(){ return `https://api.telegram.org/bot${window.SS_TG_BOT||TG_BOT}/sendMessage`; }
-function getTgChat(){ return window.SS_TG_CHAT||TG_CHAT; }
+// TG notifications now routed through worker (token hidden)
 
 const DEFAULT_PRICES = {"diamonds": {"25": {"price": 24, "original": 26}, "50": {"price": 35, "original": 40}, "115": {"price": 75, "original": 80}, "240": {"price": 155, "original": 160}, "355": {"price": 235, "original": 485}, "480": {"price": 315, "original": 325}, "610": {"price": 400, "original": 410}, "850": {"price": 555, "original": 565}, "1240": {"price": 795, "original": 805}, "2530": {"price": 1590, "original": 1600}, "5060": {"price": 3185, "original": 3200}, "10120": {"price": 6345, "original": 6360}}, "passes": {"weekly_lite": {"price": 42, "original": 140, "name": "Weekly Lite"}, "weekly_1x": {"price": 150, "original": 290, "name": "1X Weekly"}, "weekly_2x": {"price": 300, "original": 550, "name": "2X Weekly"}, "monthly": {"price": 760, "original": 1100, "name": "Monthly"}}, "specials": {"evo_access": {"price": 300, "original": 1000, "name": "EVO Access"}, "level_up": {"price": 410, "original": 550, "name": "Level Up Pass"}}, "announcement": "", "updated": "2026-03-03"};
 
@@ -1306,9 +1303,7 @@ function applySiteSettings() {
         });
     }
     
-    // Update Telegram bot/chat for notifications
-    if (s.tgBot) window.SS_TG_BOT = s.tgBot;
-    if (s.tgChat) window.SS_TG_CHAT = s.tgChat;
+    // TG bot/chat settings now handled by worker
 }
 
 async function loadPrices() {
@@ -1672,10 +1667,10 @@ function handleLogin() {
     updateAccountStats();
     showToast('✅ প্রোফাইল সেভ হয়েছে!');
     
-    fetch(getTgApi(), {
+    fetch(WORKER_URL + '/notify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ chat_id: getTgChat(), text: `👤 *New User Registered!*\n\n📛 Name: ${name}\n📧 Email: ${email}\n📱 Phone: ${phone || 'N/A'}\n📅 Time: ${user.loginDate}`, parse_mode: 'Markdown' })
+        body: JSON.stringify({ type: 'new_user', name, email, phone: phone || 'N/A', date: user.loginDate })
     }).catch(e => {});
 }
 
