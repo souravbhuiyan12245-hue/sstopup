@@ -1,35 +1,35 @@
 {
   "diamonds": {
     "25": {
-      "price": 38,
+      "price": 24,
       "original": 26
     },
     "50": {
-      "price": 55,
+      "price": 35,
       "original": 40
     },
     "115": {
-      "price": 95,
+      "price": 75,
       "original": 80
     },
     "240": {
-      "price": 300,
+      "price": 155,
       "original": 160
     },
     "355": {
-      "price": 390,
+      "price": 235,
       "original": 485
     },
     "480": {
-      "price": 510,
+      "price": 315,
       "original": 325
     },
     "610": {
-      "price": 640,
+      "price": 400,
       "original": 410
     },
     "850": {
-      "price": 875,
+      "price": 555,
       "original": 565
     },
     "1240": {
@@ -78,12 +78,12 @@
       "name": "EVO Access"
     },
     "level_up": {
-      "price": 130,
+      "price": 410,
       "original": 550,
       "name": "Level Up Pass"
     }
   },
   "announcement": "আপোনাদের একটু সাপোর্ট চাই বাস, আর কিচ্ছু না.\n4 থেকে 5 মিনিটের মধ্যে আমরা ডায়মন্ড পাঠিয়ে দেই",
-  "updated": "2026-03-04",
+  "updated": "2026-03-05",
   "addMoneyEnabled": false
 }
