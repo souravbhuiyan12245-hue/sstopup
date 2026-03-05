@@ -45,7 +45,16 @@ function esc(str) {
 }
 
 // ===== Telegram: Send order with buttons =====
-async function sendTelegramOrder(order, orderIndex, env) {
+async function sendTelegramOrder(order, orderIndex, env, orders) {
+  // Check if this UID has ordered before (duplicate UID warning)
+  let uidWarning = '';
+  if (orders && order.uid) {
+    const prevOrders = orders.filter(o => o.uid === order.uid && o.status !== 'Rejected' && orders.indexOf(o) !== orderIndex);
+    if (prevOrders.length >= 2) {
+      uidWarning = `\n\n⚠️ *সতর্কতা:* এই UID থেকে আগে ${prevOrders.length}টি অর্ডার আছে\\!`;
+    }
+  }
+  
   const msg = `🛒 *নতুন অর্ডার\\!* \\#${orderIndex + 1}\n\n` +
     `👤 Name: \`${esc(order.name)}\`\n` +
     `🎮 UID: \`${esc(order.uid)}\`\n` +
@@ -54,7 +63,7 @@ async function sendTelegramOrder(order, orderIndex, env) {
     `💳 Payment: ${esc(order.payment)}\n` +
     `📱 Phone: \`${esc(order.phone)}\`\n` +
     `🧾 TrxID: \`${esc(order.trxId)}\`\n` +
-    `📅 ${esc(order.date)}`;
+    `📅 ${esc(order.date)}` + uidWarning;
 
   await fetch(`${TG_API_BASE}${env.TG_BOT_TOKEN}/sendMessage`, {
     method: 'POST',
@@ -306,7 +315,7 @@ export default {
         orders.push(order);
         const saved = await saveOrders(orders, sha, env);
         if (saved) {
-          await sendTelegramOrder(order, orders.length - 1, env);
+          await sendTelegramOrder(order, orders.length - 1, env, orders);
           return new Response(JSON.stringify({ success: true }), {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' }
           });
@@ -374,6 +383,14 @@ export default {
       });
     }
 
+    // GET /daily-summary — Manual trigger for daily summary
+    if (url.pathname === '/daily-summary') {
+      await sendDailySummary(env);
+      return new Response(JSON.stringify({ success: true, message: 'Summary sent' }), {
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
     if (url.pathname === '/' || url.pathname === '/health') {
       return new Response(JSON.stringify({ status: 'ok', service: 'SS TOP-UP Automation' }), {
         headers: { 'Content-Type': 'application/json' }
@@ -381,5 +398,81 @@ export default {
     }
 
     return new Response('Not Found', { status: 404 });
+  },
+
+  // Cron trigger — runs daily at 11:55 PM Bangladesh time (17:55 UTC)
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil(sendDailySummary(env));
   }
 };
+
+// ===== Daily Summary =====
+async function sendDailySummary(env) {
+  try {
+    const { orders } = await getOrders(env);
+    
+    // Today's date (Bangladesh time UTC+6)
+    const now = new Date();
+    const bdTime = new Date(now.getTime() + 6 * 60 * 60 * 1000);
+    const todayStr = bdTime.toISOString().split('T')[0];
+    
+    // Filter today's orders
+    const todayOrders = orders.filter(o => {
+      if (!o.date || o.type === 'referral') return false;
+      try {
+        const d = new Date(o.date);
+        const bdD = new Date(d.getTime() + 6 * 60 * 60 * 1000);
+        return bdD.toISOString().split('T')[0] === todayStr;
+      } catch(e) { return false; }
+    });
+    
+    const totalOrders = todayOrders.length;
+    const completed = todayOrders.filter(o => o.status === 'Completed').length;
+    const pending = todayOrders.filter(o => o.status === 'Pending').length;
+    const rejected = todayOrders.filter(o => o.status === 'Rejected').length;
+    const totalIncome = todayOrders.filter(o => o.status === 'Completed').reduce((sum, o) => sum + (o.price || 0), 0);
+    const pendingIncome = todayOrders.filter(o => o.status === 'Pending').reduce((sum, o) => sum + (o.price || 0), 0);
+    
+    // Top items
+    const itemCount = {};
+    todayOrders.forEach(o => {
+      if (o.item) itemCount[o.item] = (itemCount[o.item] || 0) + 1;
+    });
+    const topItems = Object.entries(itemCount).sort((a,b) => b[1] - a[1]).slice(0, 3);
+    const topItemsStr = topItems.length > 0 
+      ? topItems.map(([item, count]) => `  • ${esc(item)}: ${count}টি`).join('\n')
+      : '  কোনো অর্ডার নেই';
+    
+    // Duplicate UID check (UIDs with 3+ orders today)
+    const uidCount = {};
+    todayOrders.forEach(o => {
+      if (o.uid && o.uid !== '-') uidCount[o.uid] = (uidCount[o.uid] || 0) + 1;
+    });
+    const suspiciousUids = Object.entries(uidCount).filter(([_, count]) => count >= 3);
+    let suspiciousStr = '';
+    if (suspiciousUids.length > 0) {
+      suspiciousStr = `\n\n⚠️ *সন্দেহজনক UID \\(3\\+ orders\\):*\n` + 
+        suspiciousUids.map(([uid, count]) => `  🔴 \`${esc(uid)}\` — ${count}টি order`).join('\n');
+    }
+    
+    const msg = `📊 *দৈনিক রিপোর্ট — SS TOP\\-UP*\n` +
+      `📅 ${esc(todayStr)}\n\n` +
+      `📦 মোট অর্ডার: *${totalOrders}*\n` +
+      `✅ সম্পন্ন: ${completed}\n` +
+      `⏳ পেন্ডিং: ${pending}\n` +
+      `❌ বাতিল: ${rejected}\n\n` +
+      `💰 আজকের আয়: *৳${totalIncome}*\n` +
+      `⏳ পেন্ডিং আয়: ৳${pendingIncome}\n\n` +
+      `🏆 *টপ প্রোডাক্ট:*\n${topItemsStr}` +
+      suspiciousStr +
+      `\n\n🤖 SS TOP\\-UP Automation`;
+    
+    await fetch(`${TG_API_BASE}${env.TG_BOT_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: env.TG_CHAT_ID, text: msg, parse_mode: 'MarkdownV2' })
+    });
+  } catch(e) {
+    console.log('Daily summary error:', e.message);
+  }
+}
