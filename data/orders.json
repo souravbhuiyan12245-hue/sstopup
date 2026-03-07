@@ -13,18 +13,6 @@
   },
   {
     "name": "Unknown",
-    "uid": "244886486",
-    "item": "1X Weekly",
-    "price": 150,
-    "payment": "bkash",
-    "phone": "01820919190",
-    "trxId": "gsvdhdvdk",
-    "date": "2026-03-05T10:42:05.622Z",
-    "status": "Completed",
-    "approvedAt": "2026-03-05T10:42:22.380Z"
-  },
-  {
-    "name": "Unknown",
     "uid": "25577445",
     "item": "1X Weekly",
     "price": 150,
