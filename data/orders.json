@@ -12,18 +12,6 @@
     "approvedAt": "2026-03-05T10:57:06.938Z"
   },
   {
-    "name": "Unknown",
-    "uid": "56369824",
-    "item": "115 Diamond",
-    "price": 75,
-    "payment": "bkash",
-    "phone": "01814707074",
-    "trxId": "Hzkxvxksv",
-    "date": "2026-03-07T10:05:59.326Z",
-    "status": "Completed",
-    "approvedAt": "2026-03-07T10:06:31.434Z"
-  },
-  {
     "name": "sstopupofficial",
     "uid": "84650868",
     "item": "1X Weekly",
@@ -34,18 +22,6 @@
     "date": "2026-03-07T10:31:36.975Z",
     "status": "Completed",
     "approvedAt": "2026-03-07T10:34:58.425Z"
-  },
-  {
-    "name": "sstopupofficial",
-    "uid": "87685640",
-    "item": "Monthly",
-    "price": 760,
-    "payment": "bkash",
-    "phone": "01858580854",
-    "trxId": "Vdjdvsjv",
-    "date": "2026-03-07T10:33:08.575Z",
-    "status": "Completed",
-    "approvedAt": "2026-03-07T10:35:01.702Z"
   },
   {
     "name": "sstopupofficial",
