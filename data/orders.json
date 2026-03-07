@@ -13,18 +13,6 @@
   },
   {
     "name": "Unknown",
-    "uid": "25577445",
-    "item": "1X Weekly",
-    "price": 150,
-    "payment": "bkash",
-    "phone": "01717575739",
-    "trxId": "Hjghjcjjc",
-    "date": "2026-03-07T09:16:16.042Z",
-    "status": "Completed",
-    "approvedAt": "2026-03-07T09:17:07.053Z"
-  },
-  {
-    "name": "Unknown",
     "uid": "22441139",
     "item": "Weekly Lite",
     "price": 42,
