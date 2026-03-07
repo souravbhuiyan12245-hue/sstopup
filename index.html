@@ -885,11 +885,6 @@
             <input class="form-input" type="text" id="uidInput" placeholder="Enter your Free Fire UID" inputmode="numeric">
         </div>
 
-        <div class="form-group">
-            <label class="form-label">📧 Gmail / Email</label>
-            <input class="form-input" type="email" id="emailInput" placeholder="example@gmail.com" inputmode="email">
-        </div>
-
         <div class="form-group" id="diamondSelectGroup">
             <label class="form-label">💎 Select Diamonds</label>
             <div class="diamond-grid" id="diamondGrid"></div>
@@ -1507,13 +1502,12 @@ function copyNumber() {
 
 async function submitOrder() {
     const uid = document.getElementById('uidInput').value.trim();
-    const email = document.getElementById('emailInput').value.trim();
     const phone = document.getElementById('phoneInput').value.trim();
     const trx = document.getElementById('trxInput').value.trim();
+    const savedEmail = localStorage.getItem('ss_email') || '';
     
+    if (!savedEmail) { showEmailPopup(); return; }
     if (!uid) { showToast('❌ Player ID দাও!'); return; }
-    if (!email) { showToast('❌ Gmail / Email দাও!'); return; }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showToast('❌ সঠিক Email দাও!'); return; }
     if (!phone) { showToast('❌ ফোন নম্বর দাও!'); return; }
     if (!trx) { showToast('❌ Transaction ID দাও!'); return; }
     
@@ -1535,8 +1529,8 @@ async function submitOrder() {
     }
     
     const order = { 
-        name: email.split('@')[0],
-        email, uid, item, price, payment: selectedPayment, 
+        name: savedEmail.split('@')[0],
+        email: savedEmail, uid, item, price, payment: selectedPayment, 
         phone, trxId: trx, 
         date: new Date().toISOString(), 
         status: 'Pending' 
@@ -1570,7 +1564,6 @@ async function submitOrder() {
     setTimeout(() => {
         closeModal();
         document.getElementById('uidInput').value = '';
-        document.getElementById('emailInput').value = '';
         document.getElementById('phoneInput').value = '';
         document.getElementById('trxInput').value = '';
         selectedDiamond = null;
@@ -1736,6 +1729,41 @@ function logoutUser() {
 checkLogin();
 loadPrices();
 loadHomeOrders();
+
+// ===== One-time Email Registration Popup =====
+function showEmailPopup() {
+    if (document.getElementById('emailPopupOverlay')) return;
+    const overlay = document.createElement('div');
+    overlay.id = 'emailPopupOverlay';
+    overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);';
+    overlay.innerHTML = `
+        <div style="background:#fff;border-radius:20px;padding:28px 22px;max-width:360px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.3);text-align:center;">
+            <div style="font-size:2.5rem;margin-bottom:12px;">📧</div>
+            <div style="font-weight:800;font-size:1.1rem;color:#1E1B4B;margin-bottom:8px;">Gmail / Email দিন</div>
+            <div style="font-size:0.8rem;color:#6B7280;margin-bottom:20px;">অর্ডার করতে একবার Email দিতে হবে।<br>পরে আর দিতে হবে না।</div>
+            <input type="email" id="emailPopupInput" placeholder="example@gmail.com" inputmode="email"
+                style="width:100%;padding:14px 16px;border:2px solid #E5E7EB;border-radius:12px;font-size:0.95rem;outline:none;transition:border 0.2s;margin-bottom:16px;"
+                onfocus="this.style.borderColor='#6C3CE1'" onblur="this.style.borderColor='#E5E7EB'">
+            <button onclick="saveEmailPopup()" 
+                style="width:100%;padding:14px;background:linear-gradient(135deg,#6C3CE1,#5228CC);color:#fff;border:none;border-radius:12px;font-weight:700;font-size:0.95rem;cursor:pointer;">
+                ✅ Save & Continue
+            </button>
+            <div style="font-size:0.7rem;color:#9CA3AF;margin-top:12px;">🔒 আপনার তথ্য সম্পূর্ণ নিরাপদ</div>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+    setTimeout(() => document.getElementById('emailPopupInput').focus(), 100);
+}
+
+function saveEmailPopup() {
+    const email = document.getElementById('emailPopupInput').value.trim();
+    if (!email) { showToast('❌ Email দিন!'); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showToast('❌ সঠিক Email দিন!'); return; }
+    localStorage.setItem('ss_email', email);
+    const overlay = document.getElementById('emailPopupOverlay');
+    if (overlay) overlay.remove();
+    showToast('✅ Email saved!');
+}
 </script>
 </body>
 </html>
