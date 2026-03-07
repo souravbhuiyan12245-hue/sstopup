@@ -1,18 +1,6 @@
 [
   {
     "name": "Unknown",
-    "uid": "75231067696",
-    "item": "Level Up Pass",
-    "price": 130,
-    "payment": "bkash",
-    "phone": "01820919190",
-    "trxId": "udvdkvdjv",
-    "date": "3/4/2026, 10:54:04 AM",
-    "status": "Completed",
-    "approvedAt": "2026-03-04T04:54:14.336Z"
-  },
-  {
-    "name": "Unknown",
     "uid": "2441139155",
     "item": "115 Diamond",
     "price": 95,
