@@ -1534,8 +1534,10 @@ async function submitOrder() {
         price = prices.specials[currentType].price;
     }
     
+    const ssUser = localStorage.getItem('ss_user');
+    const orderName = ssUser ? JSON.parse(ssUser).name : savedEmail.split('@')[0];
     const order = { 
-        name: savedEmail.split('@')[0],
+        name: orderName,
         email: savedEmail, uid, item, price, payment: selectedPayment, 
         phone, trxId: trx, 
         date: new Date().toISOString(), 
@@ -1640,7 +1642,10 @@ async function submitAddMoney() {
     if (!trx) { showToast('❌ Transaction ID দাও!'); return; }
     
     try {
-        const data = { name: localStorage.getItem('ss_user') || 'Unknown', amount, payment: addPaymentMethod, phone, trxId: trx, date: new Date().toLocaleString() };
+        const ssUser = localStorage.getItem('ss_user');
+        const userName = ssUser ? JSON.parse(ssUser).name : (localStorage.getItem('ss_email') || 'Unknown').split('@')[0];
+        const userEmail = ssUser ? JSON.parse(ssUser).email : (localStorage.getItem('ss_email') || '');
+        const data = { name: userName, email: userEmail, amount, payment: addPaymentMethod, phone, trxId: trx, date: new Date().toLocaleString() };
         const r = await fetch(WORKER_URL + '/addmoney', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
         if (r.ok) { showToast('✅ রিকোয়েস্ট পাঠানো হয়েছে!'); }
         else { showToast('✅ রিকোয়েস্ট পাঠানো হয়েছে!'); }
@@ -1669,6 +1674,7 @@ function handleLogin() {
     
     const user = { name, email, phone, loginDate: new Date().toLocaleString() };
     localStorage.setItem('ss_user', JSON.stringify(user));
+    localStorage.setItem('ss_email', email);
     
     document.querySelector('.profile-btn').textContent = name[0].toUpperCase();
     document.getElementById('accountName').textContent = name;
@@ -1727,6 +1733,12 @@ function checkLogin() {
 
 function logoutUser() {
     localStorage.removeItem('ss_user');
+    localStorage.removeItem('ss_email');
+    localStorage.removeItem('ss_support_pin');
+    localStorage.removeItem('ss_profile_photo');
+    document.getElementById('accountName').textContent = 'Guest';
+    document.getElementById('accountEmail').textContent = 'ইমেইল যোগ করা হয়নি';
+    document.querySelector('.profile-btn').textContent = 'S';
     showToast('লগআউট হয়েছে!');
     navigateTo('account');
 }
@@ -1766,12 +1778,27 @@ function saveEmailPopup() {
     if (!email) { showToast('❌ Email দিন!'); return; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showToast('❌ সঠিক Email দিন!'); return; }
     localStorage.setItem('ss_email', email);
-    document.getElementById('accountName').textContent = email.split('@')[0];
+    // Also create ss_user so profile syncs everywhere
+    const name = email.split('@')[0];
+    const user = { name, email, phone: '', loginDate: new Date().toLocaleString() };
+    localStorage.setItem('ss_user', JSON.stringify(user));
+    if (!localStorage.getItem('ss_support_pin')) {
+        localStorage.setItem('ss_support_pin', Math.floor(1000000 + Math.random() * 9000000).toString());
+    }
+    document.getElementById('accountName').textContent = name;
     document.getElementById('accountEmail').textContent = email;
     document.getElementById('profileSetupCard').style.display = 'none';
+    document.querySelector('.profile-btn').textContent = name[0].toUpperCase();
+    updateAccountStats();
     const overlay = document.getElementById('emailPopupOverlay');
     if (overlay) overlay.remove();
     showToast('✅ Email saved!');
+    // Notify admin
+    fetch(WORKER_URL + '/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'new_user', name, email, phone: 'N/A', date: user.loginDate })
+    }).catch(e => {});
 }
 </script>
 </body>
