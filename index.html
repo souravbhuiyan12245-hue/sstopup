@@ -885,6 +885,11 @@
             <input class="form-input" type="text" id="uidInput" placeholder="Enter your Free Fire UID" inputmode="numeric">
         </div>
 
+        <div class="form-group">
+            <label class="form-label">📧 Gmail / Email</label>
+            <input class="form-input" type="email" id="emailInput" placeholder="example@gmail.com" inputmode="email">
+        </div>
+
         <div class="form-group" id="diamondSelectGroup">
             <label class="form-label">💎 Select Diamonds</label>
             <div class="diamond-grid" id="diamondGrid"></div>
@@ -1502,10 +1507,13 @@ function copyNumber() {
 
 async function submitOrder() {
     const uid = document.getElementById('uidInput').value.trim();
+    const email = document.getElementById('emailInput').value.trim();
     const phone = document.getElementById('phoneInput').value.trim();
     const trx = document.getElementById('trxInput').value.trim();
     
     if (!uid) { showToast('❌ Player ID দাও!'); return; }
+    if (!email) { showToast('❌ Gmail / Email দাও!'); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showToast('❌ সঠিক Email দাও!'); return; }
     if (!phone) { showToast('❌ ফোন নম্বর দাও!'); return; }
     if (!trx) { showToast('❌ Transaction ID দাও!'); return; }
     
@@ -1527,8 +1535,8 @@ async function submitOrder() {
     }
     
     const order = { 
-        name: localStorage.getItem('ss_user') || 'Unknown',
-        uid, item, price, payment: selectedPayment, 
+        name: email.split('@')[0],
+        email, uid, item, price, payment: selectedPayment, 
         phone, trxId: trx, 
         date: new Date().toISOString(), 
         status: 'Pending' 
@@ -1562,6 +1570,7 @@ async function submitOrder() {
     setTimeout(() => {
         closeModal();
         document.getElementById('uidInput').value = '';
+        document.getElementById('emailInput').value = '';
         document.getElementById('phoneInput').value = '';
         document.getElementById('trxInput').value = '';
         selectedDiamond = null;

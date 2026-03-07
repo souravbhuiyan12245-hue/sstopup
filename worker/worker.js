@@ -57,6 +57,7 @@ async function sendTelegramOrder(order, orderIndex, env, orders) {
   
   const msg = `🛒 *নতুন অর্ডার\\!* \\#${orderIndex + 1}\n\n` +
     `👤 Name: \`${esc(order.name)}\`\n` +
+    `📧 Email: \`${esc(order.email || 'N/A')}\`\n` +
     `🎮 UID: \`${esc(order.uid)}\`\n` +
     `📦 Item: ${esc(order.item)}\n` +
     `💰 Price: ৳${order.price}\n` +
@@ -380,6 +381,14 @@ export default {
       });
       return new Response(JSON.stringify(await r.json(), null, 2), {
         headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    // GET /orders — Read orders directly from GitHub (no CDN cache)
+    if (url.pathname === '/orders' && request.method === 'GET') {
+      const { orders } = await getOrders(env);
+      return new Response(JSON.stringify(orders), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Cache-Control': 'no-cache, no-store' }
       });
     }
 
