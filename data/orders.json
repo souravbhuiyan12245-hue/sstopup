@@ -14,18 +14,6 @@
   {
     "name": "Unknown",
     "uid": "2441139155",
-    "item": "Monthly",
-    "price": 760,
-    "payment": "bkash",
-    "phone": "01606335147",
-    "trxId": "hsvsksbdj",
-    "date": "2026-03-04T16:56:04.735Z",
-    "status": "Completed",
-    "approvedAt": "2026-03-04T16:57:44.397Z"
-  },
-  {
-    "name": "Unknown",
-    "uid": "2441139155",
     "item": "115 Diamond",
     "price": 95,
     "payment": "bkash",
