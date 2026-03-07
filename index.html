@@ -1586,6 +1586,8 @@ async function renderOrders() {
     const el = document.getElementById('ordersList');
     el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted);font-size:0.8rem;">⏳ লোড হচ্ছে...</div>';
     
+    const localOrders = getOrders();
+    
     try {
         const r = await fetch(ORDERS_READ + '?t=' + Date.now(), { cache: 'no-store' });
         if (r.ok) {
@@ -1594,32 +1596,43 @@ async function renderOrders() {
             const ssUser = localStorage.getItem('ss_user');
             const userName = ssUser ? JSON.parse(ssUser).name : '';
             
-            // Filter orders by email or name match
-            const userOrders = allOrders.filter(o => 
+            // Match server orders with local orders by UID+item+trxId+date
+            let matchedOrders = [];
+            
+            if (localOrders.length > 0) {
+                // For each local order, find matching server order to get real status
+                matchedOrders = localOrders.map(lo => {
+                    const serverMatch = allOrders.find(so => 
+                        so.uid === lo.uid && so.item === lo.item && so.trxId === lo.trxId
+                    );
+                    return serverMatch || lo;
+                });
+            }
+            
+            // Also add any server orders matching by email/name that aren't in local
+            const serverUserOrders = allOrders.filter(o => 
                 (savedEmail && o.email === savedEmail) || 
                 (userName && o.name === userName)
             );
             
-            if (userOrders.length === 0) {
-                // Fallback to localStorage orders
-                const localOrders = getOrders();
-                if (localOrders.length > 0) {
-                    el.innerHTML = localOrders.slice(-10).reverse().map(o => renderOrderCard(o)).join('');
-                } else {
-                    el.innerHTML = '<div style="text-align:center;padding:40px 20px;color:var(--text-muted);"><i class="fas fa-inbox" style="font-size:2.5rem;margin-bottom:12px;display:block;opacity:0.3;"></i><p>No orders yet</p></div>';
-                }
+            serverUserOrders.forEach(so => {
+                const alreadyExists = matchedOrders.find(mo => 
+                    mo.uid === so.uid && mo.item === so.item && mo.trxId === so.trxId
+                );
+                if (!alreadyExists) matchedOrders.push(so);
+            });
+            
+            if (matchedOrders.length === 0) {
+                el.innerHTML = '<div style="text-align:center;padding:40px 20px;color:var(--text-muted);"><i class="fas fa-inbox" style="font-size:2.5rem;margin-bottom:12px;display:block;opacity:0.3;"></i><p>No orders yet</p></div>';
                 return;
             }
-            el.innerHTML = userOrders.slice(-10).reverse().map(o => renderOrderCard(o)).join('');
+            el.innerHTML = matchedOrders.slice(-10).reverse().map(o => renderOrderCard(o)).join('');
         } else {
-            // Fallback to localStorage
-            const localOrders = getOrders();
             el.innerHTML = localOrders.length > 0 
                 ? localOrders.slice(-10).reverse().map(o => renderOrderCard(o)).join('')
                 : '<div style="text-align:center;padding:40px 20px;color:var(--text-muted);"><p>No orders yet</p></div>';
         }
     } catch(e) {
-        const localOrders = getOrders();
         el.innerHTML = localOrders.length > 0 
             ? localOrders.slice(-10).reverse().map(o => renderOrderCard(o)).join('')
             : '<div style="text-align:center;padding:40px 20px;color:var(--text-muted);"><p>No orders yet</p></div>';
