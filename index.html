@@ -1231,10 +1231,16 @@ function showPage(page) {
         document.getElementById('accountSection').classList.add('show');
         document.getElementById('navAccount').classList.add('active');
         const user = localStorage.getItem('ss_user');
+        const ssEmail = localStorage.getItem('ss_email');
         if (user) {
             const u = JSON.parse(user);
             document.getElementById('accountName').textContent = u.name;
             document.getElementById('accountEmail').textContent = u.email;
+            document.getElementById('profileSetupCard').style.display = 'none';
+            updateAccountStats();
+        } else if (ssEmail) {
+            document.getElementById('accountName').textContent = ssEmail.split('@')[0];
+            document.getElementById('accountEmail').textContent = ssEmail;
             document.getElementById('profileSetupCard').style.display = 'none';
             updateAccountStats();
         } else {
@@ -1760,6 +1766,9 @@ function saveEmailPopup() {
     if (!email) { showToast('❌ Email দিন!'); return; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showToast('❌ সঠিক Email দিন!'); return; }
     localStorage.setItem('ss_email', email);
+    document.getElementById('accountName').textContent = email.split('@')[0];
+    document.getElementById('accountEmail').textContent = email;
+    document.getElementById('profileSetupCard').style.display = 'none';
     const overlay = document.getElementById('emailPopupOverlay');
     if (overlay) overlay.remove();
     showToast('✅ Email saved!');
