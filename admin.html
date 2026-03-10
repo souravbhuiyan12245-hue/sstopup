@@ -382,7 +382,7 @@ function filt(f){cf=f;renderO();}
 function dirty(){changed=true;document.getElementById('saveBtn').classList.add('show');}
 
 async function setS(i,s){O[i].status=s;await saveO();renderO();
-    try{await fetch('https://ss-topup-automation.souravbhuiyan73.workers.dev/admin-status',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({orderIndex:i,status:s,order:O[i]})});}catch(e){}
+    try{await fetch('https://ss-topup-automation.kodomofficial01.workers.dev/admin-status',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({orderIndex:i,status:s,order:O[i]})});}catch(e){}
 }
 async function delO(i){if(!confirm('Delete?'))return;O.splice(i,1);await saveO();renderO();}
 

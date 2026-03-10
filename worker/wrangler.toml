@@ -1,6 +1,7 @@
 name = "ss-topup-automation"
 main = "worker.js"
 compatibility_date = "2024-01-01"
+account_id = "1af3449f6b91cd8d48fcfda6f61359f5"
 
 [triggers]
 crons = ["0 1 * * *"]
