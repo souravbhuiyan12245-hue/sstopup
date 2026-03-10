@@ -55,16 +55,18 @@ async function sendTelegramOrder(order, orderIndex, env, orders) {
     }
   }
   
-  const msg = `🛒 *নতুন অর্ডার\\!* \\#${orderIndex + 1}\n\n` +
-    `👤 Name: \`${esc(order.name)}\`\n` +
-    `📧 Email: \`${esc(order.email || 'N/A')}\`\n` +
+  const payIcon = (order.payment || '').toLowerCase() === 'nagad' ? '🟠' : '🟣';
+  const msg = `🛒 *নতুন অর্ডার\\!* \\#${orderIndex + 1}\n` +
+    `━━━━━━━━━━━━━━━━━━━\n\n` +
+    `👤 *${esc(order.name || 'Unknown')}*\n` +
     `🎮 UID: \`${esc(order.uid)}\`\n` +
-    `📦 Item: ${esc(order.item)}\n` +
-    `💰 Price: ৳${order.price}\n` +
-    `💳 Payment: ${esc(order.payment)}\n` +
-    `📱 Phone: \`${esc(order.phone)}\`\n` +
-    `🧾 TrxID: \`${esc(order.trxId)}\`\n` +
-    `📅 ${esc(order.date)}` + uidWarning;
+    `📦 ${esc(order.item)} — *৳${order.price}*\n` +
+    `${payIcon} ${esc(order.payment)} \\| 📱 \`${esc(order.phone)}\`\n\n` +
+    `━━━━━━━━━━━━━━━━━━━\n` +
+    `🧾 *TrxID:*\n\`${esc(order.trxId)}\`\n` +
+    `━━━━━━━━━━━━━━━━━━━\n\n` +
+    `📅 ${esc(order.date)}` + uidWarning +
+    `\n\n🟡 *Status: Pending*`;
 
   await fetch(`${TG_API_BASE}${env.TG_BOT_TOKEN}/sendMessage`, {
     method: 'POST',
@@ -76,9 +78,11 @@ async function sendTelegramOrder(order, orderIndex, env, orders) {
       reply_markup: { inline_keyboard: [
         [{ text: '🔍 Verify TrxID', callback_data: `verify_${orderIndex}` }],
         [
-          { text: '✅ Approve', callback_data: `approve_${orderIndex}` },
+          { text: '✅ Done', callback_data: `approve_${orderIndex}` },
+          { text: '▶️ Running', callback_data: `running_${orderIndex}` },
           { text: '❌ Reject', callback_data: `reject_${orderIndex}` }
-        ]
+        ],
+        [{ text: '🗑 Delete', callback_data: `delete_${orderIndex}` }]
       ]}
     })
   });
@@ -150,6 +154,12 @@ async function handleCallback(callbackQuery, env) {
   if (action === 'approve') {
     orders[index].status = 'Completed';
     orders[index].approvedAt = new Date().toISOString();
+  } else if (action === 'running') {
+    orders[index].status = 'Running';
+    orders[index].runningAt = new Date().toISOString();
+  } else if (action === 'delete') {
+    orders[index].status = 'Deleted';
+    orders[index].deletedAt = new Date().toISOString();
   } else {
     orders[index].status = 'Rejected';
     orders[index].rejectedAt = new Date().toISOString();
@@ -157,18 +167,44 @@ async function handleCallback(callbackQuery, env) {
 
   const saved = await saveOrders(orders, sha, env);
   if (saved) {
-    const emoji = action === 'approve' ? '✅' : '❌';
-    const st = action === 'approve' ? 'APPROVED' : 'REJECTED';
+    const statusMap = {
+      approve: { emoji: '✅', st: 'DONE', color: '🟢' },
+      running: { emoji: '▶️', st: 'RUNNING', color: '🔵' },
+      reject: { emoji: '❌', st: 'REJECTED', color: '🔴' },
+      delete: { emoji: '🗑', st: 'DELETED', color: '⚫' }
+    };
+    const s = statusMap[action] || statusMap.reject;
+    
+    // Update message with new status
+    const updatedText = callbackQuery.message.text
+      .replace(/🟡 Status: Pending/, `${s.color} Status: ${s.st}`)
+      .replace(/🟢 Status: DONE/, `${s.color} Status: ${s.st}`)
+      .replace(/🔵 Status: RUNNING/, `${s.color} Status: ${s.st}`)
+      .replace(/🔴 Status: REJECTED/, `${s.color} Status: ${s.st}`)
+      + (action !== 'running' ? '' : '');
+    
+    // Running still shows buttons, others remove buttons
+    const replyMarkup = action === 'running' ? {
+      inline_keyboard: [
+        [{ text: '🔍 Verify TrxID', callback_data: `verify_${index}` }],
+        [
+          { text: '✅ Done', callback_data: `approve_${index}` },
+          { text: '❌ Reject', callback_data: `reject_${index}` }
+        ]
+      ]
+    } : undefined;
+    
     await fetch(`${TG_API_BASE}${env.TG_BOT_TOKEN}/editMessageText`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         chat_id: chatId,
         message_id: messageId,
-        text: callbackQuery.message.text + `\n\n${emoji} ${st} by Admin`
+        text: updatedText,
+        ...(replyMarkup ? { reply_markup: replyMarkup } : {})
       })
     });
-    await answerCb(callbackQuery.id, `${emoji} Order ${st}!`, env);
+    await answerCb(callbackQuery.id, `${s.emoji} Order ${s.st}!`, env);
   } else {
     await answerCb(callbackQuery.id, '❌ Failed! Try again.', env);
   }
@@ -240,7 +276,8 @@ async function handleVerifyReply(message, env) {
       parse_mode: 'MarkdownV2',
       reply_markup: { inline_keyboard: [
         [
-          { text: '✅ Approve', callback_data: `approve_${orderIndex}` },
+          { text: '✅ Done', callback_data: `approve_${orderIndex}` },
+          { text: '▶️ Running', callback_data: `running_${orderIndex}` },
           { text: '❌ Reject', callback_data: `reject_${orderIndex}` }
         ],
         [{ text: '🔍 আবার Verify', callback_data: `verify_${orderIndex}` }]
