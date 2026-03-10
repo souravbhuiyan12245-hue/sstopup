@@ -142,6 +142,11 @@
             <div class="stat"><div class="n" id="sDone" style="color:var(--success);">0</div><div class="l">Completed</div></div>
             <div class="stat"><div class="n" id="sRev" style="color:var(--primary);">৳0</div><div class="l">Revenue</div></div>
         </div>
+        <div class="stats" style="margin-top:8px;">
+            <div class="stat" style="border:2px solid #22c55e;"><div class="n" id="sProfit" style="color:#22c55e;">৳0</div><div class="l">💰 Profit</div></div>
+            <div class="stat"><div class="n" id="sCost" style="color:#ef4444;">৳0</div><div class="l">📉 Cost</div></div>
+            <div class="stat"><div class="n" id="sMargin" style="color:var(--primary);">0%</div><div class="l">📊 Margin</div></div>
+        </div>
         <div class="card">
             <h3>📋 Orders</h3>
             <div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;">
@@ -347,7 +352,7 @@ function renderP(){
     updateAMButtons(P.addMoneyEnabled===true);
     const dE=document.getElementById('dPrices');dE.innerHTML='';
     Object.keys(P.diamonds).sort((a,b)=>+a-+b).forEach(k=>{const d=P.diamonds[k];
-        dE.innerHTML+=`<div class="pr"><div class="name">💎 ${k}<small>was ৳${d.original}</small></div><span class="tk">৳</span><input type="number" value="${d.price}" data-t="diamonds" data-k="${k}" oninput="dirty()"><button class="btn btn-sm btn-danger" style="margin-left:4px;" onclick="delDiamond(\x27${k}\x27)"><i class="fas fa-trash"></i></button></div>`;
+        dE.innerHTML+=`<div class="pr"><div class="name">💎 ${k}<small>was ৳${d.original}</small></div><span class="tk">৳</span><input type="number" value="${d.price}" data-t="diamonds" data-k="${k}" oninput="dirty()" style="width:70px"><span class="tk" style="color:#ef4444;font-size:.7rem">cost৳</span><input type="number" value="${d.cost||''}" data-t="diamonds" data-k="${k}" data-f="cost" oninput="dirty()" style="width:60px" placeholder="0"><button class="btn btn-sm btn-danger" style="margin-left:4px;" onclick="delDiamond(\x27${k}\x27)"><i class="fas fa-trash"></i></button></div>`;
     });
     const oE=document.getElementById('offerPrices');oE.innerHTML='';
     ['monthly','weekly_1x'].forEach(k=>{if(P.passes[k]){const p=P.passes[k];
@@ -363,15 +368,45 @@ function renderP(){
     });
 }
 
+// Cost lookup - finds cost for an item from prices data
+function getCost(item, price) {
+    if(!P) return Math.round(price * 0.7); // fallback 70% cost
+    // Check diamonds
+    for(const k of Object.keys(P.diamonds||{})) {
+        if(item.includes(k+' Diamond') || item.includes(k)) {
+            return P.diamonds[k].cost || Math.round(P.diamonds[k].price * 0.7);
+        }
+    }
+    // Check passes
+    for(const k of Object.keys(P.passes||{})) {
+        if(P.passes[k].name && item.includes(P.passes[k].name)) {
+            return P.passes[k].cost || Math.round(P.passes[k].price * 0.7);
+        }
+    }
+    // Check specials
+    for(const k of Object.keys(P.specials||{})) {
+        if(P.specials[k].name && item.includes(P.specials[k].name)) {
+            return P.specials[k].cost || Math.round(P.specials[k].price * 0.7);
+        }
+    }
+    return Math.round(price * 0.7);
+}
+
 function renderO(){
     const c=document.getElementById('orderBox');
     const pen=O.filter(o=>o.status==='Pending'||!o.status).length;
     const done=O.filter(o=>o.status==='Completed').length;
     const rev=O.filter(o=>o.status==='Completed').reduce((s,o)=>s+(o.price||0),0);
+    const totalCost=O.filter(o=>o.status==='Completed').reduce((s,o)=>s+getCost(o.item,o.price),0);
+    const profit=rev-totalCost;
+    const margin=rev>0?Math.round((profit/rev)*100):0;
     document.getElementById('sTotal').textContent=O.length;
     document.getElementById('sPen').textContent=pen;
     document.getElementById('sDone').textContent=done;
     document.getElementById('sRev').textContent='৳'+rev;
+    document.getElementById('sProfit').textContent='৳'+profit;
+    document.getElementById('sCost').textContent='৳'+totalCost;
+    document.getElementById('sMargin').textContent=margin+'%';
 
     let list=cf==='all'?O:O.filter(o=>(o.status||'Pending')===cf);
     if(!list.length){c.innerHTML='<div style="text-align:center;padding:30px;color:var(--muted);"><div style="font-size:2rem;margin-bottom:8px;">📭</div>No orders</div>';return;}
@@ -425,7 +460,10 @@ async function saveO(){
 
 async function savePrices(){
     const t=tok();if(!t){msg('Set GitHub Token first!',1);return;}
-    document.querySelectorAll('.pr input').forEach(inp=>{P[inp.dataset.t][inp.dataset.k].price=+inp.value;});
+    document.querySelectorAll('.pr input').forEach(inp=>{
+        if(inp.dataset.f==='cost') P[inp.dataset.t][inp.dataset.k].cost=+inp.value;
+        else if(inp.dataset.t && inp.dataset.k && !inp.dataset.f) P[inp.dataset.t][inp.dataset.k].price=+inp.value;
+    });
     P.announcement=document.getElementById('ann').value.trim();
     P.updated=new Date().toISOString().split('T')[0];
     try{
