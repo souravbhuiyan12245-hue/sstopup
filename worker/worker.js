@@ -1,16 +1,32 @@
 // SS TOP-UP Automation Worker
 // Deploy on Cloudflare Workers (FREE)
 // Set these as Environment Variables in Cloudflare Dashboard:
-// TG_BOT_TOKEN, TG_CHAT_ID, GH_TOKEN, GH_REPO
+// TG_BOT_TOKEN, TG_CHAT_ID, GH_TOKEN, GH_REPO, API_KEY
 
 const TG_API_BASE = 'https://api.telegram.org/bot';
 const GH_ORDERS_PATH = 'data/orders.json';
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
-};
+const ALLOWED_ORIGINS = [
+  'https://souravbhuiyan12245-hue.github.io',
+  'http://localhost',
+  'http://127.0.0.1'
+];
+
+function getCorsHeaders(request) {
+  const origin = request.headers.get('Origin') || '';
+  const allowed = ALLOWED_ORIGINS.some(o => origin.startsWith(o));
+  return {
+    'Access-Control-Allow-Origin': allowed ? origin : ALLOWED_ORIGINS[0],
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, X-API-Key',
+  };
+}
+
+// Auth check for admin endpoints
+function isAuthorized(request, env) {
+  const apiKey = request.headers.get('X-API-Key') || new URL(request.url).searchParams.get('key');
+  return apiKey === env.API_KEY;
+}
 
 // ===== GitHub: Read orders =====
 async function getOrders(env) {
@@ -359,8 +375,10 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
+    const cors = getCorsHeaders(request);
+
     if (request.method === 'OPTIONS') {
-      return new Response(null, { headers: corsHeaders });
+      return new Response(null, { headers: cors });
     }
 
     // POST /notify — Route notifications through worker (hide TG token from frontend)
@@ -376,11 +394,11 @@ export default {
           });
         }
         return new Response(JSON.stringify({ success: true }), {
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          headers: { ...cors, 'Content-Type': 'application/json' }
         });
       } catch (e) {
         return new Response(JSON.stringify({ success: false }), {
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          headers: { ...cors, 'Content-Type': 'application/json' }
         });
       }
     }
@@ -392,11 +410,11 @@ export default {
         const { orders } = await getOrders(env);
         const result = checkWeeklyLimit(orders, d.uid, d.item);
         return new Response(JSON.stringify(result), {
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          headers: { ...cors, 'Content-Type': 'application/json' }
         });
       } catch (e) {
         return new Response(JSON.stringify({ allowed: true }), {
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          headers: { ...cors, 'Content-Type': 'application/json' }
         });
       }
     }
@@ -410,7 +428,7 @@ export default {
         const validErr = validateOrder(d);
         if (validErr) {
           return new Response(JSON.stringify({ success: false, limited: true, message: '❌ ' + validErr }), {
-            status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            status: 400, headers: { ...cors, 'Content-Type': 'application/json' }
           });
         }
         
@@ -422,7 +440,7 @@ export default {
             success: false, limited: true, 
             message: '⛔ এই Transaction ID আগেই ব্যবহার করা হয়েছে! সঠিক TrxID দাও।' 
           }), {
-            status: 409, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            status: 409, headers: { ...cors, 'Content-Type': 'application/json' }
           });
         }
         
@@ -432,7 +450,7 @@ export default {
             success: false, limited: true, 
             message: '⛔ অনেক বেশি অর্ডার দিয়েছো! ১ ঘণ্টা পর আবার চেষ্টা করো।' 
           }), {
-            status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            status: 429, headers: { ...cors, 'Content-Type': 'application/json' }
           });
         }
         
@@ -443,7 +461,7 @@ export default {
             success: false, limited: true, 
             message: limitCheck.message 
           }), {
-            status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            status: 429, headers: { ...cors, 'Content-Type': 'application/json' }
           });
         }
         
@@ -458,15 +476,15 @@ export default {
         if (saved) {
           await sendTelegramOrder(order, orders.length - 1, env, orders);
           return new Response(JSON.stringify({ success: true }), {
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            headers: { ...cors, 'Content-Type': 'application/json' }
           });
         }
         return new Response(JSON.stringify({ success: false }), {
-          status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          status: 500, headers: { ...cors, 'Content-Type': 'application/json' }
         });
       } catch (e) {
         return new Response(JSON.stringify({ success: false, error: e.message }), {
-          status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          status: 500, headers: { ...cors, 'Content-Type': 'application/json' }
         });
       }
     }
@@ -488,15 +506,15 @@ export default {
         if (saved) {
           await sendTelegramAddMoney(d, orders.length - 1, env);
           return new Response(JSON.stringify({ success: true }), {
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            headers: { ...cors, 'Content-Type': 'application/json' }
           });
         }
         return new Response(JSON.stringify({ success: false }), {
-          status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          status: 500, headers: { ...cors, 'Content-Type': 'application/json' }
         });
       } catch (e) {
         return new Response(JSON.stringify({ success: false, error: e.message }), {
-          status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          status: 500, headers: { ...cors, 'Content-Type': 'application/json' }
         });
       }
     }
@@ -516,8 +534,13 @@ export default {
       }
     }
 
-    // GET /setup — Set Telegram webhook
+    // GET /setup — Set Telegram webhook (protected)
     if (url.pathname === '/setup') {
+      if (!isAuthorized(request, env)) {
+        return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+          status: 401, headers: { 'Content-Type': 'application/json' }
+        });
+      }
       const r = await fetch(`${TG_API_BASE}${env.TG_BOT_TOKEN}/setWebhook`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -531,6 +554,11 @@ export default {
     // GET /orders — Read orders directly from GitHub (no CDN cache)
     // POST /admin-status — Notify Telegram when admin changes order status
     if (url.pathname === '/admin-status' && request.method === 'POST') {
+      if (!isAuthorized(request, env)) {
+        return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+          status: 401, headers: { ...cors, 'Content-Type': 'application/json' }
+        });
+      }
       const { orderIndex, status, order } = await request.json();
       const emoji = status === 'Completed' ? '✅' : status === 'Rejected' ? '❌' : '▶️';
       const st = status === 'Completed' ? 'APPROVED' : status === 'Rejected' ? 'REJECTED' : 'RUNNING';
@@ -543,18 +571,39 @@ export default {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ chat_id: env.TG_CHAT_ID, text: msg, parse_mode: 'MarkdownV2' })
       });
-      return new Response(JSON.stringify({ success: true }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      return new Response(JSON.stringify({ success: true }), { headers: { ...cors, 'Content-Type': 'application/json' } });
     }
 
+    // GET /orders — Protected: requires API key for full data, public gets limited view
     if (url.pathname === '/orders' && request.method === 'GET') {
       const { orders } = await getOrders(env);
-      return new Response(JSON.stringify(orders), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Cache-Control': 'no-cache, no-store' }
-      });
+      if (isAuthorized(request, env)) {
+        // Admin: full order data
+        return new Response(JSON.stringify(orders), {
+          headers: { ...cors, 'Content-Type': 'application/json', 'Cache-Control': 'no-cache, no-store' }
+        });
+      } else {
+        // Public: only status and basic info (no phone, trxId, email)
+        const safeOrders = orders.map(o => ({
+          name: o.name ? o.name[0] + '***' : 'Unknown',
+          item: o.item,
+          price: o.price,
+          status: o.status,
+          date: o.date
+        }));
+        return new Response(JSON.stringify(safeOrders), {
+          headers: { ...cors, 'Content-Type': 'application/json', 'Cache-Control': 'no-cache, no-store' }
+        });
+      }
     }
 
-    // GET /daily-summary — Manual trigger for daily summary
+    // GET /daily-summary — Manual trigger (protected)
     if (url.pathname === '/daily-summary') {
+      if (!isAuthorized(request, env)) {
+        return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+          status: 401, headers: { 'Content-Type': 'application/json' }
+        });
+      }
       await sendDailySummary(env);
       return new Response(JSON.stringify({ success: true, message: 'Summary sent' }), {
         headers: { 'Content-Type': 'application/json' }

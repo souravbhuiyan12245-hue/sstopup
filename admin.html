@@ -244,6 +244,12 @@
             <button class="btn btn-primary" onclick="saveTok()"><i class="fas fa-save"></i> Save Token</button>
         </div>
         <div class="card">
+            <h3><i class="fas fa-shield-alt"></i> API Key</h3>
+            <p style="font-size:0.78rem;color:var(--muted);margin-bottom:12px;">Worker API access key (admin endpoints)</p>
+            <input type="password" id="apiKeyInput" placeholder="API Key">
+            <button class="btn btn-primary" onclick="saveApiKey()"><i class="fas fa-save"></i> Save API Key</button>
+        </div>
+        <div class="card">
             <h3><i class="fas fa-lock"></i> Change Password</h3>
             <input type="password" id="curPw" placeholder="Current password">
             <input type="password" id="newPw" placeholder="New password">
@@ -273,19 +279,31 @@ const RAW=`https://raw.githubusercontent.com/${REPO}/main/`;
 const DEFHASH='240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9';
 
 let P=null,O=[],cf='all',oSha=null,pSha=null,changed=false;
+let loginAttempts=0, lockUntil=0;
 
 const tok=()=>localStorage.getItem('ss_gh')||'';
+const apiKey=()=>localStorage.getItem('ss_api_key')||'';
 const ph=()=>localStorage.getItem('ss_ph')||DEFHASH;
 const h=async s=>{const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')};
 
 async function doLogin(){
+    if(Date.now()<lockUntil){
+        document.getElementById('err').textContent='⛔ Too many attempts! Wait '+ Math.ceil((lockUntil-Date.now())/1000) +'s';
+        document.getElementById('err').style.display='block';return;
+    }
     const v=document.getElementById('pw').value;
     if(await h(v)===ph()){
+        loginAttempts=0;
         document.getElementById('loginPage').classList.add('hide');
         document.getElementById('dash').classList.add('show');
         sessionStorage.setItem('a','1');
         init();
-    }else{document.getElementById('err').style.display='block';document.getElementById('pw').value='';}
+    }else{
+        loginAttempts++;
+        if(loginAttempts>=5){lockUntil=Date.now()+60000;document.getElementById('err').textContent='⛔ 5 wrong attempts! Locked for 60s';}
+        else{document.getElementById('err').textContent='Wrong password! ('+loginAttempts+'/5)';}
+        document.getElementById('err').style.display='block';document.getElementById('pw').value='';
+    }
 }
 function doLogout(){sessionStorage.removeItem('a');location.reload();}
 if(sessionStorage.getItem('a')){document.getElementById('loginPage').classList.add('hide');document.getElementById('dash').classList.add('show');init();}
@@ -300,8 +318,16 @@ function go(name,el){
 
 async function init(){
     document.getElementById('ghTok').value=tok();
+    document.getElementById('apiKeyInput').value=apiKey();
     await Promise.all([loadP(),loadO()]);
     loadSettings();
+}
+
+function saveApiKey(){
+    const v=document.getElementById('apiKeyInput').value.trim();
+    if(!v){msg('Enter API Key!',1);return;}
+    localStorage.setItem('ss_api_key',v);
+    msg('✅ API Key saved!');
 }
 
 async function loadP(){
@@ -382,7 +408,7 @@ function filt(f){cf=f;renderO();}
 function dirty(){changed=true;document.getElementById('saveBtn').classList.add('show');}
 
 async function setS(i,s){O[i].status=s;await saveO();renderO();
-    try{await fetch('https://ss-topup-automation.kodomofficial01.workers.dev/admin-status',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({orderIndex:i,status:s,order:O[i]})});}catch(e){}
+    try{await fetch('https://ss-topup-automation.kodomofficial01.workers.dev/admin-status',{method:'POST',headers:{'Content-Type':'application/json','X-API-Key':apiKey()},body:JSON.stringify({orderIndex:i,status:s,order:O[i]})});}catch(e){}
 }
 async function delO(i){if(!confirm('Delete?'))return;O.splice(i,1);await saveO();renderO();}
 
