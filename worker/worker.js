@@ -9,7 +9,10 @@ const GH_ORDERS_PATH = 'data/orders.json';
 const ALLOWED_ORIGINS = [
   'https://souravbhuiyan12245-hue.github.io',
   'http://localhost',
-  'http://127.0.0.1'
+  'http://127.0.0.1',
+  'https://web.telegram.org',
+  'https://webk.telegram.org',
+  'https://webz.telegram.org'
 ];
 
 function getCorsHeaders(request) {
@@ -92,7 +95,7 @@ async function sendTelegramOrder(order, orderIndex, env, orders) {
       text: msg,
       parse_mode: 'MarkdownV2',
       reply_markup: { inline_keyboard: [
-        [{ text: '🔍 TrxID দেখুন', callback_data: `showtrx_${orderIndex}` }],
+        [{ text: '🔍 Verify TrxID', web_app: { url: `https://souravbhuiyan12245-hue.github.io/sstopup/verify.html?order=${orderIndex}` } }],
         [
           { text: '✅ Done', callback_data: `approve_${orderIndex}` },
           { text: '▶️ Running', callback_data: `running_${orderIndex}` },
@@ -639,20 +642,22 @@ export default {
       });
     }
 
-    // GET /order-detail — Single order for verify Mini App (admin only via TG initData)
+    // GET /order-detail — Single order for verify Mini App
     if (url.pathname === '/order-detail' && request.method === 'GET') {
-      const tgData = request.headers.get('X-TG-Data') || '';
-      const chatIdParam = new URLSearchParams(tgData).get('chat_id') || '';
-      // Only allow from admin chat
       const index = parseInt(url.searchParams.get('index') || '0');
       const { orders } = await getOrders(env);
       if (index >= orders.length) {
         return new Response(JSON.stringify({ error: 'Not found' }), {
-          status: 404, headers: { ...cors, 'Content-Type': 'application/json' }
+          status: 404, headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' }
         });
       }
-      return new Response(JSON.stringify(orders[index]), {
-        headers: { ...cors, 'Content-Type': 'application/json' }
+      // Only return limited data needed for verify (no sensitive admin data)
+      const o = orders[index];
+      return new Response(JSON.stringify({
+        name: o.name, uid: o.uid, item: o.item, price: o.price,
+        payment: o.payment, phone: o.phone, trxId: o.trxId, status: o.status
+      }), {
+        headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' }
       });
     }
 

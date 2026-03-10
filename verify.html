@@ -237,10 +237,7 @@
         // Load order data
         async function loadOrder() {
             try {
-                const startData = tg.initData;
-                const r = await fetch(`https://ss-topup-automation.kodomofficial01.workers.dev/order-detail?index=${orderIndex}`, {
-                    headers: { 'X-TG-Data': startData }
-                });
+                const r = await fetch(`https://ss-topup-automation.kodomofficial01.workers.dev/order-detail?index=${orderIndex}`);
                 if (r.ok) {
                     orderData = await r.json();
                     renderOrder();
@@ -248,7 +245,7 @@
                     document.getElementById('loadingView').innerHTML = '<div style="font-size:2rem;margin-bottom:12px;">❌</div><div>অর্ডার লোড হয়নি!</div>';
                 }
             } catch(e) {
-                document.getElementById('loadingView').innerHTML = '<div style="font-size:2rem;margin-bottom:12px;">❌</div><div>Error loading order</div>';
+                document.getElementById('loadingView').innerHTML = '<div style="font-size:2rem;margin-bottom:12px;">❌</div><div>Error: ' + e.message + '</div>';
             }
         }
         
