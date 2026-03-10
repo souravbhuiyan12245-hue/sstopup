@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>তুমি কত % বুদ্ধিমান? 🧠</title>
+    <meta name="description" content="মজার Quiz খেলো — তুমি কত % বুদ্ধিমান বের করো! 🧠">
+    <meta property="og:title" content="তুমি কত % বুদ্ধিমান? 🧠">
+    <meta property="og:description" content="আমি পেয়েছি আমার result! তুমিও খেলো — দেখো তুমি কত % বুদ্ধিমান! 🔥">
+    <meta property="og:image" content="https://souravbhuiyan12245-hue.github.io/sstopup/images/quiz-og.png">
+    <meta property="og:url" content="https://souravbhuiyan12245-hue.github.io/sstopup/quiz.html">
+    <meta property="og:type" content="website">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            color: #1e1b4b;
+        }
+        .container {
+            background: #fff;
+            border-radius: 24px;
+            padding: 32px 24px;
+            max-width: 420px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Start Screen */
+        .screen { display: none; }
+        .screen.active { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+
+        .start-emoji { font-size: 4rem; margin-bottom: 16px; }
+        .start-title { font-size: 1.5rem; font-weight: 900; margin-bottom: 8px; color: #4F46E5; }
+        .start-sub { font-size: 0.9rem; color: #6B7280; margin-bottom: 24px; }
+        
+        .name-input {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #E5E7EB;
+            border-radius: 14px;
+            font-size: 1rem;
+            font-family: inherit;
+            outline: none;
+            text-align: center;
+            margin-bottom: 16px;
+            transition: border 0.2s;
+        }
+        .name-input:focus { border-color: #4F46E5; }
+        .name-input::placeholder { color: #9CA3AF; }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 16px;
+            font-size: 1rem;
+            font-weight: 800;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+        .btn:active { transform: scale(0.96); }
+        .btn-primary {
+            background: linear-gradient(135deg, #4F46E5, #7C3AED);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(79,70,229,0.4);
+        }
+
+        /* Progress */
+        .progress-wrap { margin-bottom: 20px; }
+        .progress-text { font-size: 0.8rem; color: #6B7280; margin-bottom: 8px; font-weight: 600; }
+        .progress-bar { height: 8px; background: #E5E7EB; border-radius: 10px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #4F46E5, #7C3AED); border-radius: 10px; transition: width 0.4s ease; }
+
+        /* Question */
+        .q-number { font-size: 0.8rem; color: #7C3AED; font-weight: 700; margin-bottom: 8px; }
+        .q-text { font-size: 1.1rem; font-weight: 800; margin-bottom: 20px; line-height: 1.5; }
+        .q-emoji { font-size: 2.5rem; margin-bottom: 12px; }
+
+        .options { display: flex; flex-direction: column; gap: 10px; }
+        .option {
+            padding: 14px 18px;
+            border: 2px solid #E5E7EB;
+            border-radius: 14px;
+            font-size: 0.92rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+            background: #fff;
+        }
+        .option:hover { border-color: #4F46E5; background: #EEF2FF; }
+        .option:active { transform: scale(0.97); }
+        .option.selected {
+            border-color: #4F46E5;
+            background: linear-gradient(135deg, #EEF2FF, #E0E7FF);
+            color: #4F46E5;
+        }
+
+        /* Result */
+        .result-emoji { font-size: 5rem; margin-bottom: 16px; }
+        .result-name { font-size: 0.9rem; color: #6B7280; margin-bottom: 4px; }
+        .result-percent {
+            font-size: 3.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #4F46E5, #7C3AED);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 4px;
+        }
+        .result-label { font-size: 1.2rem; font-weight: 800; margin-bottom: 8px; }
+        .result-desc { font-size: 0.88rem; color: #6B7280; margin-bottom: 24px; line-height: 1.5; }
+        
+        .result-bar-wrap { margin-bottom: 24px; }
+        .result-bar { height: 14px; background: #E5E7EB; border-radius: 10px; overflow: hidden; }
+        .result-bar-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 1.5s ease;
+            background: linear-gradient(90deg, #EF4444, #F59E0B, #22C55E, #4F46E5);
+        }
+
+        .share-title { font-size: 0.8rem; color: #6B7280; font-weight: 600; margin-bottom: 12px; }
+        .share-btns { display: flex; gap: 8px; margin-bottom: 16px; }
+        .share-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            color: #fff;
+            transition: all 0.2s;
+        }
+        .share-btn:active { transform: scale(0.95); }
+        .share-fb { background: #1877F2; }
+        .share-wa { background: #25D366; }
+        .share-tg { background: #0088CC; }
+        .share-copy { background: #6B7280; }
+
+        .retry-link {
+            display: inline-block;
+            margin-top: 8px;
+            color: #7C3AED;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        /* Confetti */
+        .confetti { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; }
+        .confetti span {
+            position: absolute;
+            top: -10px;
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            animation: fall 3s linear forwards;
+        }
+        @keyframes fall {
+            to { transform: translateY(600px) rotate(720deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Start Screen -->
+        <div class="screen active" id="startScreen">
+            <div class="start-emoji">🧠</div>
+            <div class="start-title">তুমি কত % বুদ্ধিমান?</div>
+            <div class="start-sub">১০টা মজার প্রশ্নের উত্তর দাও — দেখো তোমার result! 🔥</div>
+            <input type="text" class="name-input" id="nameInput" placeholder="তোমার নাম লেখো" maxlength="30">
+            <button class="btn btn-primary" onclick="startQuiz()">🚀 শুরু করো!</button>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div class="screen" id="quizScreen">
+            <div class="progress-wrap">
+                <div class="progress-text" id="progressText">প্রশ্ন ১/১০</div>
+                <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:10%"></div></div>
+            </div>
+            <div class="q-emoji" id="qEmoji">🤔</div>
+            <div class="q-text" id="qText">Loading...</div>
+            <div class="options" id="optionsWrap"></div>
+        </div>
+
+        <!-- Result Screen -->
+        <div class="screen" id="resultScreen">
+            <div class="confetti" id="confetti"></div>
+            <div class="result-emoji" id="resultEmoji">🧠</div>
+            <div class="result-name" id="resultName">তোমার result:</div>
+            <div class="result-percent" id="resultPercent">0%</div>
+            <div class="result-label" id="resultLabel">বুদ্ধিমান</div>
+            <div class="result-bar-wrap">
+                <div class="result-bar"><div class="result-bar-fill" id="resultBarFill" style="width:0%"></div></div>
+            </div>
+            <div class="result-desc" id="resultDesc">...</div>
+            <div class="share-title">👇 বন্ধুদের challenge করো!</div>
+            <div class="share-btns">
+                <button class="share-btn share-fb" onclick="shareFB()">📘 Facebook</button>
+                <button class="share-btn share-wa" onclick="shareWA()">💬 WhatsApp</button>
+                <button class="share-btn share-tg" onclick="shareTG()">✈️ Telegram</button>
+            </div>
+            <button class="btn btn-primary" onclick="location.reload()" style="margin-top:8px;">🔄 আবার খেলো</button>
+            <div class="retry-link" onclick="location.reload()">নতুন quiz খেলতে চাও?</div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                emoji: '🧮',
+                q: 'যদি ১২ জন ১২টা কলম ১২ মিনিটে বানায়, তাহলে ১০০টা কলম ১০০ মিনিটে কতজন বানাবে?',
+                opts: ['১০০ জন', '১২ জন', '১ জন', '১৪৪ জন'],
+                ans: 1
+            },
+            {
+                emoji: '🔢',
+                q: '1, 1, 2, 3, 5, 8, ___ পরের সংখ্যা কত?',
+                opts: ['10', '11', '13', '15'],
+                ans: 2
+            },
+            {
+                emoji: '🚪',
+                q: 'তুমি একটা অন্ধকার ঘরে ঢুকলে। তোমার কাছে একটা মোমবাতি, একটা লণ্ঠন, আর একটা চুলা। আগে কোনটা জ্বালাবে?',
+                opts: ['মোমবাতি', 'লণ্ঠন', 'চুলা', 'দেশলাই/লাইটার'],
+                ans: 3
+            },
+            {
+                emoji: '🎂',
+                q: 'তোমার জন্মদিনে তুমি ২ বছর আগে ১৫ বছর ছিলে। এখন তোমার বয়স কত?',
+                opts: ['১৬', '১৭', '১৮', '১৫'],
+                ans: 1
+            },
+            {
+                emoji: '🧊',
+                q: 'বরফ গলতে ১ ঘণ্টা লাগে। ২টা বরফ গলতে কত সময় লাগবে?',
+                opts: ['২ ঘণ্টা', '১ ঘণ্টা', '৩০ মিনিট', '১.৫ ঘণ্টা'],
+                ans: 1
+            },
+            {
+                emoji: '🐔',
+                q: 'একটা মোরগ একটা বাড়ির ছাদের চূড়ায় ডিম পাড়লো। ডিমটা কোন দিকে পড়বে?',
+                opts: ['ডান দিকে', 'বাম দিকে', 'সামনে', 'মোরগ ডিম পাড়ে না!'],
+                ans: 3
+            },
+            {
+                emoji: '🧠',
+                q: 'কোনটা বেশি ভারী — ১ কেজি তুলা নাকি ১ কেজি লোহা?',
+                opts: ['তুলা', 'লোহা', 'সমান', 'নির্ভর করে'],
+                ans: 2
+            },
+            {
+                emoji: '📅',
+                q: 'কিছু মাসে ৩১ দিন আছে, কিছুতে ৩০। কয়টা মাসে ২৮ দিন আছে?',
+                opts: ['১টা (ফেব্রুয়ারি)', '২টা', '৬টা', '১২টা (সব মাসে)'],
+                ans: 3
+            },
+            {
+                emoji: '🏃',
+                q: 'তুমি দৌড়ে ২য় স্থানের জনকে পেছনে ফেললে। তুমি এখন কত নম্বরে?',
+                opts: ['১ম', '২য়', '৩য়', 'শেষ'],
+                ans: 1
+            },
+            {
+                emoji: '💡',
+                q: 'একটা ঘরে ৩টা সুইচ আছে। প্রতিটা একটা বাল্বের সাথে যুক্ত — বাল্ব অন্য ঘরে। একবার গিয়ে কিভাবে বুঝবে কোন সুইচ কোন বাল্বের?',
+                opts: ['বুঝা সম্ভব না', 'একটা জ্বালিয়ে রাখো, একটা কিছুক্ষণ জ্বালিয়ে বন্ধ করো, একটা বন্ধ রাখো', 'তিনবার যাও', 'আন্দাজে বলো'],
+                ans: 1
+            }
+        ];
+
+        let current = 0, score = 0, playerName = '';
+
+        function startQuiz() {
+            playerName = document.getElementById('nameInput').value.trim() || 'বন্ধু';
+            document.getElementById('startScreen').classList.remove('active');
+            document.getElementById('quizScreen').classList.add('active');
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const q = questions[current];
+            document.getElementById('progressText').textContent = `প্রশ্ন ${current + 1}/১০`;
+            document.getElementById('progressFill').style.width = `${(current + 1) * 10}%`;
+            document.getElementById('qEmoji').textContent = q.emoji;
+            document.getElementById('qText').textContent = q.q;
+
+            const wrap = document.getElementById('optionsWrap');
+            wrap.innerHTML = '';
+            q.opts.forEach((opt, i) => {
+                const div = document.createElement('div');
+                div.className = 'option';
+                div.textContent = opt;
+                div.onclick = () => selectAnswer(i);
+                wrap.appendChild(div);
+            });
+        }
+
+        function selectAnswer(idx) {
+            const opts = document.querySelectorAll('.option');
+            opts.forEach(o => o.style.pointerEvents = 'none');
+            opts[idx].classList.add('selected');
+            
+            if (idx === questions[current].ans) score++;
+
+            setTimeout(() => {
+                current++;
+                if (current < questions.length) {
+                    showQuestion();
+                } else {
+                    showResult();
+                }
+            }, 600);
+        }
+
+        function showResult() {
+            document.getElementById('quizScreen').classList.remove('active');
+            document.getElementById('resultScreen').classList.add('active');
+
+            const percent = Math.round((score / questions.length) * 100);
+            let emoji, label, desc;
+
+            if (percent >= 90) {
+                emoji = '🏆'; label = 'জিনিয়াস!';
+                desc = `${playerName}, তুমি তো আইনস্টাইন লেভেল! 🔥 তোমার মাথায় শুধু ব্রেইন না, সুপারকম্পিউটার আছে!`;
+            } else if (percent >= 70) {
+                emoji = '🧠'; label = 'অনেক বুদ্ধিমান!';
+                desc = `${playerName}, তুমি বেশিরভাগের চেয়ে শার্প! তোমাকে সহজে বোকা বানানো যায় না 😎`;
+            } else if (percent >= 50) {
+                emoji = '😊'; label = 'মোটামুটি ভালো!';
+                desc = `${playerName}, Average এর উপরে আছো! আরেকটু practice করলে genius হয়ে যাবে! 💪`;
+            } else if (percent >= 30) {
+                emoji = '😅'; label = 'একটু কম...';
+                desc = `${playerName}, চিন্তা নেই! এই প্রশ্নগুলো tricky ছিল। আবার try করো! 🔄`;
+            } else {
+                emoji = '🤦'; label = 'ওহো!';
+                desc = `${playerName}, মনে হচ্ছে ঘুমিয়ে ঘুমিয়ে খেলেছো! 😂 চা খেয়ে আবার try করো!`;
+            }
+
+            document.getElementById('resultEmoji').textContent = emoji;
+            document.getElementById('resultName').textContent = `${playerName} এর result:`;
+            document.getElementById('resultPercent').textContent = `${percent}%`;
+            document.getElementById('resultLabel').textContent = label;
+            document.getElementById('resultDesc').textContent = desc;
+
+            setTimeout(() => {
+                document.getElementById('resultBarFill').style.width = `${percent}%`;
+            }, 200);
+
+            // Confetti
+            const confetti = document.getElementById('confetti');
+            const colors = ['#4F46E5', '#7C3AED', '#EC4899', '#F59E0B', '#22C55E', '#EF4444'];
+            for (let i = 0; i < 30; i++) {
+                const span = document.createElement('span');
+                span.style.left = Math.random() * 100 + '%';
+                span.style.background = colors[Math.floor(Math.random() * colors.length)];
+                span.style.animationDelay = Math.random() * 1 + 's';
+                span.style.animationDuration = (2 + Math.random() * 2) + 's';
+                confetti.appendChild(span);
+            }
+        }
+
+        const QUIZ_URL = 'https://souravbhuiyan12245-hue.github.io/sstopup/quiz.html';
+        const shareText = () => `আমি ${document.getElementById('resultPercent').textContent} বুদ্ধিমান! 🧠 তুমি কত % পাবে? খেলো এখনই! 👇`;
+
+        function shareFB() {
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(QUIZ_URL)}&quote=${encodeURIComponent(shareText())}`, '_blank');
+        }
+        function shareWA() {
+            window.open(`https://wa.me/?text=${encodeURIComponent(shareText() + '\n' + QUIZ_URL)}`, '_blank');
+        }
+        function shareTG() {
+            window.open(`https://t.me/share/url?url=${encodeURIComponent(QUIZ_URL)}&text=${encodeURIComponent(shareText())}`, '_blank');
+        }
+    </script>
+</body>
+</html>
