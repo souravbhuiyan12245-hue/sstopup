@@ -92,7 +92,7 @@ async function sendTelegramOrder(order, orderIndex, env, orders) {
       text: msg,
       parse_mode: 'MarkdownV2',
       reply_markup: { inline_keyboard: [
-        [{ text: '🔍 Verify TrxID', web_app: { url: `https://souravbhuiyan12245-hue.github.io/sstopup/verify.html?order=${orderIndex}` } }],
+        [{ text: '🔍 TrxID দেখুন', callback_data: `showtrx_${orderIndex}` }],
         [
           { text: '✅ Done', callback_data: `approve_${orderIndex}` },
           { text: '▶️ Running', callback_data: `running_${orderIndex}` },
@@ -142,28 +142,14 @@ async function handleCallback(callbackQuery, env) {
     return;
   }
 
-  // ===== Verify TrxID Flow =====
-  if (action === 'verify') {
+  // ===== Show TrxID Popup =====
+  if (action === 'showtrx') {
     const order = orders[index];
     const customerTrx = order.trxId || 'N/A';
-    
-    // Send a message asking admin to paste the real TrxID, with force_reply
-    await fetch(`${TG_API_BASE}${env.TG_BOT_TOKEN}/sendMessage`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        chat_id: chatId,
-        text: `🔍 *TrxID Verify — Order \\#${index + 1}*\n\n` +
-          `👤 ${esc(order.name || 'Unknown')} — 🎮 UID: \`${esc(order.uid)}\`\n` +
-          `📦 ${esc(order.item)} — ৳${order.price}\n` +
-          `💳 ${esc(order.payment)}\n\n` +
-          `🧾 Customer TrxID:\n\`${esc(customerTrx)}\`\n\n` +
-          `👇 *bKash/Nagad থেকে real TrxID পেস্ট করো:*`,
-        parse_mode: 'MarkdownV2',
-        reply_markup: { force_reply: true, selective: true, input_field_placeholder: 'Real TrxID paste করো...' }
-      })
-    });
-    await answerCb(callbackQuery.id, '🔍 Real TrxID পেস্ট করো নিচে!', env);
+    const payment = (order.payment || 'bkash').toUpperCase();
+    await answerCb(callbackQuery.id, 
+      `🧾 TrxID: ${customerTrx}\n\n💳 ${payment}\n📱 ${order.phone || 'N/A'}\n💰 ৳${order.price}\n\nbKash/Nagad app এ check করো!`, 
+      env);
     return;
   }
 
