@@ -385,6 +385,23 @@ export default {
     }
 
     // GET /orders — Read orders directly from GitHub (no CDN cache)
+    // POST /admin-status — Notify Telegram when admin changes order status
+    if (url.pathname === '/admin-status' && request.method === 'POST') {
+      const { orderIndex, status, order } = await request.json();
+      const emoji = status === 'Completed' ? '✅' : status === 'Rejected' ? '❌' : '▶️';
+      const st = status === 'Completed' ? 'APPROVED' : status === 'Rejected' ? 'REJECTED' : 'RUNNING';
+      const msg = `${emoji} *Order \\#${orderIndex + 1} ${st} by Admin*\n\n` +
+        `👤 ${esc(order.name || 'Unknown')}\n` +
+        `🎮 UID: \`${esc(order.uid || '—')}\`\n` +
+        `📦 ${esc(order.item || '—')} — ৳${order.price || 0}`;
+      await fetch(`${TG_API_BASE}${env.TG_BOT_TOKEN}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: env.TG_CHAT_ID, text: msg, parse_mode: 'MarkdownV2' })
+      });
+      return new Response(JSON.stringify({ success: true }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
+
     if (url.pathname === '/orders' && request.method === 'GET') {
       const { orders } = await getOrders(env);
       return new Response(JSON.stringify(orders), {
