@@ -39,6 +39,59 @@
             --shadow: 0 2px 12px rgba(108,60,225,0.12);
             --shadow-lg: 0 8px 30px rgba(108,60,225,0.18);
         }
+
+        [data-theme="dark"] {
+            --primary: #8B5CF6;
+            --primary-dark: #7C3AED;
+            --primary-light: #A78BFA;
+            --bg: #0F0F1A;
+            --white: #1A1A2E;
+            --card-bg: #1A1A2E;
+            --text: #E2E8F0;
+            --text-muted: #94A3B8;
+            --border: rgba(139,92,246,0.15);
+            --shadow: 0 2px 12px rgba(0,0,0,0.3);
+            --shadow-lg: 0 8px 30px rgba(0,0,0,0.4);
+        }
+        [data-theme="dark"] body { background: var(--bg); color: var(--text); }
+        [data-theme="dark"] .header { background: linear-gradient(135deg, #1E1B4B, #312E81); }
+        [data-theme="dark"] .bottom-nav { background: #1A1A2E; border-top-color: rgba(139,92,246,0.15); }
+        [data-theme="dark"] .form-input { background: #12122a; border-color: #2D2D4A; color: #E2E8F0; }
+        [data-theme="dark"] .form-input:focus { background: #1A1A2E; border-color: var(--primary); }
+        [data-theme="dark"] .form-input::placeholder { color: #4A4A6A; }
+        [data-theme="dark"] .diamond-option { background: #12122a; color: #E2E8F0; }
+        [data-theme="dark"] .diamond-option.selected { background: #2D1B69; border-color: var(--primary); }
+        [data-theme="dark"] .diamond-option .dm-price { color: var(--text-muted); }
+        [data-theme="dark"] .payment-option { background: #12122a; }
+        [data-theme="dark"] .payment-option.selected { background: #2D1B69; }
+        [data-theme="dark"] .total-bar { background: #2D1B69; }
+        [data-theme="dark"] .modal { background: #1A1A2E; }
+        [data-theme="dark"] .modal-handle { background: #4A4A6A; }
+        [data-theme="dark"] .status-card { background: #1A1A2E; border-color: rgba(139,92,246,0.15); }
+        [data-theme="dark"] .status-row { border-bottom-color: #2D2D4A; }
+        [data-theme="dark"] .announce-bar { background: linear-gradient(135deg, #422006, #78350F); color: #FDE68A; }
+        [data-theme="dark"] .toast { box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
+        [data-theme="dark"] .login-card { background: #1A1A2E; }
+        [data-theme="dark"] .login-card h2 { color: #E2E8F0; }
+        [data-theme="dark"] a { color: #E2E8F0; }
+        [data-theme="dark"] #siteFooter { background: linear-gradient(135deg, #064E3B, #065F46); }
+
+        .dark-toggle {
+            width: 38px;
+            height: 38px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 1rem;
+            cursor: pointer;
+            border: none;
+            backdrop-filter: blur(10px);
+            transition: all 0.2s;
+        }
+        .dark-toggle:active { transform: scale(0.92); }
         
         body {
             font-family: 'Inter', sans-serif;
@@ -678,6 +731,7 @@
         </div>
     </div>
     <div class="header-right">
+        <button class="dark-toggle" id="darkToggle" onclick="toggleDarkMode()"><i class="fas fa-moon"></i></button>
         <button class="header-btn" onclick="navigateTo('home')"><i class="fas fa-home"></i></button>
         <button class="header-btn" onclick="navigateTo('orders')"><i class="fas fa-receipt"></i></button>
         <div class="profile-btn" onclick="navigateTo('account')">S</div>
@@ -1162,6 +1216,32 @@
 <div class="toast" id="toast"></div>
 
 <script>
+// ===== Dark Mode =====
+function toggleDarkMode() {
+    const html = document.documentElement;
+    const isDark = html.getAttribute('data-theme') === 'dark';
+    if (isDark) {
+        html.removeAttribute('data-theme');
+        localStorage.setItem('ss_theme', 'light');
+        document.getElementById('darkToggle').innerHTML = '<i class="fas fa-moon"></i>';
+    } else {
+        html.setAttribute('data-theme', 'dark');
+        localStorage.setItem('ss_theme', 'dark');
+        document.getElementById('darkToggle').innerHTML = '<i class="fas fa-sun"></i>';
+    }
+}
+// Load saved theme
+(function() {
+    const saved = localStorage.getItem('ss_theme');
+    if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        document.addEventListener('DOMContentLoaded', () => {
+            const btn = document.getElementById('darkToggle');
+            if (btn) btn.innerHTML = '<i class="fas fa-sun"></i>';
+        });
+    }
+})();
+
 if('serviceWorker' in navigator){
   // Clear old caches and re-register
   caches.keys().then(keys => keys.forEach(k => caches.delete(k)));
