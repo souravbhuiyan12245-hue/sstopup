@@ -142,11 +142,7 @@
             <div class="stat"><div class="n" id="sDone" style="color:var(--success);">0</div><div class="l">Completed</div></div>
             <div class="stat"><div class="n" id="sRev" style="color:var(--primary);">৳0</div><div class="l">Revenue</div></div>
         </div>
-        <div class="stats" style="margin-top:8px;">
-            <div class="stat" style="border:2px solid #22c55e;"><div class="n" id="sProfit" style="color:#22c55e;">৳0</div><div class="l">💰 Profit</div></div>
-            <div class="stat"><div class="n" id="sCost" style="color:#ef4444;">৳0</div><div class="l">📉 Cost</div></div>
-            <div class="stat"><div class="n" id="sMargin" style="color:var(--primary);">0%</div><div class="l">📊 Margin</div></div>
-        </div>
+
         <div class="card">
             <h3>📋 Orders</h3>
             <div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;">
@@ -397,16 +393,10 @@ function renderO(){
     const pen=O.filter(o=>o.status==='Pending'||!o.status).length;
     const done=O.filter(o=>o.status==='Completed').length;
     const rev=O.filter(o=>o.status==='Completed').reduce((s,o)=>s+(o.price||0),0);
-    const totalCost=O.filter(o=>o.status==='Completed').reduce((s,o)=>s+getCost(o.item,o.price),0);
-    const profit=rev-totalCost;
-    const margin=rev>0?Math.round((profit/rev)*100):0;
     document.getElementById('sTotal').textContent=O.length;
     document.getElementById('sPen').textContent=pen;
     document.getElementById('sDone').textContent=done;
     document.getElementById('sRev').textContent='৳'+rev;
-    document.getElementById('sProfit').textContent='৳'+profit;
-    document.getElementById('sCost').textContent='৳'+totalCost;
-    document.getElementById('sMargin').textContent=margin+'%';
 
     let list=cf==='all'?O:O.filter(o=>(o.status||'Pending')===cf);
     if(!list.length){c.innerHTML='<div style="text-align:center;padding:30px;color:var(--muted);"><div style="font-size:2rem;margin-bottom:8px;">📭</div>No orders</div>';return;}
