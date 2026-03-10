@@ -73,10 +73,13 @@ async function sendTelegramOrder(order, orderIndex, env, orders) {
       chat_id: env.TG_CHAT_ID,
       text: msg,
       parse_mode: 'MarkdownV2',
-      reply_markup: { inline_keyboard: [[
-        { text: '✅ Approve', callback_data: `approve_${orderIndex}` },
-        { text: '❌ Reject', callback_data: `reject_${orderIndex}` }
-      ]]}
+      reply_markup: { inline_keyboard: [
+        [{ text: '🔍 Verify TrxID', callback_data: `verify_${orderIndex}` }],
+        [
+          { text: '✅ Approve', callback_data: `approve_${orderIndex}` },
+          { text: '❌ Reject', callback_data: `reject_${orderIndex}` }
+        ]
+      ]}
     })
   });
 }
@@ -105,7 +108,7 @@ async function sendTelegramAddMoney(data, orderIndex, env) {
   });
 }
 
-// ===== Handle Telegram Callback (Approve/Reject) =====
+// ===== Handle Telegram Callback (Approve/Reject/Verify) =====
 async function handleCallback(callbackQuery, env) {
   const data = callbackQuery.data;
   const chatId = callbackQuery.message.chat.id;
@@ -116,6 +119,31 @@ async function handleCallback(callbackQuery, env) {
   const { orders, sha } = await getOrders(env);
   if (index >= orders.length) {
     await answerCb(callbackQuery.id, '❌ Order not found!', env);
+    return;
+  }
+
+  // ===== Verify TrxID Flow =====
+  if (action === 'verify') {
+    const order = orders[index];
+    const customerTrx = order.trxId || 'N/A';
+    
+    // Send a message asking admin to paste the real TrxID, with force_reply
+    await fetch(`${TG_API_BASE}${env.TG_BOT_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text: `🔍 *TrxID Verify — Order \\#${index + 1}*\n\n` +
+          `👤 ${esc(order.name || 'Unknown')} — 🎮 UID: \`${esc(order.uid)}\`\n` +
+          `📦 ${esc(order.item)} — ৳${order.price}\n` +
+          `💳 ${esc(order.payment)}\n\n` +
+          `🧾 Customer TrxID:\n\`${esc(customerTrx)}\`\n\n` +
+          `👇 *bKash/Nagad থেকে real TrxID পেস্ট করো:*`,
+        parse_mode: 'MarkdownV2',
+        reply_markup: { force_reply: true, selective: true, input_field_placeholder: 'Real TrxID paste করো...' }
+      })
+    });
+    await answerCb(callbackQuery.id, '🔍 Real TrxID পেস্ট করো নিচে!', env);
     return;
   }
 
@@ -144,6 +172,81 @@ async function handleCallback(callbackQuery, env) {
   } else {
     await answerCb(callbackQuery.id, '❌ Failed! Try again.', env);
   }
+}
+
+// ===== Handle Verify Reply (admin pastes real TrxID) =====
+async function handleVerifyReply(message, env) {
+  const replyTo = message.reply_to_message;
+  if (!replyTo || !replyTo.text) return;
+  
+  // Check if the replied message is a verify prompt
+  const verifyMatch = replyTo.text.match(/TrxID Verify — Order #(\d+)/);
+  if (!verifyMatch) return;
+  
+  const orderIndex = parseInt(verifyMatch[1]) - 1;
+  const realTrxId = (message.text || '').trim();
+  const chatId = message.chat.id;
+  
+  if (!realTrxId) {
+    await fetch(`${TG_API_BASE}${env.TG_BOT_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: chatId, text: '❌ TrxID খালি! আবার চেষ্টা করো।' })
+    });
+    return;
+  }
+  
+  const { orders } = await getOrders(env);
+  if (orderIndex >= orders.length) {
+    await fetch(`${TG_API_BASE}${env.TG_BOT_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: chatId, text: '❌ Order not found!' })
+    });
+    return;
+  }
+  
+  const order = orders[orderIndex];
+  const customerTrx = (order.trxId || '').trim().toUpperCase();
+  const adminTrx = realTrxId.toUpperCase();
+  
+  const matched = customerTrx === adminTrx;
+  
+  let resultMsg;
+  if (matched) {
+    resultMsg = `✅ *MATCHED\\!* 🎉\n\n` +
+      `📦 Order \\#${orderIndex + 1} — ${esc(order.item)}\n` +
+      `👤 ${esc(order.name)} — UID: \`${esc(order.uid)}\`\n` +
+      `💰 ৳${order.price}\n\n` +
+      `🧾 Customer: \`${esc(order.trxId)}\`\n` +
+      `🔍 bKash/Nagad: \`${esc(realTrxId)}\`\n\n` +
+      `✅ TrxID মিলে গেছে\\! এখন অর্ডার Approve করো\\.`;
+  } else {
+    resultMsg = `❌ *NOT MATCHED\\!* ⚠️\n\n` +
+      `📦 Order \\#${orderIndex + 1} — ${esc(order.item)}\n` +
+      `👤 ${esc(order.name)} — UID: \`${esc(order.uid)}\`\n` +
+      `💰 ৳${order.price}\n\n` +
+      `🧾 Customer: \`${esc(order.trxId)}\`\n` +
+      `🔍 bKash/Nagad: \`${esc(realTrxId)}\`\n\n` +
+      `❌ TrxID মিলেনি\\! Reject করো অথবা আবার verify করো\\.`;
+  }
+  
+  await fetch(`${TG_API_BASE}${env.TG_BOT_TOKEN}/sendMessage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      chat_id: chatId,
+      text: resultMsg,
+      parse_mode: 'MarkdownV2',
+      reply_markup: { inline_keyboard: [
+        [
+          { text: '✅ Approve', callback_data: `approve_${orderIndex}` },
+          { text: '❌ Reject', callback_data: `reject_${orderIndex}` }
+        ],
+        [{ text: '🔍 আবার Verify', callback_data: `verify_${orderIndex}` }]
+      ]}
+    })
+  });
 }
 
 async function answerCb(id, text, env) {
@@ -361,11 +464,15 @@ export default {
       }
     }
 
-    // POST /webhook — Telegram callbacks
+    // POST /webhook — Telegram callbacks + verify replies
     if (url.pathname === '/webhook' && request.method === 'POST') {
       try {
         const update = await request.json();
-        if (update.callback_query) await handleCallback(update.callback_query, env);
+        if (update.callback_query) {
+          await handleCallback(update.callback_query, env);
+        } else if (update.message && update.message.reply_to_message) {
+          await handleVerifyReply(update.message, env);
+        }
         return new Response('OK');
       } catch (e) {
         return new Response('Error', { status: 500 });
@@ -377,7 +484,7 @@ export default {
       const r = await fetch(`${TG_API_BASE}${env.TG_BOT_TOKEN}/setWebhook`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: `${url.origin}/webhook`, allowed_updates: ['callback_query'] })
+        body: JSON.stringify({ url: `${url.origin}/webhook`, allowed_updates: ['callback_query', 'message'] })
       });
       return new Response(JSON.stringify(await r.json(), null, 2), {
         headers: { 'Content-Type': 'application/json' }
