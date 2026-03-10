@@ -352,8 +352,30 @@ function renderO(){
     c.innerHTML=list.slice().reverse().map(o=>{
         const i=O.indexOf(o);
         const bc=o.status==='Completed'?'b-done':o.status==='Running'?'b-run':o.status==='Rejected'?'b-rej':'b-pen';
-        return`<div class="ord"><div class="top"><span class="uid">🎮 ${o.uid||'—'}</span><span class="badge ${bc}">${o.status||'Pending'}</span></div><div class="det">👤 <b>${o.name||'—'}</b><br>📦 ${o.item||'—'} — <b>৳${o.price||0}</b><br>💳 ${o.payment||'—'} | 📱 ${o.phone||'—'}<br>🧾 ${o.trxId||'—'}<br>📅 ${o.date||'—'}</div><div class="acts">${o.status!=='Completed'?`<button class="btn btn-sm btn-success" onclick="setS(${i},'Completed')">✅ Done</button>`:''} ${o.status!=='Running'&&o.status!=='Completed'?`<button class="btn btn-sm" style="background:#dbeafe;color:#1e40af;" onclick="setS(${i},'Running')">▶ Running</button>`:''} <button class="btn btn-sm btn-danger" onclick="delO(${i})">🗑</button></div></div>`;
+        const matchId = `match_${i}`;
+        const matchBox = o.status!=='Completed'&&o.status!=='Rejected' ? `<div style="margin-top:8px;padding:8px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;">
+            <div style="font-size:0.7rem;color:#166534;font-weight:600;margin-bottom:4px;">🔍 TrxID Verify</div>
+            <div style="display:flex;gap:6px;">
+                <input type="text" id="${matchId}" placeholder="bKash TrxID paste করুন" style="flex:1;padding:6px 8px;border:1px solid #d1d5db;border-radius:6px;font-size:0.75rem;">
+                <button class="btn btn-sm" style="background:#16a34a;color:#fff;white-space:nowrap;" onclick="matchTrx(${i})">Match</button>
+            </div>
+            <div id="${matchId}_result" style="font-size:0.7rem;margin-top:4px;"></div>
+        </div>` : '';
+        return`<div class="ord"><div class="top"><span class="uid">🎮 ${o.uid||'—'}</span><span class="badge ${bc}">${o.status||'Pending'}</span></div><div class="det">👤 <b>${o.name||'—'}</b> ${o.email?`<br>📧 ${o.email}`:''}<br>📦 ${o.item||'—'} — <b>৳${o.price||0}</b><br>💳 ${o.payment||'—'} | 📱 ${o.phone||'—'}<br>🧾 <span style="background:#fef3c7;padding:2px 6px;border-radius:4px;font-weight:700;">${o.trxId||'—'}</span><br>📅 ${o.date||'—'}</div>${matchBox}<div class="acts">${o.status!=='Completed'?`<button class="btn btn-sm btn-success" onclick="setS(${i},'Completed')">✅ Done</button>`:''} ${o.status!=='Running'&&o.status!=='Completed'?`<button class="btn btn-sm" style="background:#dbeafe;color:#1e40af;" onclick="setS(${i},'Running')">▶ Running</button>`:''} ${o.status!=='Rejected'?`<button class="btn btn-sm" style="background:#fee2e2;color:#991b1b;" onclick="setS(${i},'Rejected')">❌ Reject</button>`:''} <button class="btn btn-sm btn-danger" onclick="delO(${i})">🗑</button></div></div>`;
     }).join('');
+}
+
+function matchTrx(i){
+    const input=document.getElementById(`match_${i}`).value.trim();
+    const result=document.getElementById(`match_${i}_result`);
+    if(!input){result.innerHTML='<span style="color:#dc2626;">❌ TrxID paste করুন!</span>';return;}
+    const orderTrx=(O[i].trxId||'').trim().toLowerCase();
+    const inputTrx=input.trim().toLowerCase();
+    if(orderTrx===inputTrx){
+        result.innerHTML='<span style="color:#16a34a;font-weight:700;">✅ MATCHED! TrxID মিলেছে!</span>';
+    } else {
+        result.innerHTML=`<span style="color:#dc2626;font-weight:700;">❌ NOT MATCHED!</span><br><span style="font-size:0.65rem;color:#6b7280;">Customer: ${O[i].trxId} | Your: ${input}</span>`;
+    }
 }
 
 function filt(f){cf=f;renderO();}
