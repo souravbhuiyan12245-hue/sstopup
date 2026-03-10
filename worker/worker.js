@@ -92,7 +92,7 @@ async function sendTelegramOrder(order, orderIndex, env, orders) {
       text: msg,
       parse_mode: 'MarkdownV2',
       reply_markup: { inline_keyboard: [
-        [{ text: '🔍 Verify TrxID', callback_data: `verify_${orderIndex}` }],
+        [{ text: '🔍 Verify TrxID', web_app: { url: `https://souravbhuiyan12245-hue.github.io/sstopup/verify.html?order=${orderIndex}` } }],
         [
           { text: '✅ Done', callback_data: `approve_${orderIndex}` },
           { text: '▶️ Running', callback_data: `running_${orderIndex}` },
@@ -224,6 +224,47 @@ async function handleCallback(callbackQuery, env) {
   } else {
     await answerCb(callbackQuery.id, '❌ Failed! Try again.', env);
   }
+}
+
+// ===== Handle Web App Data (from Mini App verify) =====
+async function handleWebAppData(message, env) {
+  try {
+    const data = JSON.parse(message.web_app_data.data);
+    const { action, orderIndex, verified } = data;
+    const chatId = message.chat.id;
+    
+    const { orders, sha } = await getOrders(env);
+    if (orderIndex >= orders.length) return;
+    
+    const order = orders[orderIndex];
+    
+    if (action === 'approve') {
+      orders[orderIndex].status = 'Completed';
+      orders[orderIndex].approvedAt = new Date().toISOString();
+    } else if (action === 'running') {
+      orders[orderIndex].status = 'Running';
+      orders[orderIndex].runningAt = new Date().toISOString();
+    } else if (action === 'reject') {
+      orders[orderIndex].status = 'Rejected';
+      orders[orderIndex].rejectedAt = new Date().toISOString();
+    }
+    
+    const saved = await saveOrders(orders, sha, env);
+    if (saved) {
+      const verifyText = verified ? '✅ TrxID Verified' : '⚠️ TrxID Not Verified';
+      const statusMap = { approve: '✅ DONE', running: '▶️ RUNNING', reject: '❌ REJECTED' };
+      const st = statusMap[action] || action;
+      
+      await fetch(`${TG_API_BASE}${env.TG_BOT_TOKEN}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text: `${st} — Order #${orderIndex + 1}\n\n👤 ${order.name}\n🎮 UID: ${order.uid}\n📦 ${order.item} — ৳${order.price}\n\n${verifyText}`
+        })
+      });
+    }
+  } catch(e) { console.log('WebApp data error:', e.message); }
 }
 
 // ===== Handle Verify Reply (admin pastes real TrxID) =====
@@ -525,6 +566,8 @@ export default {
         const update = await request.json();
         if (update.callback_query) {
           await handleCallback(update.callback_query, env);
+        } else if (update.message && update.message.web_app_data) {
+          await handleWebAppData(update.message, env);
         } else if (update.message && update.message.reply_to_message) {
           await handleVerifyReply(update.message, env);
         }
@@ -607,6 +650,23 @@ export default {
       await sendDailySummary(env);
       return new Response(JSON.stringify({ success: true, message: 'Summary sent' }), {
         headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    // GET /order-detail — Single order for verify Mini App (admin only via TG initData)
+    if (url.pathname === '/order-detail' && request.method === 'GET') {
+      const tgData = request.headers.get('X-TG-Data') || '';
+      const chatIdParam = new URLSearchParams(tgData).get('chat_id') || '';
+      // Only allow from admin chat
+      const index = parseInt(url.searchParams.get('index') || '0');
+      const { orders } = await getOrders(env);
+      if (index >= orders.length) {
+        return new Response(JSON.stringify({ error: 'Not found' }), {
+          status: 404, headers: { ...cors, 'Content-Type': 'application/json' }
+        });
+      }
+      return new Response(JSON.stringify(orders[index]), {
+        headers: { ...cors, 'Content-Type': 'application/json' }
       });
     }
 

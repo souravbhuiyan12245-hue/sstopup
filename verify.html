@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TrxID Verify — SS TOP-UP</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--tg-theme-bg-color, #f5f3ff);
+            color: var(--tg-theme-text-color, #1e1b4b);
+            min-height: 100vh;
+            padding: 16px;
+        }
+        .card {
+            background: var(--tg-theme-secondary-bg-color, #fff);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .order-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+        .order-title {
+            font-size: 1rem;
+            font-weight: 800;
+        }
+        .order-badge {
+            background: #FEF3C7;
+            color: #92400E;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+        .order-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 0;
+            font-size: 0.85rem;
+        }
+        .order-row .label {
+            color: var(--tg-theme-hint-color, #6b7280);
+            min-width: 28px;
+        }
+        .order-row .value {
+            font-weight: 600;
+        }
+        .divider {
+            height: 1px;
+            background: var(--tg-theme-hint-color, #e5e7eb);
+            opacity: 0.3;
+            margin: 12px 0;
+        }
+        .trx-section {
+            margin-top: 8px;
+        }
+        .trx-label {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--tg-theme-hint-color, #6b7280);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .customer-trx {
+            background: #FEF3C7;
+            border: 2px solid #F59E0B;
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            text-align: center;
+            color: #92400E;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            word-break: break-all;
+        }
+        .verify-input-wrap {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .verify-input {
+            flex: 1;
+            padding: 14px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            outline: none;
+            background: var(--tg-theme-bg-color, #f8fafc);
+            color: var(--tg-theme-text-color, #1e1b4b);
+            transition: border 0.2s;
+        }
+        .verify-input:focus {
+            border-color: #6C3CE1;
+        }
+        .verify-input::placeholder {
+            color: var(--tg-theme-hint-color, #9ca3af);
+        }
+        .match-btn {
+            padding: 14px 24px;
+            background: linear-gradient(135deg, #F97316, #EA580C);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+        .match-btn:active { transform: scale(0.95); }
+        
+        .result {
+            display: none;
+            padding: 14px 16px;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+            animation: fadeIn 0.3s ease;
+        }
+        .result.matched {
+            display: block;
+            background: #D1FAE5;
+            color: #065F46;
+            border: 2px solid #22C55E;
+        }
+        .result.not-matched {
+            display: block;
+            background: #FEE2E2;
+            color: #991B1B;
+            border: 2px solid #EF4444;
+        }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
+        
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+        }
+        .action-btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .action-btn:active { transform: scale(0.95); }
+        .btn-done { background: #22C55E; color: #fff; }
+        .btn-running { background: #6C3CE1; color: #fff; }
+        .btn-reject { background: #EF4444; color: #fff; }
+        
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--tg-theme-hint-color, #6b7280);
+        }
+        .loading .spinner {
+            font-size: 2rem;
+            margin-bottom: 12px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div id="loadingView" class="loading">
+        <div class="spinner">⏳</div>
+        <div>অর্ডার লোড হচ্ছে...</div>
+    </div>
+
+    <div id="mainView" style="display:none;">
+        <div class="card">
+            <div class="order-header">
+                <div class="order-title" id="orderTitle">🎫 Order #—</div>
+                <div class="order-badge" id="orderStatus">Pending</div>
+            </div>
+            <div class="order-row"><span class="label">👤</span><span class="value" id="orderName">—</span></div>
+            <div class="order-row"><span class="label">🎮</span><span class="value" id="orderUid">—</span></div>
+            <div class="order-row"><span class="label">📦</span><span class="value" id="orderItem">—</span></div>
+            <div class="order-row"><span class="label">💳</span><span class="value" id="orderPayment">—</span></div>
+            <div class="order-row"><span class="label">📱</span><span class="value" id="orderPhone">—</span></div>
+        </div>
+
+        <div class="card">
+            <div class="trx-section">
+                <div class="trx-label">🧾 Customer TrxID</div>
+                <div class="customer-trx" id="customerTrx">—</div>
+                
+                <div class="trx-label">🔍 bKash/Nagad থেকে Real TrxID</div>
+                <div class="verify-input-wrap">
+                    <input type="text" class="verify-input" id="realTrxInput" placeholder="Real TrxID paste করুন">
+                    <button class="match-btn" onclick="doMatch()">Match</button>
+                </div>
+                
+                <div class="result" id="matchResult"></div>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <button class="action-btn btn-done" onclick="sendAction('approve')">✅ Done</button>
+            <button class="action-btn btn-running" onclick="sendAction('running')">▶️ Running</button>
+            <button class="action-btn btn-reject" onclick="sendAction('reject')">❌ Reject</button>
+        </div>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        tg.ready();
+        
+        const params = new URLSearchParams(window.location.search);
+        const orderIndex = parseInt(params.get('order') || '0');
+        let orderData = null;
+        
+        // Load order data
+        async function loadOrder() {
+            try {
+                const startData = tg.initData;
+                const r = await fetch(`https://ss-topup-automation.kodomofficial01.workers.dev/order-detail?index=${orderIndex}`, {
+                    headers: { 'X-TG-Data': startData }
+                });
+                if (r.ok) {
+                    orderData = await r.json();
+                    renderOrder();
+                } else {
+                    document.getElementById('loadingView').innerHTML = '<div style="font-size:2rem;margin-bottom:12px;">❌</div><div>অর্ডার লোড হয়নি!</div>';
+                }
+            } catch(e) {
+                document.getElementById('loadingView').innerHTML = '<div style="font-size:2rem;margin-bottom:12px;">❌</div><div>Error loading order</div>';
+            }
+        }
+        
+        function renderOrder() {
+            if (!orderData) return;
+            document.getElementById('loadingView').style.display = 'none';
+            document.getElementById('mainView').style.display = 'block';
+            
+            document.getElementById('orderTitle').textContent = `🎫 Order #${orderIndex + 1}`;
+            document.getElementById('orderStatus').textContent = orderData.status || 'Pending';
+            document.getElementById('orderName').textContent = orderData.name || 'Unknown';
+            document.getElementById('orderUid').textContent = 'UID: ' + (orderData.uid || '—');
+            document.getElementById('orderItem').textContent = `${orderData.item} — ৳${orderData.price}`;
+            document.getElementById('orderPayment').textContent = orderData.payment || '—';
+            document.getElementById('orderPhone').textContent = orderData.phone || '—';
+            document.getElementById('customerTrx').textContent = orderData.trxId || '—';
+        }
+        
+        function doMatch() {
+            const realTrx = document.getElementById('realTrxInput').value.trim();
+            if (!realTrx) return;
+            
+            const customerTrx = (orderData.trxId || '').trim().toUpperCase();
+            const adminTrx = realTrx.toUpperCase();
+            const resultEl = document.getElementById('matchResult');
+            
+            if (customerTrx === adminTrx) {
+                resultEl.className = 'result matched';
+                resultEl.textContent = '✅ MATCHED! TrxID মিলেছে!';
+            } else {
+                resultEl.className = 'result not-matched';
+                resultEl.textContent = '❌ NOT MATCHED! TrxID মিলেনি!';
+            }
+        }
+        
+        function sendAction(action) {
+            const data = JSON.stringify({
+                action: action,
+                orderIndex: orderIndex,
+                verified: document.getElementById('matchResult').classList.contains('matched')
+            });
+            tg.sendData(data);
+        }
+        
+        loadOrder();
+    </script>
+</body>
+</html>
