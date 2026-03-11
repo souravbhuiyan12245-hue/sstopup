@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
+    <title>SS Shop — Admin Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --bg: #f5f3ff;
+            --card: #ffffff;
+            --text: #0f172a;
+            --muted: #64748b;
+            --primary: #7c3aed;
+            --primary-light: #ede9fe;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --border: #e2e8f0;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+
+        /* Login */
+        .login-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .login-card {
+            background: var(--card);
+            border-radius: 24px;
+            padding: 32px 24px;
+            max-width: 360px;
+            width: 100%;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+        .login-card h2 { font-size: 1.3rem; font-weight: 900; color: var(--primary); margin-bottom: 8px; }
+        .login-card p { font-size: 0.82rem; color: var(--muted); margin-bottom: 20px; }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #7c3aed, #6d28d9);
+            color: #fff;
+            padding: 16px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-top { display:flex; justify-content:space-between; align-items:center; }
+        .header h1 { font-size:1.1rem; font-weight:800; }
+        .header-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: #fff;
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+            overflow-x: auto;
+        }
+        .tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--muted);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            white-space: nowrap;
+            min-width: 70px;
+        }
+        .tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+        /* Panels */
+        .panel { display:none; padding:16px; }
+        .panel.active { display:block; }
+
+        /* Cards */
+        .card {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .card h3 { font-size: 0.9rem; font-weight: 700; margin-bottom: 12px; color: var(--primary); }
+
+        /* Form */
+        .form-group { margin-bottom: 12px; }
+        .form-label { font-size: 0.75rem; font-weight: 600; color: var(--muted); margin-bottom: 4px; display:block; }
+        .form-input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 0.85rem;
+            outline: none;
+            font-family: inherit;
+        }
+        .form-input:focus { border-color: var(--primary); }
+        textarea.form-input { resize: vertical; min-height: 60px; }
+        select.form-input { appearance: auto; }
+
+        /* Buttons */
+        .btn {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+        .btn:active { transform: scale(0.96); }
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-success { background: var(--success); color: #fff; }
+        .btn-danger { background: var(--danger); color: #fff; }
+        .btn-sm { padding: 6px 12px; font-size: 0.75rem; border-radius: 8px; }
+        .btn-full { width: 100%; padding: 14px; font-size: 0.9rem; }
+        .btn-outline { background: transparent; border: 2px solid var(--border); color: var(--text); }
+
+        /* Stats */
+        .stats { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-bottom:16px; }
+        .stat { background:var(--card); border-radius:14px; padding:14px; text-align:center; box-shadow:0 2px 6px rgba(0,0,0,.04); }
+        .stat .n { font-size:1.4rem; font-weight:900; }
+        .stat .l { font-size:0.7rem; color:var(--muted); margin-top:2px; }
+
+        /* Product List */
+        .prod-item {
+            display: flex;
+            gap: 12px;
+            padding: 12px;
+            background: var(--card);
+            border-radius: 14px;
+            margin-bottom: 8px;
+            align-items: center;
+            box-shadow: 0 1px 4px rgba(0,0,0,.04);
+        }
+        .prod-emoji {
+            width: 50px;
+            height: 50px;
+            background: #f1f5f9;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+        .prod-info { flex: 1; min-width: 0; }
+        .prod-name { font-size: 0.82rem; font-weight: 700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .prod-meta { font-size: 0.72rem; color: var(--muted); }
+        .prod-price { font-weight: 800; color: var(--primary); font-size: 0.85rem; }
+        .prod-actions { display:flex; gap:4px; flex-shrink:0; }
+
+        /* Order Item */
+        .order-item {
+            background: var(--card);
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 10px;
+            box-shadow: 0 1px 4px rgba(0,0,0,.04);
+        }
+        .order-header { display:flex; justify-content:space-between; margin-bottom:8px; }
+        .order-id { font-size:0.75rem; font-weight:700; color:var(--primary); }
+        .order-status {
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 8px;
+        }
+        .status-new { background: #fef3c7; color: #92400e; }
+        .status-confirmed { background: #dbeafe; color: #1e40af; }
+        .status-shipped { background: #e0e7ff; color: #4338ca; }
+        .status-delivered { background: #dcfce7; color: #166534; }
+        .status-cancelled { background: #fee2e2; color: #991b1b; }
+        .order-detail { font-size: 0.78rem; color: var(--muted); line-height: 1.6; }
+        .order-detail b { color: var(--text); }
+        .order-total { font-size: 0.95rem; font-weight: 800; color: var(--primary); margin-top: 8px; }
+        .order-actions { display:flex; gap:6px; margin-top:10px; flex-wrap:wrap; }
+
+        /* Category Chip */
+        .cat-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            margin: 0 6px 6px 0;
+        }
+        .cat-chip .del { cursor:pointer; font-size:0.9rem; }
+
+        /* Toast */
+        .toast {
+            position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+            background:#1e1b4b; color:#fff; padding:10px 20px; border-radius:12px;
+            font-size:0.82rem; font-weight:600; z-index:999;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn { from{opacity:0;transform:translateX(-50%) translateY(10px)} }
+
+        .hidden { display: none !important; }
+        .flex-between { display:flex; justify-content:space-between; align-items:center; }
+        .mb-8 { margin-bottom: 8px; }
+        .mb-16 { margin-bottom: 16px; }
+        .text-center { text-align: center; }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-wrap">
+        <div class="login-card">
+            <h2>🛒 SS Shop Admin</h2>
+            <p>অ্যাডমিন প্যানেলে লগইন করুন</p>
+            <div class="form-group">
+                <input class="form-input" id="loginPass" type="password" placeholder="পাসওয়ার্ড দিন" onkeypress="if(event.key==='Enter')doLogin()">
+            </div>
+            <button class="btn btn-primary btn-full" onclick="doLogin()">🔑 লগইন</button>
+            <p id="loginErr" style="color:var(--danger);font-size:.78rem;margin-top:10px;display:none">❌ ভুল পাসওয়ার্ড!</p>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="mainApp" class="hidden">
+        <div class="header">
+            <div class="header-top">
+                <h1>🛒 SS Shop Admin</h1>
+                <div>
+                    <button class="header-btn" onclick="previewShop()">👁️ Preview</button>
+                    <button class="header-btn" onclick="doLogout()" style="margin-left:6px">🚪</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('dashboard')">📊 Dashboard</div>
+            <div class="tab" onclick="switchTab('products')">📦 Products</div>
+            <div class="tab" onclick="switchTab('categories')">📂 Category</div>
+            <div class="tab" onclick="switchTab('orders')">🛒 Orders</div>
+            <div class="tab" onclick="switchTab('settings')">⚙️ Settings</div>
+        </div>
+
+        <!-- Dashboard -->
+        <div class="panel active" id="p-dashboard">
+            <div class="stats">
+                <div class="stat"><div class="n" id="dProducts" style="color:var(--primary)">0</div><div class="l">📦 Products</div></div>
+                <div class="stat"><div class="n" id="dOrders" style="color:var(--warning)">0</div><div class="l">🛒 Orders</div></div>
+                <div class="stat"><div class="n" id="dRevenue" style="color:var(--success)">৳0</div><div class="l">💰 Revenue</div></div>
+                <div class="stat"><div class="n" id="dPending" style="color:var(--danger)">0</div><div class="l">⏳ Pending</div></div>
+            </div>
+            <div class="card">
+                <h3>📋 Recent Orders</h3>
+                <div id="recentOrders"><p class="text-center" style="color:var(--muted);font-size:.82rem;padding:20px">Loading...</p></div>
+            </div>
+        </div>
+
+        <!-- Products -->
+        <div class="panel" id="p-products">
+            <div class="flex-between mb-16">
+                <h3 style="font-size:1rem;font-weight:800">📦 Products</h3>
+                <button class="btn btn-primary btn-sm" onclick="openProductForm()">+ নতুন</button>
+            </div>
+            <div id="productList"></div>
+
+            <!-- Product Form Modal -->
+            <div id="productFormWrap" class="hidden" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:200;display:flex;align-items:flex-end;justify-content:center">
+                <div style="background:var(--card);border-radius:24px 24px 0 0;width:100%;max-width:480px;max-height:85vh;overflow-y:auto;padding:24px 20px;animation:slideUp .3s ease">
+                    <div class="flex-between mb-16">
+                        <h3 id="formTitle" style="font-weight:800">➕ নতুন Product</h3>
+                        <button class="btn btn-sm btn-outline" onclick="closeProductForm()">✕</button>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">পণ্যের নাম *</label>
+                        <input class="form-input" id="pName" placeholder="যেমন: ওয়্যারলেস ইয়ারবাড">
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                        <div class="form-group">
+                            <label class="form-label">বিক্রয় মূল্য (৳) *</label>
+                            <input class="form-input" id="pPrice" type="number" placeholder="450">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">আসল মূল্য (৳)</label>
+                            <input class="form-input" id="pOriginal" type="number" placeholder="899">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">ক্যাটাগরি *</label>
+                        <select class="form-input" id="pCat"></select>
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                        <div class="form-group">
+                            <label class="form-label">Emoji</label>
+                            <input class="form-input" id="pEmoji" placeholder="🎧">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Badge</label>
+                            <input class="form-input" id="pBadge" placeholder="Hot, 50% OFF">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Image URL</label>
+                        <input class="form-input" id="pImg" placeholder="https://...">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">বিবরণ</label>
+                        <textarea class="form-input" id="pDesc" placeholder="পণ্যের বিস্তারিত..."></textarea>
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                        <div class="form-group">
+                            <label class="form-label">Rating (1-5)</label>
+                            <input class="form-input" id="pRating" type="number" step="0.1" min="1" max="5" placeholder="4.5">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Reviews</label>
+                            <input class="form-input" id="pReviews" type="number" placeholder="100">
+                        </div>
+                    </div>
+                    <button class="btn btn-success btn-full" id="saveProductBtn" onclick="saveProduct()">💾 Save Product</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Categories -->
+        <div class="panel" id="p-categories">
+            <div class="card">
+                <h3>📂 Categories</h3>
+                <div id="catList" class="mb-16"></div>
+                <div style="display:flex;gap:8px">
+                    <input class="form-input" id="newCatId" placeholder="id (english)" style="flex:1">
+                    <input class="form-input" id="newCatName" placeholder="নাম (emoji সহ)" style="flex:1">
+                    <button class="btn btn-primary btn-sm" onclick="addCategory()">+</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Orders -->
+        <div class="panel" id="p-orders">
+            <div class="flex-between mb-16">
+                <h3 style="font-size:1rem;font-weight:800">🛒 Orders</h3>
+                <select class="form-input" style="width:auto;padding:6px 12px;font-size:.75rem" onchange="filterOrders(this.value)">
+                    <option value="all">সব</option>
+                    <option value="new">New</option>
+                    <option value="confirmed">Confirmed</option>
+                    <option value="shipped">Shipped</option>
+                    <option value="delivered">Delivered</option>
+                    <option value="cancelled">Cancelled</option>
+                </select>
+            </div>
+            <div id="orderList"></div>
+        </div>
+
+        <!-- Settings -->
+        <div class="panel" id="p-settings">
+            <div class="card">
+                <h3>🏪 Shop Settings</h3>
+                <div class="form-group">
+                    <label class="form-label">দোকানের নাম</label>
+                    <input class="form-input" id="sShopName" placeholder="SS Shop">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Banner Title</label>
+                    <input class="form-input" id="sBannerTitle" placeholder="🔥 Grand Opening Sale!">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Banner Text</label>
+                    <input class="form-input" id="sBannerText" placeholder="সব পণ্যে বিশেষ ছাড়!">
+                </div>
+            </div>
+            <div class="card">
+                <h3>💳 Payment Settings</h3>
+                <div class="form-group">
+                    <label class="form-label">bKash নম্বর</label>
+                    <input class="form-input" id="sBkash" placeholder="01XXXXXXXXX">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Nagad নম্বর</label>
+                    <input class="form-input" id="sNagad" placeholder="01XXXXXXXXX">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">COD চালু?</label>
+                    <select class="form-input" id="sCOD">
+                        <option value="true">হ্যাঁ</option>
+                        <option value="false">না</option>
+                    </select>
+                </div>
+            </div>
+            <div class="card">
+                <h3>📱 Telegram</h3>
+                <div class="form-group">
+                    <label class="form-label">Bot Token</label>
+                    <input class="form-input" id="sBotToken" placeholder="123:ABC...">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Chat ID</label>
+                    <input class="form-input" id="sChatId" placeholder="8687506733">
+                </div>
+            </div>
+            <div class="card">
+                <h3>🔑 Security</h3>
+                <div class="form-group">
+                    <label class="form-label">নতুন পাসওয়ার্ড</label>
+                    <input class="form-input" id="sNewPass" type="password" placeholder="নতুন পাসওয়ার্ড">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">GitHub Token</label>
+                    <input class="form-input" id="sGHToken" type="password" placeholder="ghp_...">
+                </div>
+            </div>
+            <button class="btn btn-success btn-full" onclick="saveSettings()">💾 সব সেটিংস সেভ করুন</button>
+        </div>
+    </div>
+
+    <script>
+    // ============ CONFIG ============
+    const GH_REPO = 'souravbhuiyan12245-hue/sstopup';
+    const GH_API = `https://api.github.com/repos/${GH_REPO}/contents/`;
+    const RAW = `https://raw.githubusercontent.com/${GH_REPO}/main/`;
+    const SHOP_DATA_PATH = 'shop/data.json';
+    const SHOP_ORDERS_PATH = 'shop/orders.json';
+
+    let shopData = null;
+    let shopOrders = [];
+    let dataSha = null;
+    let ordersSha = null;
+    let editingProduct = null;
+
+    // ============ AUTH ============
+    function doLogin() {
+        const pass = document.getElementById('loginPass').value;
+        const hash = sha256(pass);
+        const stored = localStorage.getItem('ss_shop_pass_hash') || 'b493d48364afe44d11c0165cf470a4164d1e2609911ef998be868d46ade3de4e'; // default: admin
+        if (hash === stored) {
+            localStorage.setItem('ss_shop_logged', '1');
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('mainApp').classList.remove('hidden');
+            loadAll();
+        } else {
+            document.getElementById('loginErr').style.display = 'block';
+        }
+    }
+
+    function doLogout() {
+        localStorage.removeItem('ss_shop_logged');
+        location.reload();
+    }
+
+    // Check session
+    if (localStorage.getItem('ss_shop_logged') === '1') {
+        document.getElementById('loginScreen').classList.add('hidden');
+        document.getElementById('mainApp').classList.remove('hidden');
+        setTimeout(loadAll, 100);
+    }
+
+    // ============ TABS ============
+    function switchTab(name) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        event.target.classList.add('active');
+        document.getElementById('p-' + name).classList.add('active');
+    }
+
+    // ============ DATA LOADING ============
+    async function loadAll() {
+        await loadShopData();
+        await loadOrders();
+        renderDashboard();
+        renderProducts();
+        renderCategories();
+        renderOrders();
+        loadSettings();
+    }
+
+    function ghToken() {
+        let t = localStorage.getItem('ss_shop_gh_token');
+        if (!t) { t = prompt('GitHub Token দিন (Settings এ সেভ করুন):'); if(t) localStorage.setItem('ss_shop_gh_token', t); }
+        return t || '';
+    }
+
+    async function loadShopData() {
+        try {
+            const r = await fetch(RAW + SHOP_DATA_PATH + '?t=' + Date.now(), { cache: 'no-store' });
+            if (r.ok) shopData = await r.json();
+        } catch (e) {}
+        if (!shopData) {
+            shopData = {
+                shop: { name: 'SS Shop', bannerTitle: '🔥 Grand Opening Sale!', bannerText: 'সব পণ্যে বিশেষ ছাড়!' },
+                payment: { bkash: '', nagad: '', cod: true },
+                telegram: { botToken: '8709358566:AAFAIJGxh5YwQxB7dI0DxVMGNhiLfxY37-g', chatId: '8687506733' },
+                categories: [
+                    { id: 'electronics', name: '📱 ইলেকট্রনিক্স' },
+                    { id: 'gaming', name: '🎮 গেমিং' },
+                    { id: 'accessories', name: '🔌 এক্সেসরিজ' },
+                    { id: 'lifestyle', name: '🏠 লাইফস্টাইল' },
+                    { id: 'digital', name: '💻 ডিজিটাল' },
+                    { id: 'fashion', name: '👗 ফ্যাশন' }
+                ],
+                products: []
+            };
+        }
+        // Get SHA
+        try {
+            const r = await fetch(GH_API + SHOP_DATA_PATH, { headers: { Authorization: 'token ' + ghToken() } });
+            if (r.ok) dataSha = (await r.json()).sha;
+        } catch (e) {}
+    }
+
+    async function loadOrders() {
+        try {
+            const r = await fetch(RAW + SHOP_ORDERS_PATH + '?t=' + Date.now(), { cache: 'no-store' });
+            if (r.ok) shopOrders = await r.json();
+        } catch (e) { shopOrders = []; }
+        try {
+            const r = await fetch(GH_API + SHOP_ORDERS_PATH, { headers: { Authorization: 'token ' + ghToken() } });
+            if (r.ok) ordersSha = (await r.json()).sha;
+        } catch (e) {}
+    }
+
+    async function saveToGH(path, data, sha) {
+        const body = {
+            message: 'Shop admin update: ' + path,
+            content: btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2)))),
+        };
+        if (sha) body.sha = sha;
+        const r = await fetch(GH_API + path, {
+            method: 'PUT',
+            headers: { Authorization: 'token ' + ghToken(), 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        });
+        const res = await r.json();
+        return res.content ? res.content.sha : null;
+    }
+
+    // ============ DASHBOARD ============
+    function renderDashboard() {
+        const prods = shopData.products || [];
+        const total = shopOrders.reduce((s, o) => s + (o.total || 0), 0);
+        const pending = shopOrders.filter(o => o.status === 'new' || !o.status).length;
+
+        document.getElementById('dProducts').textContent = prods.length;
+        document.getElementById('dOrders').textContent = shopOrders.length;
+        document.getElementById('dRevenue').textContent = '৳' + total;
+        document.getElementById('dPending').textContent = pending;
+
+        const recent = shopOrders.slice(-3).reverse();
+        const el = document.getElementById('recentOrders');
+        if (!recent.length) { el.innerHTML = '<p class="text-center" style="color:var(--muted);font-size:.82rem;padding:20px">কোনো অর্ডার নেই</p>'; return; }
+        el.innerHTML = recent.map(o => `
+            <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:.8rem">
+                <div><b>${o.name||'N/A'}</b> — ৳${o.total||0}</div>
+                <span class="order-status status-${o.status||'new'}">${o.status||'new'}</span>
+            </div>
+        `).join('');
+    }
+
+    // ============ PRODUCTS ============
+    function renderProducts() {
+        const list = shopData.products || [];
+        const el = document.getElementById('productList');
+        if (!list.length) { el.innerHTML = '<p class="text-center" style="color:var(--muted);padding:30px">কোনো product নেই। "নতুন" বাটনে ক্লিক করুন।</p>'; return; }
+        el.innerHTML = list.map((p, i) => `
+            <div class="prod-item">
+                <div class="prod-emoji">${p.img ? '<img src="'+p.img+'" style="width:100%;height:100%;object-fit:cover;border-radius:12px">' : (p.emoji||'📦')}</div>
+                <div class="prod-info">
+                    <div class="prod-name">${p.name}</div>
+                    <div class="prod-meta">${p.cat} ${p.badge ? '• '+p.badge : ''}</div>
+                    <div class="prod-price">৳${p.price} <span style="text-decoration:line-through;color:var(--muted);font-size:.7rem;font-weight:400">৳${p.original||''}</span></div>
+                </div>
+                <div class="prod-actions">
+                    <button class="btn btn-sm btn-outline" onclick="editProduct(${i})">✏️</button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteProduct(${i})">🗑️</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function openProductForm(idx) {
+        editingProduct = idx !== undefined ? idx : null;
+        const f = document.getElementById('productFormWrap');
+        f.classList.remove('hidden');
+        f.style.display = 'flex';
+
+        // Populate category dropdown
+        const catSel = document.getElementById('pCat');
+        catSel.innerHTML = (shopData.categories || []).map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+
+        if (editingProduct !== null) {
+            const p = shopData.products[editingProduct];
+            document.getElementById('formTitle').textContent = '✏️ Edit Product';
+            document.getElementById('pName').value = p.name || '';
+            document.getElementById('pPrice').value = p.price || '';
+            document.getElementById('pOriginal').value = p.original || '';
+            document.getElementById('pCat').value = p.cat || '';
+            document.getElementById('pEmoji').value = p.emoji || '';
+            document.getElementById('pBadge').value = p.badge || '';
+            document.getElementById('pImg').value = p.img || '';
+            document.getElementById('pDesc').value = p.desc || '';
+            document.getElementById('pRating').value = p.rating || '';
+            document.getElementById('pReviews').value = p.reviews || '';
+        } else {
+            document.getElementById('formTitle').textContent = '➕ নতুন Product';
+            ['pName','pPrice','pOriginal','pEmoji','pBadge','pImg','pDesc','pRating','pReviews'].forEach(id => document.getElementById(id).value = '');
+        }
+    }
+
+    function closeProductForm() {
+        const f = document.getElementById('productFormWrap');
+        f.classList.add('hidden');
+        f.style.display = 'none';
+    }
+
+    function editProduct(idx) { openProductForm(idx); }
+
+    async function saveProduct() {
+        const name = document.getElementById('pName').value.trim();
+        const price = +document.getElementById('pPrice').value;
+        if (!name || !price) { toast('❌ নাম ও মূল্য দিন!'); return; }
+
+        const product = {
+            id: editingProduct !== null ? shopData.products[editingProduct].id : Date.now(),
+            name,
+            price,
+            original: +document.getElementById('pOriginal').value || price,
+            cat: document.getElementById('pCat').value,
+            emoji: document.getElementById('pEmoji').value || '📦',
+            badge: document.getElementById('pBadge').value || '',
+            img: document.getElementById('pImg').value || '',
+            desc: document.getElementById('pDesc').value || '',
+            rating: +document.getElementById('pRating').value || 4.0,
+            reviews: +document.getElementById('pReviews').value || 0
+        };
+
+        if (editingProduct !== null) {
+            shopData.products[editingProduct] = product;
+        } else {
+            shopData.products.push(product);
+        }
+
+        document.getElementById('saveProductBtn').textContent = '⏳ Saving...';
+        dataSha = await saveToGH(SHOP_DATA_PATH, shopData, dataSha);
+        document.getElementById('saveProductBtn').textContent = '💾 Save Product';
+
+        closeProductForm();
+        renderProducts();
+        renderDashboard();
+        toast('✅ Product saved!');
+    }
+
+    async function deleteProduct(idx) {
+        if (!confirm('এই product মুছে ফেলবেন?')) return;
+        shopData.products.splice(idx, 1);
+        dataSha = await saveToGH(SHOP_DATA_PATH, shopData, dataSha);
+        renderProducts();
+        renderDashboard();
+        toast('🗑️ Product deleted');
+    }
+
+    // ============ CATEGORIES ============
+    function renderCategories() {
+        const el = document.getElementById('catList');
+        el.innerHTML = (shopData.categories || []).map((c, i) => `
+            <span class="cat-chip">${c.name} <span class="del" onclick="deleteCategory(${i})">✕</span></span>
+        `).join('');
+    }
+
+    async function addCategory() {
+        const id = document.getElementById('newCatId').value.trim();
+        const name = document.getElementById('newCatName').value.trim();
+        if (!id || !name) { toast('❌ ID ও নাম দিন!'); return; }
+        shopData.categories.push({ id, name });
+        dataSha = await saveToGH(SHOP_DATA_PATH, shopData, dataSha);
+        document.getElementById('newCatId').value = '';
+        document.getElementById('newCatName').value = '';
+        renderCategories();
+        toast('✅ Category added');
+    }
+
+    async function deleteCategory(idx) {
+        shopData.categories.splice(idx, 1);
+        dataSha = await saveToGH(SHOP_DATA_PATH, shopData, dataSha);
+        renderCategories();
+        toast('🗑️ Category deleted');
+    }
+
+    // ============ ORDERS ============
+    let orderFilter = 'all';
+    function filterOrders(val) { orderFilter = val; renderOrders(); }
+
+    function renderOrders() {
+        let list = [...shopOrders].reverse();
+        if (orderFilter !== 'all') list = list.filter(o => (o.status || 'new') === orderFilter);
+
+        const el = document.getElementById('orderList');
+        if (!list.length) { el.innerHTML = '<p class="text-center" style="color:var(--muted);padding:30px">কোনো অর্ডার নেই</p>'; return; }
+
+        el.innerHTML = list.map((o, idx) => `
+            <div class="order-item">
+                <div class="order-header">
+                    <span class="order-id">#${o.orderId || (shopOrders.length - idx)}</span>
+                    <span class="order-status status-${o.status||'new'}">${o.status || 'new'}</span>
+                </div>
+                <div class="order-detail">
+                    <b>👤</b> ${o.name || 'N/A'}<br>
+                    <b>📞</b> ${o.phone || 'N/A'}<br>
+                    <b>📍</b> ${o.address || 'N/A'}<br>
+                    <b>💳</b> ${o.payment || 'N/A'} ${o.trxId ? '• TrxID: '+o.trxId : ''}<br>
+                    <b>📦</b> ${o.itemText || (o.items||[]).map(i=>i.name+'×'+i.qty).join(', ')}<br>
+                    ${o.note ? '<b>📝</b> '+o.note+'<br>' : ''}
+                    <small style="color:var(--muted)">${o.timestamp ? new Date(o.timestamp).toLocaleString('bn-BD') : ''}</small>
+                </div>
+                <div class="order-total">মোট: ৳${o.total || 0}</div>
+                <div class="order-actions">
+                    <button class="btn btn-sm btn-success" onclick="updateOrderStatus('${o.orderId||idx}','confirmed')">✅ Confirm</button>
+                    <button class="btn btn-sm btn-primary" onclick="updateOrderStatus('${o.orderId||idx}','shipped')">📦 Shipped</button>
+                    <button class="btn btn-sm" style="background:#22c55e;color:#fff" onclick="updateOrderStatus('${o.orderId||idx}','delivered')">🎉 Delivered</button>
+                    <button class="btn btn-sm btn-danger" onclick="updateOrderStatus('${o.orderId||idx}','cancelled')">❌ Cancel</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    async function updateOrderStatus(id, status) {
+        const order = shopOrders.find(o => o.orderId == id) || shopOrders[+id];
+        if (!order) return;
+        order.status = status;
+        ordersSha = await saveToGH(SHOP_ORDERS_PATH, shopOrders, ordersSha);
+        renderOrders();
+        renderDashboard();
+        toast('✅ Order status: ' + status);
+    }
+
+    // ============ SETTINGS ============
+    function loadSettings() {
+        const s = shopData;
+        document.getElementById('sShopName').value = s.shop?.name || '';
+        document.getElementById('sBannerTitle').value = s.shop?.bannerTitle || '';
+        document.getElementById('sBannerText').value = s.shop?.bannerText || '';
+        document.getElementById('sBkash').value = s.payment?.bkash || '';
+        document.getElementById('sNagad').value = s.payment?.nagad || '';
+        document.getElementById('sCOD').value = s.payment?.cod !== false ? 'true' : 'false';
+        document.getElementById('sBotToken').value = s.telegram?.botToken || '';
+        document.getElementById('sChatId').value = s.telegram?.chatId || '';
+        document.getElementById('sGHToken').value = ghToken();
+    }
+
+    async function saveSettings() {
+        shopData.shop = {
+            name: document.getElementById('sShopName').value.trim(),
+            bannerTitle: document.getElementById('sBannerTitle').value.trim(),
+            bannerText: document.getElementById('sBannerText').value.trim()
+        };
+        shopData.payment = {
+            bkash: document.getElementById('sBkash').value.trim(),
+            nagad: document.getElementById('sNagad').value.trim(),
+            cod: document.getElementById('sCOD').value === 'true'
+        };
+        shopData.telegram = {
+            botToken: document.getElementById('sBotToken').value.trim(),
+            chatId: document.getElementById('sChatId').value.trim()
+        };
+
+        const newPass = document.getElementById('sNewPass').value;
+        if (newPass) localStorage.setItem('ss_shop_pass_hash', sha256(newPass));
+
+        const ghTok = document.getElementById('sGHToken').value.trim();
+        if (ghTok) localStorage.setItem('ss_shop_gh_token', ghTok);
+
+        dataSha = await saveToGH(SHOP_DATA_PATH, shopData, dataSha);
+        toast('✅ সেটিংস সেভ হয়েছে!');
+    }
+
+    // ============ UTILS ============
+    function previewShop() {
+        window.open(`https://souravbhuiyan12245-hue.github.io/sstopup/shop/`, '_blank');
+    }
+
+    function toast(msg) {
+        const t = document.createElement('div');
+        t.className = 'toast';
+        t.textContent = msg;
+        document.body.appendChild(t);
+        setTimeout(() => t.remove(), 2000);
+    }
+
+    // Simple SHA-256
+    async function sha256(msg) {
+        const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(msg));
+        return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+    // Sync version for login
+    function sha256(str) {
+        // Simple hash for login
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+            const char = str.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash = hash & hash;
+        }
+        return hash.toString(16);
+    }
+
+    @keyframes slideUp { from { transform:translateY(100%); } to { transform:translateY(0); } }
+    </script>
+</body>
+</html>
