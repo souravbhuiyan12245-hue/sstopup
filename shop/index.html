@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
+    <title>SS Shop — অনলাইন শপ</title>
+    <meta name="description" content="SS Shop — সেরা দামে পণ্য কিনুন। bKash/Nagad এ পেমেন্ট করুন।">
+    <meta property="og:title" content="SS Shop — অনলাইন শপ">
+    <meta property="og:description" content="সেরা দামে পণ্য কিনুন। দ্রুত ডেলিভারি। bKash/Nagad পেমেন্ট।">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #0f172a;
+            --muted: #64748b;
+            --primary: #7c3aed;
+            --primary-light: #ede9fe;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --border: #e2e8f0;
+            --shadow: 0 2px 8px rgba(0,0,0,0.06);
+            --radius: 16px;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; padding-bottom:80px; }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #7c3aed, #6d28d9);
+            color: #fff;
+            padding: 16px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(124,58,237,0.3);
+        }
+        .header-top { display:flex; justify-content:space-between; align-items:center; }
+        .logo { font-size:1.3rem; font-weight:900; }
+        .logo i { margin-right:6px; }
+        .cart-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: #fff;
+            padding: 8px 14px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            position: relative;
+            font-family: inherit;
+        }
+        .cart-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: var(--danger);
+            color: #fff;
+            font-size: 0.65rem;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+        }
+        .search-wrap {
+            margin-top: 12px;
+            position: relative;
+        }
+        .search-wrap input {
+            width: 100%;
+            padding: 10px 14px 10px 38px;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            background: rgba(255,255,255,0.2);
+            color: #fff;
+            outline: none;
+            font-family: inherit;
+        }
+        .search-wrap input::placeholder { color: rgba(255,255,255,0.6); }
+        .search-wrap i { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:rgba(255,255,255,0.5); font-size:.85rem; }
+
+        /* Categories */
+        .cats {
+            display: flex;
+            gap: 8px;
+            padding: 14px 20px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .cats::-webkit-scrollbar { display:none; }
+        .cat-btn {
+            flex-shrink: 0;
+            padding: 8px 16px;
+            border: 2px solid var(--border);
+            border-radius: 20px;
+            background: var(--card);
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            color: var(--muted);
+            transition: all 0.2s;
+        }
+        .cat-btn.active {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+        }
+
+        /* Banner */
+        .banner {
+            margin: 0 16px 16px;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            border-radius: var(--radius);
+            padding: 20px;
+            color: #78350f;
+            text-align: center;
+        }
+        .banner h2 { font-size: 1.1rem; font-weight: 800; margin-bottom: 4px; }
+        .banner p { font-size: 0.8rem; }
+
+        /* Products Grid */
+        .products {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            padding: 0 16px;
+        }
+        .product {
+            background: var(--card);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+        .product:active { transform: scale(0.97); }
+        .product-img {
+            width: 100%;
+            aspect-ratio: 1;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            position: relative;
+        }
+        .product-img img { width:100%; height:100%; object-fit:cover; }
+        .product-badge {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: var(--danger);
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 8px;
+            font-size: 0.65rem;
+            font-weight: 700;
+        }
+        .product-info { padding: 10px 12px; }
+        .product-name { font-size: 0.82rem; font-weight: 700; margin-bottom: 4px; line-height: 1.3; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+        .product-price { font-size: 0.95rem; font-weight: 900; color: var(--primary); }
+        .product-original { font-size: 0.72rem; color: var(--muted); text-decoration: line-through; margin-left: 4px; }
+        .product-rating { font-size: 0.7rem; color: var(--warning); margin-top: 4px; }
+        .add-cart-btn {
+            width: 100%;
+            padding: 8px;
+            border: none;
+            background: var(--primary-light);
+            color: var(--primary);
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+        .add-cart-btn:hover { background: var(--primary); color: #fff; }
+
+        /* Product Detail Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 200;
+            align-items: flex-end;
+            justify-content: center;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal {
+            background: var(--card);
+            border-radius: 24px 24px 0 0;
+            width: 100%;
+            max-width: 480px;
+            max-height: 85vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+        }
+        @keyframes slideUp { from { transform:translateY(100%); } to { transform:translateY(0); } }
+        .modal-img {
+            width: 100%;
+            aspect-ratio: 1.2;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5rem;
+            position: relative;
+        }
+        .modal-img img { width:100%; height:100%; object-fit:cover; }
+        .modal-close {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(0,0,0,0.5);
+            color: #fff;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        .modal-body { padding: 20px; }
+        .modal-name { font-size: 1.2rem; font-weight: 800; margin-bottom: 4px; }
+        .modal-price { font-size: 1.5rem; font-weight: 900; color: var(--primary); margin-bottom: 4px; }
+        .modal-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.5; margin-bottom: 16px; }
+        .qty-wrap { display:flex; align-items:center; gap:12px; margin-bottom:16px; }
+        .qty-btn {
+            width: 36px; height: 36px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            background: var(--card);
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .qty-num { font-size: 1.1rem; font-weight: 800; min-width: 30px; text-align: center; }
+        .modal-add-btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #7c3aed, #6d28d9);
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 800;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .modal-add-btn:active { transform: scale(0.97); }
+
+        /* Cart Panel */
+        .cart-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 300;
+            align-items: flex-end;
+            justify-content: center;
+        }
+        .cart-overlay.active { display: flex; }
+        .cart-panel {
+            background: var(--card);
+            border-radius: 24px 24px 0 0;
+            width: 100%;
+            max-width: 480px;
+            max-height: 85vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+            padding: 24px 20px;
+        }
+        .cart-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+        .cart-header h2 { font-size:1.2rem; font-weight:800; }
+        .cart-close { background:none; border:none; font-size:1.5rem; cursor:pointer; color:var(--muted); }
+        .cart-item {
+            display: flex;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+            align-items: center;
+        }
+        .cart-item-img {
+            width: 60px;
+            height: 60px;
+            background: #f1f5f9;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+        .cart-item-img img { width:100%; height:100%; object-fit:cover; border-radius:12px; }
+        .cart-item-info { flex:1; }
+        .cart-item-name { font-size:0.82rem; font-weight:700; }
+        .cart-item-price { font-size:0.85rem; font-weight:800; color:var(--primary); }
+        .cart-item-qty { font-size:0.75rem; color:var(--muted); }
+        .cart-item-del { background:none; border:none; color:var(--danger); cursor:pointer; font-size:1rem; }
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            padding: 16px 0;
+            font-size: 1.1rem;
+            font-weight: 800;
+        }
+        .cart-empty { text-align:center; padding:40px 0; color:var(--muted); }
+        .cart-empty i { font-size:3rem; margin-bottom:12px; display:block; }
+
+        /* Checkout */
+        .checkout-section { margin-top: 16px; }
+        .checkout-section h3 { font-size: 0.9rem; font-weight: 700; margin-bottom: 10px; }
+        .form-input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 0.88rem;
+            margin-bottom: 10px;
+            outline: none;
+            font-family: inherit;
+        }
+        .form-input:focus { border-color: var(--primary); }
+        .payment-opts { display:flex; gap:8px; margin-bottom:12px; }
+        .pay-opt {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            font-family: inherit;
+            background: var(--card);
+        }
+        .pay-opt.active { border-color: var(--primary); background: var(--primary-light); color: var(--primary); }
+        .pay-opt .pay-icon { font-size: 1.5rem; display: block; margin-bottom: 4px; }
+        .checkout-btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 16px;
+            background: linear-gradient(135deg, var(--success), #16a34a);
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 800;
+            cursor: pointer;
+            font-family: inherit;
+            margin-top: 8px;
+        }
+        .checkout-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .checkout-btn:active { transform: scale(0.97); }
+
+        /* Success */
+        .success-msg {
+            display: none;
+            text-align: center;
+            padding: 30px 0;
+        }
+        .success-msg.active { display: block; }
+        .success-msg i { font-size: 4rem; color: var(--success); margin-bottom: 12px; }
+        .success-msg h3 { font-size: 1.1rem; margin-bottom: 8px; }
+        .success-msg p { font-size: 0.85rem; color: var(--muted); }
+
+        /* Floating cart */
+        .float-cart {
+            display: none;
+            position: fixed;
+            bottom: 16px;
+            left: 16px;
+            right: 16px;
+            max-width: 448px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, #7c3aed, #6d28d9);
+            color: #fff;
+            border-radius: 16px;
+            padding: 14px 20px;
+            z-index: 50;
+            box-shadow: 0 8px 30px rgba(124,58,237,0.4);
+            cursor: pointer;
+        }
+        .float-cart.show { display: flex; justify-content: space-between; align-items: center; }
+        .float-cart-info { font-size: 0.88rem; font-weight: 700; }
+        .float-cart-total { font-size: 1.1rem; font-weight: 900; }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e1b4b;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            z-index: 999;
+            animation: toastIn 0.3s ease, toastOut 0.3s ease 1.7s forwards;
+        }
+        @keyframes toastIn { from { opacity:0; transform:translateX(-50%) translateY(20px); } }
+        @keyframes toastOut { to { opacity:0; transform:translateX(-50%) translateY(-20px); } }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-top">
+            <div class="logo"><i class="fas fa-store"></i> SS Shop</div>
+            <button class="cart-btn" onclick="openCart()">
+                <i class="fas fa-shopping-bag"></i> Cart
+                <span class="cart-badge" id="cartBadge">0</span>
+            </button>
+        </div>
+        <div class="search-wrap">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="পণ্য খুঁজুন..." oninput="filterProducts()">
+        </div>
+    </div>
+
+    <!-- Categories -->
+    <div class="cats" id="catWrap"></div>
+
+    <!-- Banner -->
+    <div class="banner">
+        <h2>🔥 Grand Opening Sale!</h2>
+        <p>সব পণ্যে বিশেষ ছাড় — সীমিত সময়ের জন্য!</p>
+    </div>
+
+    <!-- Products -->
+    <div class="products" id="productsGrid"></div>
+
+    <!-- Product Detail Modal -->
+    <div class="modal-overlay" id="productModal" onclick="if(event.target===this)closeModal()">
+        <div class="modal">
+            <div class="modal-img" id="modalImg">
+                <button class="modal-close" onclick="closeModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-name" id="modalName"></div>
+                <div><span class="modal-price" id="modalPrice"></span><span class="product-original" id="modalOriginal"></span></div>
+                <div class="product-rating" id="modalRating"></div>
+                <div class="modal-desc" id="modalDesc"></div>
+                <div class="qty-wrap">
+                    <button class="qty-btn" onclick="changeQty(-1)">−</button>
+                    <div class="qty-num" id="qtyNum">1</div>
+                    <button class="qty-btn" onclick="changeQty(1)">+</button>
+                </div>
+                <button class="modal-add-btn" onclick="addFromModal()">🛒 কার্টে যোগ করুন</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Panel -->
+    <div class="cart-overlay" id="cartOverlay" onclick="if(event.target===this)closeCart()">
+        <div class="cart-panel">
+            <div class="cart-header">
+                <h2>🛒 আপনার কার্ট</h2>
+                <button class="cart-close" onclick="closeCart()">✕</button>
+            </div>
+            <div id="cartItems"></div>
+            <div class="cart-total" id="cartTotal" style="display:none">
+                <span>মোট:</span>
+                <span id="totalAmount">৳0</span>
+            </div>
+
+            <!-- Checkout Form -->
+            <div class="checkout-section" id="checkoutSection" style="display:none">
+                <h3>📦 ডেলিভারি তথ্য</h3>
+                <input class="form-input" id="custName" placeholder="আপনার নাম" required>
+                <input class="form-input" id="custPhone" placeholder="মোবাইল নম্বর (01...)" type="tel" required>
+                <input class="form-input" id="custAddress" placeholder="ঠিকানা (এলাকা, জেলা)" required>
+                <textarea class="form-input" id="custNote" placeholder="নোট (ঐচ্ছিক)" rows="2"></textarea>
+
+                <h3 style="margin-top:12px">💳 পেমেন্ট</h3>
+                <div class="payment-opts">
+                    <div class="pay-opt active" onclick="selectPay(this,'bkash')">
+                        <span class="pay-icon">📱</span>bKash
+                    </div>
+                    <div class="pay-opt" onclick="selectPay(this,'nagad')">
+                        <span class="pay-icon">📲</span>Nagad
+                    </div>
+                    <div class="pay-opt" onclick="selectPay(this,'cod')">
+                        <span class="pay-icon">💵</span>COD
+                    </div>
+                </div>
+                <div id="payInfo" style="background:#ede9fe;padding:12px;border-radius:12px;font-size:.8rem;margin-bottom:12px;">
+                    📱 <b>bKash:</b> 01XXXXXXXXX নম্বরে Send Money করুন।<br>
+                    ✅ TrxID নিচে দিন।
+                </div>
+                <input class="form-input" id="custTrxId" placeholder="TrxID (bKash/Nagad)" style="display:block">
+
+                <button class="checkout-btn" id="checkoutBtn" onclick="placeOrder()">✅ অর্ডার করুন</button>
+            </div>
+
+            <div class="success-msg" id="successMsg">
+                <i class="fas fa-check-circle"></i>
+                <h3>অর্ডার সফল! 🎉</h3>
+                <p>আপনার অর্ডার গ্রহণ করা হয়েছে।<br>শীঘ্রই আপনাকে কনফার্ম করা হবে।</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Cart Bar -->
+    <div class="float-cart" id="floatCart" onclick="openCart()">
+        <div class="float-cart-info"><i class="fas fa-shopping-bag"></i> <span id="floatCount">0</span> টি পণ্য</div>
+        <div class="float-cart-total" id="floatTotal">৳0</div>
+    </div>
+
+    <script>
+    // ============ CONFIG ============
+    const WORKER_URL = 'https://ss-topup-automation.kodomofficial01.workers.dev';
+    const TG_ORDER_ENDPOINT = WORKER_URL + '/shop-order';
+
+    // ============ PRODUCTS ============
+    const products = [
+        {
+            id: 1, name: 'ওয়্যারলেস ইয়ারবাড TWS', cat: 'electronics',
+            price: 450, original: 899, emoji: '🎧',
+            img: '', desc: 'হাই কোয়ালিটি সাউন্ড, ব্লুটুথ 5.0, ৪ ঘণ্টা ব্যাটারি লাইফ। গেমিং ও মিউজিক দুটোর জন্যই পারফেক্ট।',
+            rating: 4.5, reviews: 128, badge: '50% OFF'
+        },
+        {
+            id: 2, name: 'LED রিং লাইট ১০ ইঞ্চি', cat: 'electronics',
+            price: 350, original: 650, emoji: '💡',
+            img: '', desc: 'TikTok, YouTube, ভিডিও কলের জন্য পারফেক্ট। ৩ ধরনের লাইট, ১০ লেভেল ব্রাইটনেস।',
+            rating: 4.3, reviews: 87, badge: 'Hot'
+        },
+        {
+            id: 3, name: 'স্মার্ট ব্যান্ড ওয়াচ M8', cat: 'electronics',
+            price: 550, original: 1200, emoji: '⌚',
+            img: '', desc: 'হার্ট রেট, স্টেপ কাউন্ট, স্লিপ ট্র্যাকার। ওয়াটারপ্রুফ। ৭ দিন ব্যাটারি।',
+            rating: 4.2, reviews: 203, badge: '54% OFF'
+        },
+        {
+            id: 4, name: 'মিনি ব্লুটুথ স্পিকার', cat: 'electronics',
+            price: 299, original: 599, emoji: '🔊',
+            img: '', desc: 'পোর্টেবল, শক্তিশালী বেজ। মাইক্রো SD কার্ড সাপোর্ট। ৮ ঘণ্টা ব্যাটারি।',
+            rating: 4.4, reviews: 156
+        },
+        {
+            id: 5, name: 'গেমিং মাউস RGB', cat: 'gaming',
+            price: 399, original: 799, emoji: '🖱️',
+            img: '', desc: '৬ বাটন, DPI অ্যাডজাস্টেবল, RGB লাইটিং। গেমিং ও অফিস দুটোর জন্যই।',
+            rating: 4.6, reviews: 94, badge: 'Best Seller'
+        },
+        {
+            id: 6, name: 'গেমিং হেডসেট LED', cat: 'gaming',
+            price: 499, original: 950, emoji: '🎮',
+            img: '', desc: 'সারাউন্ড সাউন্ড, নয়েজ ক্যান্সেলিং মাইক। PUBG, Free Fire এর জন্য পারফেক্ট।',
+            rating: 4.7, reviews: 312, badge: 'Hot'
+        },
+        {
+            id: 7, name: 'ফোন হোল্ডার ফ্লেক্সিবল', cat: 'accessories',
+            price: 150, original: 350, emoji: '📱',
+            img: '', desc: 'বেড, টেবিল যেকোনো জায়গায় লাগানো যায়। 360° রোটেশন।',
+            rating: 4.1, reviews: 445
+        },
+        {
+            id: 8, name: 'USB LED লাইট স্ট্রিপ', cat: 'lifestyle',
+            price: 199, original: 450, emoji: '🌈',
+            img: '', desc: 'রুম ডেকোরেশন, RGB কালার, রিমোট কন্ট্রোল। ৫ মিটার।',
+            rating: 4.3, reviews: 178, badge: '56% OFF'
+        },
+        {
+            id: 9, name: 'মিনি ফ্যান USB রিচার্জেবল', cat: 'lifestyle',
+            price: 250, original: 500, emoji: '🌀',
+            img: '', desc: '৩ স্পিড, USB চার্জিং, পোর্টেবল। গরমে ঠাণ্ডা বাতাস।',
+            rating: 4.0, reviews: 267
+        },
+        {
+            id: 10, name: 'ফ্রি ফায়ার 💎 টপ আপ', cat: 'digital',
+            price: 95, original: 120, emoji: '💎',
+            img: '', desc: '100 Diamonds ইনস্ট্যান্ট ডেলিভারি। UID দিন, ৫ মিনিটে পাবেন।',
+            rating: 4.8, reviews: 534, badge: 'Instant'
+        },
+        {
+            id: 11, name: 'Netflix Premium 1 মাস', cat: 'digital',
+            price: 120, original: 200, emoji: '🎬',
+            img: '', desc: '4K UHD, ৪ স্ক্রিন। পার্সোনাল অ্যাকাউন্ট, ৩০ দিন গ্যারান্টি।',
+            rating: 4.5, reviews: 89
+        },
+        {
+            id: 12, name: 'স্টাইলিশ সানগ্লাস UV400', cat: 'fashion',
+            price: 199, original: 499, emoji: '🕶️',
+            img: '', desc: 'UV400 প্রোটেকশন, পোলারাইজড লেন্স। ট্রেন্ডি ডিজাইন।',
+            rating: 4.2, reviews: 156, badge: '60% OFF'
+        }
+    ];
+
+    const categories = [
+        { id: 'all', name: '🛍️ সব', emoji: '' },
+        { id: 'electronics', name: '📱 ইলেকট্রনিক্স', emoji: '' },
+        { id: 'gaming', name: '🎮 গেমিং', emoji: '' },
+        { id: 'accessories', name: '🔌 এক্সেসরিজ', emoji: '' },
+        { id: 'lifestyle', name: '🏠 লাইফস্টাইল', emoji: '' },
+        { id: 'digital', name: '💻 ডিজিটাল', emoji: '' },
+        { id: 'fashion', name: '👗 ফ্যাশন', emoji: '' }
+    ];
+
+    let cart = JSON.parse(localStorage.getItem('ss_cart') || '[]');
+    let currentCat = 'all';
+    let modalProduct = null;
+    let modalQty = 1;
+    let payMethod = 'bkash';
+
+    // ============ INIT ============
+    function init() {
+        renderCats();
+        renderProducts();
+        updateCart();
+    }
+
+    function renderCats() {
+        const w = document.getElementById('catWrap');
+        w.innerHTML = categories.map(c =>
+            `<button class="cat-btn ${c.id===currentCat?'active':''}" onclick="selectCat('${c.id}')">${c.name}</button>`
+        ).join('');
+    }
+
+    function selectCat(id) {
+        currentCat = id;
+        renderCats();
+        renderProducts();
+    }
+
+    function renderProducts() {
+        const q = document.getElementById('searchInput').value.toLowerCase();
+        let list = products;
+        if (currentCat !== 'all') list = list.filter(p => p.cat === currentCat);
+        if (q) list = list.filter(p => p.name.toLowerCase().includes(q));
+
+        const grid = document.getElementById('productsGrid');
+        if (!list.length) {
+            grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted);">কোনো পণ্য পাওয়া যায়নি 😔</div>';
+            return;
+        }
+        grid.innerHTML = list.map(p => `
+            <div class="product" onclick="openProduct(${p.id})">
+                <div class="product-img">
+                    ${p.img ? `<img src="${p.img}" alt="${p.name}">` : p.emoji}
+                    ${p.badge ? `<div class="product-badge">${p.badge}</div>` : ''}
+                </div>
+                <div class="product-info">
+                    <div class="product-name">${p.name}</div>
+                    <div>
+                        <span class="product-price">৳${p.price}</span>
+                        <span class="product-original">৳${p.original}</span>
+                    </div>
+                    <div class="product-rating">${'⭐'.repeat(Math.floor(p.rating))} ${p.rating} (${p.reviews})</div>
+                </div>
+                <button class="add-cart-btn" onclick="event.stopPropagation();addToCart(${p.id})">🛒 কার্টে যোগ করুন</button>
+            </div>
+        `).join('');
+    }
+
+    function filterProducts() { renderProducts(); }
+
+    // ============ PRODUCT MODAL ============
+    function openProduct(id) {
+        modalProduct = products.find(p => p.id === id);
+        modalQty = 1;
+        if (!modalProduct) return;
+        document.getElementById('modalImg').innerHTML = `<button class="modal-close" onclick="closeModal()">✕</button>` +
+            (modalProduct.img ? `<img src="${modalProduct.img}">` : modalProduct.emoji);
+        document.getElementById('modalName').textContent = modalProduct.name;
+        document.getElementById('modalPrice').textContent = '৳' + modalProduct.price;
+        document.getElementById('modalOriginal').textContent = '৳' + modalProduct.original;
+        document.getElementById('modalRating').innerHTML = '⭐'.repeat(Math.floor(modalProduct.rating)) + ` ${modalProduct.rating} (${modalProduct.reviews} reviews)`;
+        document.getElementById('modalDesc').textContent = modalProduct.desc;
+        document.getElementById('qtyNum').textContent = modalQty;
+        document.getElementById('productModal').classList.add('active');
+    }
+
+    function closeModal() { document.getElementById('productModal').classList.remove('active'); }
+
+    function changeQty(d) {
+        modalQty = Math.max(1, modalQty + d);
+        document.getElementById('qtyNum').textContent = modalQty;
+    }
+
+    function addFromModal() {
+        if (!modalProduct) return;
+        for (let i = 0; i < modalQty; i++) addToCart(modalProduct.id, true);
+        closeModal();
+        toast(`✅ ${modalProduct.name} কার্টে যোগ হয়েছে!`);
+    }
+
+    // ============ CART ============
+    function addToCart(id, silent) {
+        const existing = cart.find(c => c.id === id);
+        if (existing) {
+            existing.qty++;
+        } else {
+            const p = products.find(p => p.id === id);
+            cart.push({ id: p.id, name: p.name, price: p.price, emoji: p.emoji, img: p.img, qty: 1 });
+        }
+        saveCart();
+        updateCart();
+        if (!silent) toast('✅ কার্টে যোগ হয়েছে!');
+    }
+
+    function removeFromCart(id) {
+        cart = cart.filter(c => c.id !== id);
+        saveCart();
+        updateCart();
+        renderCartItems();
+    }
+
+    function saveCart() { localStorage.setItem('ss_cart', JSON.stringify(cart)); }
+
+    function updateCart() {
+        const count = cart.reduce((s, c) => s + c.qty, 0);
+        const total = cart.reduce((s, c) => s + c.price * c.qty, 0);
+        document.getElementById('cartBadge').textContent = count;
+        document.getElementById('floatCount').textContent = count;
+        document.getElementById('floatTotal').textContent = '৳' + total;
+        const fc = document.getElementById('floatCart');
+        if (count > 0) fc.classList.add('show');
+        else fc.classList.remove('show');
+    }
+
+    function openCart() {
+        renderCartItems();
+        document.getElementById('cartOverlay').classList.add('active');
+    }
+
+    function closeCart() { document.getElementById('cartOverlay').classList.remove('active'); }
+
+    function renderCartItems() {
+        const el = document.getElementById('cartItems');
+        const totalEl = document.getElementById('cartTotal');
+        const checkEl = document.getElementById('checkoutSection');
+        const successEl = document.getElementById('successMsg');
+        successEl.classList.remove('active');
+
+        if (!cart.length) {
+            el.innerHTML = '<div class="cart-empty"><i class="fas fa-shopping-bag"></i><p>কার্ট খালি!</p></div>';
+            totalEl.style.display = 'none';
+            checkEl.style.display = 'none';
+            return;
+        }
+
+        el.innerHTML = cart.map(c => `
+            <div class="cart-item">
+                <div class="cart-item-img">${c.img ? `<img src="${c.img}">` : c.emoji}</div>
+                <div class="cart-item-info">
+                    <div class="cart-item-name">${c.name}</div>
+                    <div class="cart-item-price">৳${c.price} × ${c.qty}</div>
+                </div>
+                <button class="cart-item-del" onclick="removeFromCart(${c.id})"><i class="fas fa-trash"></i></button>
+            </div>
+        `).join('');
+
+        const total = cart.reduce((s, c) => s + c.price * c.qty, 0);
+        document.getElementById('totalAmount').textContent = '৳' + total;
+        totalEl.style.display = 'flex';
+        checkEl.style.display = 'block';
+    }
+
+    // ============ PAYMENT ============
+    function selectPay(el, method) {
+        document.querySelectorAll('.pay-opt').forEach(e => e.classList.remove('active'));
+        el.classList.add('active');
+        payMethod = method;
+        const info = document.getElementById('payInfo');
+        const trx = document.getElementById('custTrxId');
+        if (method === 'bkash') {
+            info.innerHTML = '📱 <b>bKash:</b> 01XXXXXXXXX নম্বরে Send Money করুন।<br>✅ TrxID নিচে দিন।';
+            info.style.display = 'block';
+            trx.style.display = 'block';
+        } else if (method === 'nagad') {
+            info.innerHTML = '📲 <b>Nagad:</b> 01XXXXXXXXX নম্বরে Send Money করুন।<br>✅ TrxID নিচে দিন।';
+            info.style.display = 'block';
+            trx.style.display = 'block';
+        } else {
+            info.innerHTML = '💵 <b>Cash on Delivery:</b> পণ্য হাতে পেয়ে টাকা দিন।';
+            info.style.display = 'block';
+            trx.style.display = 'none';
+        }
+    }
+
+    // ============ ORDER ============
+    async function placeOrder() {
+        const name = document.getElementById('custName').value.trim();
+        const phone = document.getElementById('custPhone').value.trim();
+        const address = document.getElementById('custAddress').value.trim();
+        const note = document.getElementById('custNote').value.trim();
+        const trxId = document.getElementById('custTrxId').value.trim();
+
+        if (!name || !phone || !address) {
+            toast('❌ নাম, মোবাইল ও ঠিকানা দিন!');
+            return;
+        }
+        if (payMethod !== 'cod' && !trxId) {
+            toast('❌ TrxID দিন!');
+            return;
+        }
+
+        const btn = document.getElementById('checkoutBtn');
+        btn.disabled = true;
+        btn.textContent = '⏳ অপেক্ষা করুন...';
+
+        const total = cart.reduce((s, c) => s + c.price * c.qty, 0);
+        const items = cart.map(c => `${c.name} ×${c.qty} = ৳${c.price*c.qty}`).join('\n');
+
+        const order = {
+            name, phone, address, note,
+            payment: payMethod,
+            trxId: trxId || 'N/A (COD)',
+            items: cart,
+            total,
+            itemText: items,
+            timestamp: new Date().toISOString()
+        };
+
+        try {
+            // Send to Telegram via worker
+            const tgText = `🛒 *নতুন অর্ডার!*\n\n👤 *নাম:* ${name}\n📞 *ফোন:* ${phone}\n📍 *ঠিকানা:* ${address}\n${note ? '📝 *নোট:* '+note+'\n' : ''}\n📦 *পণ্য:*\n${items}\n\n💰 *মোট:* ৳${total}\n💳 *পেমেন্ট:* ${payMethod.toUpperCase()}\n🔑 *TrxID:* ${trxId || 'COD'}`;
+
+            await fetch(`https://api.telegram.org/bot8709358566:AAFAIJGxh5YwQxB7dI0DxVMGNhiLfxY37-g/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    chat_id: '8687506733',
+                    text: tgText,
+                    parse_mode: 'Markdown'
+                })
+            });
+
+            // Success
+            cart = [];
+            saveCart();
+            updateCart();
+            document.getElementById('cartItems').innerHTML = '';
+            document.getElementById('cartTotal').style.display = 'none';
+            document.getElementById('checkoutSection').style.display = 'none';
+            document.getElementById('successMsg').classList.add('active');
+        } catch (e) {
+            toast('❌ সমস্যা হয়েছে, আবার চেষ্টা করুন');
+        }
+
+        btn.disabled = false;
+        btn.textContent = '✅ অর্ডার করুন';
+    }
+
+    // ============ TOAST ============
+    function toast(msg) {
+        const t = document.createElement('div');
+        t.className = 'toast';
+        t.textContent = msg;
+        document.body.appendChild(t);
+        setTimeout(() => t.remove(), 2000);
+    }
+
+    init();
+    </script>
+</body>
+</html>
