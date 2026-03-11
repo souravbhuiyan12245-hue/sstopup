@@ -1,0 +1,43 @@
+{
+  "shop": {
+    "name": "SS Shop",
+    "bannerTitle": "🔥 Grand Opening Sale!",
+    "bannerText": "সব পণ্যে বিশেষ ছাড়!"
+  },
+  "payment": {
+    "bkash": "",
+    "nagad": "",
+    "cod": true
+  },
+  "telegram": {
+    "botToken": "8709358566:AAFAIJGxh5YwQxB7dI0DxVMGNhiLfxY37-g",
+    "chatId": "8687506733"
+  },
+  "categories": [
+    {
+      "id": "electronics",
+      "name": "📱 ইলেকট্রনিক্স"
+    },
+    {
+      "id": "gaming",
+      "name": "🎮 গেমিং"
+    },
+    {
+      "id": "accessories",
+      "name": "🔌 এক্সেসরিজ"
+    },
+    {
+      "id": "lifestyle",
+      "name": "🏠 লাইফস্টাইল"
+    },
+    {
+      "id": "digital",
+      "name": "💻 ডিজিটাল"
+    },
+    {
+      "id": "fashion",
+      "name": "👗 ফ্যাশন"
+    }
+  ],
+  "products": []
+}
