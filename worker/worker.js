@@ -507,6 +507,36 @@ export default {
       }
     }
 
+    // POST /check-player — Verify Free Fire UID and get player name
+    if (url.pathname === '/check-player' && request.method === 'POST') {
+      try {
+        const d = await request.json();
+        const playerid = (d.playerid || '').trim();
+        if (!playerid || playerid.length < 5 || playerid.length > 15 || !/^\d+$/.test(playerid)) {
+          return new Response(JSON.stringify({ error: true, msg: 'সঠিক UID দাও (৫-১৫ ডিজিট)' }), {
+            status: 400, headers: { ...cors, 'Content-Type': 'application/json' }
+          });
+        }
+        const r = await fetch('https://apis.offertopup.com/api/game-id-checker', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Origin': 'https://offertopup.com',
+            'Referer': 'https://offertopup.com/'
+          },
+          body: JSON.stringify({ playerid })
+        });
+        const result = await r.json();
+        return new Response(JSON.stringify(result), {
+          headers: { ...cors, 'Content-Type': 'application/json' }
+        });
+      } catch (e) {
+        return new Response(JSON.stringify({ error: true, msg: 'Server error' }), {
+          status: 500, headers: { ...cors, 'Content-Type': 'application/json' }
+        });
+      }
+    }
+
     // GET /prices — Public: return prices.json (no cache)
     if (url.pathname === '/prices' && request.method === 'GET') {
       try {
