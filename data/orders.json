@@ -307,7 +307,7 @@
   {
     "name": "sstopupofficial",
     "uid": "-",
-    "item": "Add Money Ã Â§Â³500",
+    "item": "Add Money ÃÂ ÃÂ§ÃÂ³500",
     "price": 500,
     "payment": "bkash",
     "phone": "01854707074",
@@ -320,13 +320,14 @@
   {
     "name": "sstopupofficial",
     "uid": "-",
-    "item": "Add Money ৳500",
+    "item": "Add Money à§³500",
     "price": 500,
     "payment": "bkash",
     "phone": "01854707074",
     "trxId": "Jggjkjbv",
     "date": "3/13/2026, 12:44:59 PM",
-    "status": "Pending",
-    "type": "addmoney"
+    "status": "Completed",
+    "type": "addmoney",
+    "approvedAt": "2026-03-13T06:45:06.389Z"
   }
 ]
