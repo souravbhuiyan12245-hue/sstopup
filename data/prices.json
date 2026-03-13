@@ -2,51 +2,63 @@
   "diamonds": {
     "25": {
       "price": 24,
-      "original": 26
+      "original": 26,
+      "cost": 0
     },
     "50": {
       "price": 35,
-      "original": 40
+      "original": 40,
+      "cost": 0
     },
     "115": {
       "price": 75,
-      "original": 80
+      "original": 80,
+      "cost": 0
     },
     "240": {
       "price": 155,
-      "original": 160
+      "original": 160,
+      "cost": 0
     },
     "355": {
       "price": 235,
-      "original": 485
+      "original": 485,
+      "cost": 0
     },
     "480": {
       "price": 315,
-      "original": 325
+      "original": 325,
+      "cost": 0
     },
     "610": {
       "price": 400,
-      "original": 410
+      "original": 410,
+      "cost": 0
     },
     "850": {
       "price": 555,
-      "original": 565
+      "original": 565,
+      "cost": 0
     },
     "1240": {
       "price": 795,
-      "original": 805
+      "original": 805,
+      "cost": 0
     },
     "2530": {
       "price": 1590,
-      "original": 1600
+      "original": 1600,
+      "cost": 0
     },
     "5060": {
       "price": 3185,
-      "original": 3200
+      "original": 3200,
+      "cost": 0
     },
     "10120": {
       "price": 6345,
-      "original": 6360
+      "original": 6360,
+      "cost": 0
     }
   },
   "passes": {
@@ -84,6 +96,6 @@
     }
   },
   "announcement": "আপোনাদের একটু সাপোর্ট চাই বাস, আর কিচ্ছু না.\n4 থেকে 5 মিনিটের মধ্যে আমরা ডায়মন্ড পাঠিয়ে দেই",
-  "updated": "2026-03-05",
+  "updated": "2026-03-13",
   "addMoneyEnabled": false
 }
