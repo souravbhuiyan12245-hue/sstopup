@@ -661,6 +661,36 @@ export default {
       });
     }
 
+    // POST /check-uid — Public: check orders by UID (safe data only)
+    if (url.pathname === '/check-uid' && request.method === 'POST') {
+      try {
+        const d = await request.json();
+        const uid = (d.uid || '').trim();
+        if (!uid || uid.length < 5 || !/^\d+$/.test(uid)) {
+          return new Response(JSON.stringify({ success: false, message: 'সঠিক UID দাও (শুধু নম্বর, কমপক্ষে ৫ ডিজিট)' }), {
+            status: 400, headers: { ...cors, 'Content-Type': 'application/json' }
+          });
+        }
+        const { orders } = await getOrders(env);
+        const matched = orders
+          .filter(o => o.uid === uid && o.status !== 'Deleted')
+          .map(o => ({
+            name: o.name ? o.name[0] + '***' : 'Unknown',
+            item: o.item,
+            price: o.price,
+            status: o.status,
+            date: o.date
+          }));
+        return new Response(JSON.stringify({ success: true, uid, orders: matched }), {
+          headers: { ...cors, 'Content-Type': 'application/json', 'Cache-Control': 'no-cache, no-store' }
+        });
+      } catch (e) {
+        return new Response(JSON.stringify({ success: false, message: 'Server error' }), {
+          status: 500, headers: { ...cors, 'Content-Type': 'application/json' }
+        });
+      }
+    }
+
     if (url.pathname === '/' || url.pathname === '/health') {
       return new Response(JSON.stringify({ status: 'ok', service: 'SS TOP-UP Automation' }), {
         headers: { 'Content-Type': 'application/json' }

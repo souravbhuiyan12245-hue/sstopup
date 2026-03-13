@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>অর্ডার চেক করুন | SS TOP-UP</title>
+    <meta name="description" content="আপনার Free Fire UID দিয়ে SS TOP-UP এর অর্ডার স্ট্যাটাস চেক করুন।">
+    <meta name="theme-color" content="#6C3CE1">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="images/logo.svg?v=2">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #6C3CE1;
+            --primary-dark: #5228CC;
+            --primary-light: #8B5CF6;
+            --accent: #F97316;
+            --bg: #F5F3FF;
+            --white: #FFFFFF;
+            --card-bg: #FFFFFF;
+            --text: #1E1B4B;
+            --text-muted: #6B7280;
+            --success: #22C55E;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+            --border: rgba(108,60,225,0.1);
+            --shadow: 0 2px 12px rgba(108,60,225,0.12);
+            --shadow-lg: 0 8px 30px rgba(108,60,225,0.18);
+        }
+        [data-theme="dark"] {
+            --primary: #8B5CF6;
+            --primary-dark: #7C3AED;
+            --primary-light: #A78BFA;
+            --bg: #0F0F1A;
+            --white: #1A1A2E;
+            --card-bg: #1A1A2E;
+            --text: #E2E8F0;
+            --text-muted: #94A3B8;
+            --border: rgba(139,92,246,0.15);
+            --shadow: 0 2px 12px rgba(0,0,0,0.3);
+            --shadow-lg: 0 8px 30px rgba(0,0,0,0.4);
+        }
+        [data-theme="dark"] body { background: var(--bg); }
+        [data-theme="dark"] .header { background: linear-gradient(135deg, #1E1B4B, #312E81); }
+        [data-theme="dark"] .search-input { background: #12122a; border-color: #2D2D4A; color: #E2E8F0; }
+        [data-theme="dark"] .search-input::placeholder { color: #4A4A6A; }
+        [data-theme="dark"] .search-input:focus { background: #1A1A2E; border-color: var(--primary); }
+        [data-theme="dark"] .order-card { background: #1A1A2E; border-color: rgba(139,92,246,0.15); }
+        [data-theme="dark"] .empty-state { color: var(--text-muted); }
+        [data-theme="dark"] .bottom-nav { background: #1A1A2E; border-top-color: rgba(139,92,246,0.15); }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+        .header {
+            background: linear-gradient(135deg, #6C3CE1, #8B5CF6);
+            color: white;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .header-left a {
+            color: white;
+            text-decoration: none;
+            font-size: 20px;
+        }
+        .header h1 {
+            font-size: 18px;
+            font-weight: 700;
+        }
+        .dark-toggle {
+            width: 38px;
+            height: 38px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 10px;
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px 16px;
+        }
+        .search-box {
+            margin-bottom: 24px;
+        }
+        .search-box label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+        .search-row {
+            display: flex;
+            gap: 10px;
+        }
+        .search-input {
+            flex: 1;
+            padding: 14px 16px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: 'Inter', sans-serif;
+            background: var(--white);
+            color: var(--text);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .search-input:focus {
+            border-color: var(--primary);
+        }
+        .search-btn {
+            padding: 14px 24px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.1s, opacity 0.2s;
+            white-space: nowrap;
+        }
+        .search-btn:active {
+            transform: scale(0.96);
+        }
+        .search-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .results-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+        .results-header h2 {
+            font-size: 16px;
+            font-weight: 700;
+        }
+        .results-header .count {
+            font-size: 13px;
+            color: var(--text-muted);
+            background: var(--border);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        .order-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow);
+            transition: transform 0.15s;
+        }
+        .order-card:active {
+            transform: scale(0.98);
+        }
+        .order-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .order-item {
+            font-weight: 700;
+            font-size: 15px;
+        }
+        .order-status {
+            font-size: 12px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+        }
+        .status-completed { background: rgba(34,197,94,0.12); color: #16A34A; }
+        .status-pending { background: rgba(245,158,11,0.12); color: #D97706; }
+        .status-running { background: rgba(59,130,246,0.12); color: #2563EB; }
+        .status-rejected { background: rgba(239,68,68,0.12); color: #DC2626; }
+        .order-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+        .order-details span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .order-details .price {
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.4;
+        }
+        .empty-state h3 {
+            font-size: 16px;
+            margin-bottom: 6px;
+        }
+        .empty-state p {
+            font-size: 13px;
+        }
+        .error-msg {
+            text-align: center;
+            padding: 16px;
+            background: rgba(239,68,68,0.08);
+            border-radius: 12px;
+            color: var(--danger);
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+        .loading .spinner {
+            width: 36px;
+            height: 36px;
+            border: 3px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 12px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .uid-display {
+            text-align: center;
+            padding: 12px;
+            background: linear-gradient(135deg, rgba(108,60,225,0.08), rgba(139,92,246,0.06));
+            border-radius: 12px;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+        .uid-display strong {
+            color: var(--primary);
+            font-family: monospace;
+            font-size: 16px;
+        }
+        .summary-bar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        .summary-item {
+            flex: 1;
+            min-width: 70px;
+            text-align: center;
+            padding: 10px 8px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+        .summary-item .num {
+            display: block;
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 2px;
+        }
+
+        /* Bottom nav */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--white);
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
+            z-index: 100;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 12px;
+            transition: color 0.2s;
+        }
+        .nav-item i { font-size: 20px; }
+        .nav-item.active { color: var(--primary); }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <a href="index.html"><i class="fas fa-arrow-left"></i></a>
+            <h1>🔍 অর্ডার চেক করুন</h1>
+        </div>
+        <button class="dark-toggle" onclick="toggleDark()" id="darkBtn">🌙</button>
+    </div>
+
+    <div class="container">
+        <div class="search-box">
+            <label><i class="fas fa-gamepad"></i> আপনার Free Fire UID দিন</label>
+            <div class="search-row">
+                <input type="text" class="search-input" id="uidInput" placeholder="যেমন: 2441139155" inputmode="numeric" pattern="[0-9]*" maxlength="20" autofocus>
+                <button class="search-btn" id="searchBtn" onclick="checkUID()">
+                    <i class="fas fa-search"></i> চেক
+                </button>
+            </div>
+        </div>
+
+        <div id="results"></div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <a href="index.html" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>হোম</span>
+        </a>
+        <a href="index.html#shop" class="nav-item">
+            <i class="fas fa-store"></i>
+            <span>শপ</span>
+        </a>
+        <a href="check.html" class="nav-item active">
+            <i class="fas fa-search"></i>
+            <span>চেক</span>
+        </a>
+    </div>
+
+    <script>
+        const WORKER_URL = 'https://ss-topup-automation.sstopupofficial.workers.dev';
+
+        // Dark mode
+        function toggleDark() {
+            const html = document.documentElement;
+            const isDark = html.getAttribute('data-theme') === 'dark';
+            html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+            localStorage.setItem('theme', isDark ? 'light' : 'dark');
+            document.getElementById('darkBtn').textContent = isDark ? '🌙' : '☀️';
+        }
+        (function() {
+            const saved = localStorage.getItem('theme');
+            if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('darkBtn').textContent = '☀️';
+            }
+        })();
+
+        // Auto-fill from URL param
+        const urlParams = new URLSearchParams(window.location.search);
+        const uidParam = urlParams.get('uid');
+        if (uidParam) {
+            document.getElementById('uidInput').value = uidParam;
+            window.addEventListener('DOMContentLoaded', () => checkUID());
+        }
+
+        // Enter key
+        document.getElementById('uidInput').addEventListener('keydown', e => {
+            if (e.key === 'Enter') checkUID();
+        });
+
+        async function checkUID() {
+            const uid = document.getElementById('uidInput').value.trim();
+            const resultsDiv = document.getElementById('results');
+            const btn = document.getElementById('searchBtn');
+
+            if (!uid || uid.length < 5 || !/^\d+$/.test(uid)) {
+                resultsDiv.innerHTML = '<div class="error-msg">⚠️ সঠিক UID দাও (শুধু নম্বর, কমপক্ষে ৫ ডিজিট)</div>';
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            resultsDiv.innerHTML = '<div class="loading"><div class="spinner"></div><p>খুঁজছি...</p></div>';
+
+            try {
+                const res = await fetch(WORKER_URL + '/check-uid', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ uid })
+                });
+                const data = await res.json();
+
+                if (!data.success) {
+                    resultsDiv.innerHTML = `<div class="error-msg">❌ ${data.message || 'কিছু ভুল হয়েছে'}</div>`;
+                    return;
+                }
+
+                const orders = data.orders;
+                if (orders.length === 0) {
+                    resultsDiv.innerHTML = `
+                        <div class="uid-display">UID: <strong>${uid}</strong></div>
+                        <div class="empty-state">
+                            <i class="fas fa-inbox"></i>
+                            <h3>কোনো অর্ডার পাওয়া যায়নি</h3>
+                            <p>এই UID তে কোনো অর্ডার নেই</p>
+                        </div>`;
+                    return;
+                }
+
+                // Summary
+                const total = orders.length;
+                const completed = orders.filter(o => o.status === 'Completed').length;
+                const pending = orders.filter(o => o.status === 'Pending').length;
+                const totalSpent = orders.filter(o => o.status === 'Completed').reduce((s, o) => s + (o.price || 0), 0);
+
+                let html = `
+                    <div class="uid-display">UID: <strong>${uid}</strong></div>
+                    <div class="summary-bar">
+                        <div class="summary-item"><span class="num">${total}</span>মোট</div>
+                        <div class="summary-item"><span class="num">${completed}</span>সম্পন্ন</div>
+                        <div class="summary-item"><span class="num">${pending}</span>পেন্ডিং</div>
+                        <div class="summary-item"><span class="num">৳${totalSpent}</span>খরচ</div>
+                    </div>
+                    <div class="results-header">
+                        <h2>অর্ডার হিস্ট্রি</h2>
+                        <span class="count">${total}টি অর্ডার</span>
+                    </div>`;
+
+                // Show newest first
+                const sorted = [...orders].reverse();
+                for (const o of sorted) {
+                    const statusClass = (o.status || 'pending').toLowerCase();
+                    const statusLabels = {
+                        completed: '✅ সম্পন্ন',
+                        pending: '⏳ পেন্ডিং',
+                        running: '▶️ চলছে',
+                        rejected: '❌ বাতিল'
+                    };
+                    const statusLabel = statusLabels[statusClass] || o.status;
+                    const date = o.date ? new Date(o.date).toLocaleDateString('bn-BD', { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
+                    const time = o.date ? new Date(o.date).toLocaleTimeString('bn-BD', { hour: '2-digit', minute: '2-digit' }) : '';
+
+                    html += `
+                        <div class="order-card">
+                            <div class="order-top">
+                                <span class="order-item">💎 ${o.item || '—'}</span>
+                                <span class="order-status status-${statusClass}">${statusLabel}</span>
+                            </div>
+                            <div class="order-details">
+                                <span class="price">৳${o.price || 0}</span>
+                                <span><i class="far fa-calendar"></i> ${date}</span>
+                                <span><i class="far fa-clock"></i> ${time}</span>
+                                <span><i class="far fa-user"></i> ${o.name || '—'}</span>
+                            </div>
+                        </div>`;
+                }
+
+                resultsDiv.innerHTML = html;
+            } catch (e) {
+                resultsDiv.innerHTML = '<div class="error-msg">❌ সার্ভারে সমস্যা হয়েছে। আবার চেষ্টা করো।</div>';
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-search"></i> চেক';
+            }
+        }
+    </script>
+</body>
+</html>
