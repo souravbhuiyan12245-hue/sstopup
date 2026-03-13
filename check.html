@@ -409,6 +409,23 @@
             resultsDiv.innerHTML = '<div class="loading"><div class="spinner"></div><p>খুঁজছি...</p></div>';
 
             try {
+                // Step 1: Check player name
+                let playerName = '';
+                let playerVerified = false;
+                try {
+                    const pRes = await fetch(WORKER_URL + '/check-player', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ playerid: uid })
+                    });
+                    const pData = await pRes.json();
+                    if (!pData.error && pData.msg === 'id_found' && pData.data) {
+                        playerName = pData.data.username || '';
+                        playerVerified = true;
+                    }
+                } catch(e) {}
+
+                // Step 2: Check orders
                 const res = await fetch(WORKER_URL + '/check-uid', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -421,10 +438,24 @@
                     return;
                 }
 
+                // Player info card
+                const isRealName = playerName && playerName !== uid;
+                const playerCard = playerVerified 
+                    ? `<div style="background:linear-gradient(135deg,rgba(34,197,94,0.1),rgba(34,197,94,0.05));border:1px solid rgba(34,197,94,0.2);border-radius:14px;padding:16px;margin-bottom:16px;text-align:center;">
+                        <div style="font-size:13px;color:var(--text-muted);margin-bottom:4px;">🎮 Free Fire Player</div>
+                        <div style="font-size:20px;font-weight:800;color:var(--text);margin-bottom:4px;">${isRealName ? playerName : 'Player ' + uid}</div>
+                        <div style="font-size:13px;color:var(--text-muted);">UID: <strong style="color:var(--primary);font-family:monospace;">${uid}</strong></div>
+                        <div style="margin-top:8px;font-size:12px;color:#16a34a;font-weight:700;">✅ ID সঠিক — এই আইডি Free Fire তে আছে</div>
+                      </div>`
+                    : `<div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.15);border-radius:14px;padding:16px;margin-bottom:16px;text-align:center;">
+                        <div style="font-size:13px;color:var(--text-muted);margin-bottom:4px;">🎮 Free Fire Player</div>
+                        <div style="font-size:16px;font-weight:700;color:#dc2626;">❌ এই UID পাওয়া যায়নি</div>
+                        <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">UID: <strong style="font-family:monospace;">${uid}</strong></div>
+                      </div>`;
+
                 const orders = data.orders;
                 if (orders.length === 0) {
-                    resultsDiv.innerHTML = `
-                        <div class="uid-display">UID: <strong>${uid}</strong></div>
+                    resultsDiv.innerHTML = playerCard + `
                         <div class="empty-state">
                             <i class="fas fa-inbox"></i>
                             <h3>কোনো অর্ডার পাওয়া যায়নি</h3>
@@ -439,8 +470,7 @@
                 const pending = orders.filter(o => o.status === 'Pending').length;
                 const totalSpent = orders.filter(o => o.status === 'Completed').reduce((s, o) => s + (o.price || 0), 0);
 
-                let html = `
-                    <div class="uid-display">UID: <strong>${uid}</strong></div>
+                let html = playerCard + `
                     <div class="summary-bar">
                         <div class="summary-item"><span class="num">${total}</span>মোট</div>
                         <div class="summary-item"><span class="num">${completed}</span>সম্পন্ন</div>
