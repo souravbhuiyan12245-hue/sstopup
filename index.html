@@ -1465,9 +1465,16 @@ function applySiteSettings() {
 
 async function loadPrices() {
     try {
-        const r = await fetch(API_READ + '?t=' + Date.now(), { cache: 'no-store' });
+        const r = await fetch(WORKER_URL + '/prices', { cache: 'no-store' });
         if (r.ok) { prices = await r.json(); }
-    } catch(e) { console.log('Using default prices'); }
+        else {
+            const r2 = await fetch(API_READ + '?t=' + Date.now(), { cache: 'no-store' });
+            if (r2.ok) { prices = await r2.json(); }
+        }
+    } catch(e) { 
+        try { const r2 = await fetch(API_READ + '?t=' + Date.now(), { cache: 'no-store' }); if(r2.ok) prices = await r2.json(); }
+        catch(e2) { console.log('Using default prices'); }
+    }
     updateUI();
     applySiteSettings();
 }
