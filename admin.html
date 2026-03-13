@@ -150,6 +150,7 @@
                 <button class="btn btn-sm" style="background:#fef3c7;color:#92400e;" onclick="filt('Pending')">Pending</button>
                 <button class="btn btn-sm" style="background:#dbeafe;color:#1e40af;" onclick="filt('Running')">Running</button>
                 <button class="btn btn-sm" style="background:#dcfce7;color:#166534;" onclick="filt('Completed')">Done</button>
+                <button class="btn btn-sm" style="background:#fee2e2;color:#991b1b;" onclick="filt('Rejected')">Rejected</button>
             </div>
             <div id="orderBox"><p style="color:var(--muted);font-size:0.82rem;text-align:center;padding:20px;">Loading...</p></div>
         </div>
@@ -277,6 +278,7 @@ if('serviceWorker' in navigator){navigator.serviceWorker.register('admin-sw.js')
 const REPO='souravbhuiyan12245-hue/sstopup';
 const GH=`https://api.github.com/repos/${REPO}/contents/`;
 const RAW=`https://raw.githubusercontent.com/${REPO}/main/`;
+const WORKER='https://ss-topup-automation.sadmanbay2010.workers.dev';
 const DEFHASH='240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9';
 
 let P=null,O=[],cf='all',oSha=null,pSha=null,changed=false;
@@ -332,12 +334,14 @@ function saveApiKey(){
 }
 
 async function loadP(){
-    try{const r=await fetch(RAW+'data/prices.json?t='+Date.now(),{cache:'no-store'});if(r.ok){P=await r.json();renderP();}}catch(e){}
+    try{const r=await fetch(WORKER+'/prices',{cache:'no-store'});if(r.ok){P=await r.json();renderP();}}catch(e){
+    try{const r2=await fetch(RAW+'data/prices.json?t='+Date.now(),{cache:'no-store'});if(r2.ok){P=await r2.json();renderP();}}catch(e2){}}
     try{const t=tok();if(t){const r=await fetch(GH+'data/prices.json',{headers:{Authorization:'token '+t}});if(r.ok){pSha=(await r.json()).sha;}}}catch(e){}
 }
 
 async function loadO(){
-    try{const r=await fetch(RAW+'data/orders.json?t='+Date.now(),{cache:'no-store'});if(r.ok)O=await r.json();else O=[];}catch(e){O=[];}
+    try{const t=tok();if(t){const r=await fetch(GH+'data/orders.json',{headers:{Authorization:'token '+t}});if(r.ok){const d=await r.json();oSha=d.sha;O=JSON.parse(atob(d.content));renderO();return;}}
+    const r=await fetch(RAW+'data/orders.json?t='+Date.now(),{cache:'no-store'});if(r.ok)O=await r.json();else O=[];}catch(e){O=[];}
     try{const t=tok();if(t){const r=await fetch(GH+'data/orders.json',{headers:{Authorization:'token '+t}});if(r.ok){oSha=(await r.json()).sha;}}}catch(e){}
     renderO();
 }
