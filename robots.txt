@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://souravbhuiyan12245-hue.github.io/sstopup/sitemap.xml
