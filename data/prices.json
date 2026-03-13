@@ -97,5 +97,9 @@
   },
   "announcement": "",
   "updated": "2026-03-13",
-  "addMoneyEnabled": false
+  "addMoneyEnabled": false,
+  "siteSettings": {
+    "tgBot": "8664414516:AAFRdN6yYRbUZEM31C1eTGpT0HP8ob-0Q0M",
+    "tgChat": "8687506733"
+  }
 }
