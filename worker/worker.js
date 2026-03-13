@@ -419,10 +419,10 @@ export default {
       return new Response(null, { headers: cors });
     }
 
-    // Admin auth check
-    const ADMIN_KEY = 'ss_admin_2026_x9k7m';
+    // Admin auth check (key from env variable)
     function isAdmin(req) {
-      return req.headers.get('X-Admin-Key') === ADMIN_KEY;
+      const key = req.headers.get('X-Admin-Key');
+      return key && key === env.ADMIN_KEY;
     }
 
     // GET/POST /admin/orders — Full CRUD for admin panel
@@ -785,22 +785,26 @@ export default {
       });
     }
 
-    // GET /order-detail — Single order for verify Mini App
+    // GET /order-detail — Single order for verify Mini App (requires admin or API key)
     if (url.pathname === '/order-detail' && request.method === 'GET') {
+      if (!isAdmin(request) && !isAuthorized(request, env)) {
+        return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+          status: 401, headers: { ...cors, 'Content-Type': 'application/json' }
+        });
+      }
       const index = parseInt(url.searchParams.get('index') || '0');
       const { orders } = await getOrders(env);
       if (index >= orders.length) {
         return new Response(JSON.stringify({ error: 'Not found' }), {
-          status: 404, headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' }
+          status: 404, headers: { ...cors, 'Content-Type': 'application/json' }
         });
       }
-      // Only return limited data needed for verify (no sensitive admin data)
       const o = orders[index];
       return new Response(JSON.stringify({
         name: o.name, uid: o.uid, item: o.item, price: o.price,
         payment: o.payment, phone: o.phone, trxId: o.trxId, status: o.status
       }), {
-        headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' }
+        headers: { ...cors, 'Content-Type': 'application/json' }
       });
     }
 

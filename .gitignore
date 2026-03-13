@@ -1,2 +1,4 @@
 ACCESS_CONTROL.md
 MASTER-ACCESS.md
+worker/.wrangler/
+*.old

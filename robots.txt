@@ -1,4 +1,7 @@
 User-agent: *
 Allow: /
 Disallow: /admin.html
+Disallow: /verify.html
+Disallow: /shop/admin.html
+Disallow: /worker/
 Sitemap: https://souravbhuiyan12245-hue.github.io/sstopup/sitemap.xml

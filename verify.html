@@ -237,7 +237,9 @@
         // Load order data
         async function loadOrder() {
             try {
-                const r = await fetch(`https://ss-topup-automation.kodomofficial01.workers.dev/order-detail?index=${orderIndex}`);
+                const r = await fetch(`https://ss-topup-automation.sstopupofficial.workers.dev/order-detail?index=${orderIndex}`, {
+                    headers: { 'X-API-Key': localStorage.getItem('ss_api_key') || '' }
+                });
                 if (r.ok) {
                     orderData = await r.json();
                     renderOrder();
