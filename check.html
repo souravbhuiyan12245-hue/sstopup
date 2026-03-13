@@ -336,7 +336,7 @@
         <div class="search-box">
             <label><i class="fas fa-gamepad"></i> আপনার Free Fire UID দিন</label>
             <div class="search-row">
-                <input type="text" class="search-input" id="uidInput" placeholder="যেমন: 2441139155" inputmode="numeric" pattern="[0-9]*" maxlength="20" autofocus>
+                <input type="text" class="search-input" id="uidInput" placeholder="যেমন: 2441139155" inputmode="numeric" pattern="[0-9]*" maxlength="15" autofocus>
                 <button class="search-btn" id="searchBtn" onclick="checkUID()">
                     <i class="fas fa-search"></i> চেক
                 </button>
@@ -399,8 +399,8 @@
             const resultsDiv = document.getElementById('results');
             const btn = document.getElementById('searchBtn');
 
-            if (!uid || uid.length < 5 || !/^\d+$/.test(uid)) {
-                resultsDiv.innerHTML = '<div class="error-msg">⚠️ সঠিক UID দাও (শুধু নম্বর, কমপক্ষে ৫ ডিজিট)</div>';
+            if (!uid || uid.length < 5 || uid.length > 15 || !/^\d+$/.test(uid)) {
+                resultsDiv.innerHTML = '<div class="error-msg">⚠️ সঠিক UID দাও (৫-১৫ ডিজিট)</div>';
                 return;
             }
 

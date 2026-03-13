@@ -399,7 +399,7 @@ function isRateLimited(orders, phone) {
 
 // ===== Input Validation =====
 function validateOrder(d) {
-  if (!d.uid || d.uid.length < 5 || d.uid.length > 20) return 'UID 5-20 characters হতে হবে';
+  if (!d.uid || d.uid.length < 5 || d.uid.length > 15) return 'UID ৫-১৫ ডিজিট হতে হবে';
   if (!/^\d+$/.test(d.uid)) return 'UID শুধু নম্বর হতে হবে';
   if (!d.phone || !/^01\d{9}$/.test(d.phone)) return 'সঠিক ফোন নম্বর দাও (01XXXXXXXXX)';
   if (!d.trxId || d.trxId.length < 4) return 'সঠিক Transaction ID দাও';
@@ -779,8 +779,8 @@ export default {
       try {
         const d = await request.json();
         const uid = (d.uid || '').trim();
-        if (!uid || uid.length < 5 || !/^\d+$/.test(uid)) {
-          return new Response(JSON.stringify({ success: false, message: 'সঠিক UID দাও (শুধু নম্বর, কমপক্ষে ৫ ডিজিট)' }), {
+        if (!uid || uid.length < 5 || uid.length > 15 || !/^\d+$/.test(uid)) {
+          return new Response(JSON.stringify({ success: false, message: 'সঠিক UID দাও (৫-১৫ ডিজিট)' }), {
             status: 400, headers: { ...cors, 'Content-Type': 'application/json' }
           });
         }

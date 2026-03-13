@@ -1002,7 +1002,7 @@
 
         <div class="form-group">
             <label class="form-label">🎮 Player ID (UID)</label>
-            <input class="form-input" type="text" id="uidInput" placeholder="Enter your Free Fire UID" inputmode="numeric" maxlength="12" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+            <input class="form-input" type="text" id="uidInput" placeholder="Enter your Free Fire UID" inputmode="numeric" maxlength="15" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,15)">
         </div>
 
         <div class="form-group" id="diamondSelectGroup">
@@ -1689,7 +1689,7 @@ async function submitOrder() {
     
     if (!savedEmail) { showEmailPopup(); return; }
     if (!uid) { showToast('❌ Player ID দাও!'); return; }
-    if (uid.length < 9) { showToast('❌ সঠিক Player ID দাও! (৯-১২ ডিজিট)'); return; }
+    if (uid.length < 5 || uid.length > 15) { showToast('❌ সঠিক Player ID দাও! (৫-১৫ ডিজিট)'); return; }
     if (!phone) { showToast('❌ ফোন নম্বর দাও!'); return; }
     if (!trx) { showToast('❌ Transaction ID দাও!'); return; }
     
