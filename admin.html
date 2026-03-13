@@ -278,7 +278,7 @@ if('serviceWorker' in navigator){navigator.serviceWorker.register('admin-sw.js')
 const REPO='souravbhuiyan12245-hue/sstopup';
 const GH=`https://api.github.com/repos/${REPO}/contents/`;
 const RAW=`https://raw.githubusercontent.com/${REPO}/main/`;
-const WORKER='https://ss-topup-automation.sadmanbay2010.workers.dev';
+const WORKER='https://ss-topup-automation.sstopupofficial.workers.dev';
 const DEFHASH='240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9';
 const ADMIN_KEY='ss_admin_2026_x9k7m';
 function adminFetch(url,opts){opts=opts||{};if(!opts.headers)opts.headers={};opts.headers['X-Admin-Key']=ADMIN_KEY;return fetch(url,opts);}
@@ -439,7 +439,7 @@ function filt(f){cf=f;renderO();}
 function dirty(){changed=true;document.getElementById('saveBtn').classList.add('show');}
 
 async function setS(i,s){O[i].status=s;await saveO();renderO();
-    try{await fetch('https://ss-topup-automation.kodomofficial01.workers.dev/admin-status',{method:'POST',headers:{'Content-Type':'application/json','X-API-Key':apiKey()},body:JSON.stringify({orderIndex:i,status:s,order:O[i]})});}catch(e){}
+    try{await fetch('https://ss-topup-automation.sstopupofficial.workers.dev/admin-status',{method:'POST',headers:{'Content-Type':'application/json','X-API-Key':apiKey()},body:JSON.stringify({orderIndex:i,status:s,order:O[i]})});}catch(e){}
 }
 async function delO(i){if(!confirm('Delete?'))return;O.splice(i,1);await saveO();renderO();}
 
