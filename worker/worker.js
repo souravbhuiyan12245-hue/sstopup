@@ -499,6 +499,23 @@ export default {
       }
     }
 
+    // GET /prices — Public: return prices.json (no cache)
+    if (url.pathname === '/prices' && request.method === 'GET') {
+      try {
+        const r = await fetch(`https://api.github.com/repos/${env.GH_REPO}/contents/data/prices.json`, {
+          headers: { 'Authorization': `token ${env.GH_TOKEN}`, 'User-Agent': 'SS-TopUp-Worker' }
+        });
+        if (!r.ok) return new Response('{}', { headers: { ...cors, 'Content-Type': 'application/json' } });
+        const data = await r.json();
+        const content = atob(data.content);
+        return new Response(content, {
+          headers: { ...cors, 'Content-Type': 'application/json', 'Cache-Control': 'no-cache, no-store' }
+        });
+      } catch (e) {
+        return new Response('{}', { headers: { ...cors, 'Content-Type': 'application/json' } });
+      }
+    }
+
     // POST /notify — Route notifications through worker (hide TG token from frontend)
     if (url.pathname === '/notify' && request.method === 'POST') {
       try {
