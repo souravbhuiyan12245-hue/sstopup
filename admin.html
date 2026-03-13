@@ -360,7 +360,8 @@ function renderP(){
         oE.innerHTML+=`<div class="pr"><div class="name">🔥 ${p.name}<small>was ৳${p.original}</small></div><span class="tk">৳</span><input type="number" value="${p.price}" data-t="passes" data-k="${k}" oninput="dirty()"></div>`;
     }});
     const pE=document.getElementById('pPrices');pE.innerHTML='';
-    Object.keys(P.passes).forEach(k=>{const p=P.passes[k];
+    const offerKeys=['monthly','weekly_1x'];
+    Object.keys(P.passes).filter(k=>!offerKeys.includes(k)).forEach(k=>{const p=P.passes[k];
         pE.innerHTML+=`<div class="pr"><div class="name">📅 ${p.name}<small>was ৳${p.original}</small></div><span class="tk">৳</span><input type="number" value="${p.price}" data-t="passes" data-k="${k}" oninput="dirty()"></div>`;
     });
     const sE=document.getElementById('sPrices');sE.innerHTML='';
