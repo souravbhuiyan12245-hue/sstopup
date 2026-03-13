@@ -6,6 +6,14 @@
 const TG_API_BASE = 'https://api.telegram.org/bot';
 const GH_ORDERS_PATH = 'data/orders.json';
 
+// UTF-8 safe base64 decode/encode
+function b64decode(str) {
+  return decodeURIComponent(escape(atob(str)));
+}
+function b64encode(str) {
+  return btoa(unescape(encodeURIComponent(str)));
+}
+
 const ALLOWED_ORIGINS = [
   'https://souravbhuiyan12245-hue.github.io',
   'http://localhost',
@@ -38,13 +46,13 @@ async function getOrders(env) {
   });
   if (!r.ok) return { orders: [], sha: '' };
   const data = await r.json();
-  const content = atob(data.content);
+  const content = b64decode(data.content);
   return { orders: JSON.parse(content), sha: data.sha };
 }
 
 // ===== GitHub: Save orders =====
 async function saveOrders(orders, sha, env) {
-  const content = btoa(unescape(encodeURIComponent(JSON.stringify(orders, null, 2))));
+  const content = b64encode(JSON.stringify(orders, null, 2));
   const r = await fetch(`https://api.github.com/repos/${env.GH_REPO}/contents/${GH_ORDERS_PATH}`, {
     method: 'PUT',
     headers: {
@@ -461,7 +469,7 @@ export default {
           });
           if (!r.ok) return new Response('[]', { headers: { ...cors, 'Content-Type': 'application/json' } });
           const data = await r.json();
-          const content = atob(data.content);
+          const content = b64decode(data.content);
           return new Response(content, {
             headers: { ...cors, 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' }
           });
@@ -478,7 +486,7 @@ export default {
           });
           const data = await r.json();
           const sha = data.sha || '';
-          const content = btoa(unescape(encodeURIComponent(JSON.stringify(newPrices, null, 2))));
+          const content = b64encode(JSON.stringify(newPrices, null, 2));
           const saveR = await fetch(`https://api.github.com/repos/${env.GH_REPO}/contents/${GH_PRICES_PATH}`, {
             method: 'PUT',
             headers: {
@@ -507,7 +515,7 @@ export default {
         });
         if (!r.ok) return new Response('{}', { headers: { ...cors, 'Content-Type': 'application/json' } });
         const data = await r.json();
-        const content = atob(data.content);
+        const content = b64decode(data.content);
         return new Response(content, {
           headers: { ...cors, 'Content-Type': 'application/json', 'Cache-Control': 'no-cache, no-store' }
         });
