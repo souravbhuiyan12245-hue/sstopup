@@ -947,7 +947,7 @@
         <!-- bKash/Nagad Payment Instructions Card -->
         <div id="addMoneyInstructions" style="border-radius:16px;padding:20px 18px;margin-top:8px;margin-bottom:16px;color:#fff;background:#E2136E;">
             <div style="font-weight:800;font-size:1rem;margin-bottom:16px;text-align:center;">ট্রান্সজেকশন আইডি দিন</div>
-            <input class="form-input" type="text" id="addMoneyTrx" placeholder="ট্রান্সজেকশন আইডি দিন" style="background:rgba(255,255,255,0.95);color:#333;border:none;margin-bottom:18px;text-align:center;font-size:0.95rem;">
+            <input class="form-input" type="text" id="addMoneyTrx" placeholder="ট্রান্সজেকশন আইডি দিন" style="background:rgba(255,255,255,0.95);color:#333;border:none;margin-bottom:18px;text-align:center;font-size:0.95rem;" oninput="this.value=this.value.replace(/[^A-Za-z0-9]/g,'').toUpperCase()" autocomplete="off">
             
             <div style="font-size:0.82rem;line-height:2.2;" id="addMoneySteps">
                 <div style="display:flex;align-items:flex-start;gap:8px;">
@@ -1049,7 +1049,7 @@
 
         <div id="paymentInstructions" style="background:#E2136E;border-radius:14px;padding:18px 16px;margin-top:14px;color:#fff;">
             <div style="font-weight:700;font-size:0.9rem;margin-bottom:12px;">🧾 Transaction ID দিন</div>
-            <input class="form-input" type="text" id="trxInput" placeholder="Transaction ID দিন" style="background:rgba(255,255,255,0.95);color:#333;border:none;margin-bottom:14px;">
+            <input class="form-input" type="text" id="trxInput" placeholder="Transaction ID দিন" style="background:rgba(255,255,255,0.95);color:#333;border:none;margin-bottom:14px;" oninput="this.value=this.value.replace(/[^A-Za-z0-9]/g,'').toUpperCase()" autocomplete="off">
             
             <div style="font-size:0.78rem;line-height:2;" id="paySteps">
                 <div>📱 Dial <b>*247#</b> অথবা bKash App ওপেন করুন</div>
