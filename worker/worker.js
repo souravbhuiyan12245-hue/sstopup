@@ -411,6 +411,94 @@ export default {
       return new Response(null, { headers: cors });
     }
 
+    // Admin auth check
+    const ADMIN_KEY = 'ss_admin_2026_x9k7m';
+    function isAdmin(req) {
+      return req.headers.get('X-Admin-Key') === ADMIN_KEY;
+    }
+
+    // GET/POST /admin/orders — Full CRUD for admin panel
+    if (url.pathname === '/admin/orders') {
+      if (!isAdmin(request)) {
+        return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+          status: 401, headers: { ...cors, 'Content-Type': 'application/json' }
+        });
+      }
+      if (request.method === 'GET') {
+        const { orders } = await getOrders(env);
+        return new Response(JSON.stringify(orders), {
+          headers: { ...cors, 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' }
+        });
+      }
+      if (request.method === 'POST') {
+        try {
+          const newOrders = await request.json();
+          const { sha } = await getOrders(env);
+          const saved = await saveOrders(newOrders, sha, env);
+          return new Response(JSON.stringify({ success: saved }), {
+            headers: { ...cors, 'Content-Type': 'application/json' }
+          });
+        } catch (e) {
+          return new Response(JSON.stringify({ success: false, error: e.message }), {
+            status: 500, headers: { ...cors, 'Content-Type': 'application/json' }
+          });
+        }
+      }
+    }
+
+    // GET/POST /admin/prices — Price management for admin panel
+    if (url.pathname === '/admin/prices') {
+      if (!isAdmin(request)) {
+        return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+          status: 401, headers: { ...cors, 'Content-Type': 'application/json' }
+        });
+      }
+      const GH_PRICES_PATH = 'data/prices.json';
+      if (request.method === 'GET') {
+        try {
+          const r = await fetch(`https://api.github.com/repos/${env.GH_REPO}/contents/${GH_PRICES_PATH}`, {
+            headers: { 'Authorization': `token ${env.GH_TOKEN}`, 'User-Agent': 'SS-TopUp-Worker' }
+          });
+          if (!r.ok) return new Response('[]', { headers: { ...cors, 'Content-Type': 'application/json' } });
+          const data = await r.json();
+          const content = atob(data.content);
+          return new Response(content, {
+            headers: { ...cors, 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' }
+          });
+        } catch (e) {
+          return new Response('{}', { headers: { ...cors, 'Content-Type': 'application/json' } });
+        }
+      }
+      if (request.method === 'POST') {
+        try {
+          const newPrices = await request.json();
+          // Get current sha
+          const r = await fetch(`https://api.github.com/repos/${env.GH_REPO}/contents/${GH_PRICES_PATH}`, {
+            headers: { 'Authorization': `token ${env.GH_TOKEN}`, 'User-Agent': 'SS-TopUp-Worker' }
+          });
+          const data = await r.json();
+          const sha = data.sha || '';
+          const content = btoa(unescape(encodeURIComponent(JSON.stringify(newPrices, null, 2))));
+          const saveR = await fetch(`https://api.github.com/repos/${env.GH_REPO}/contents/${GH_PRICES_PATH}`, {
+            method: 'PUT',
+            headers: {
+              'Authorization': `token ${env.GH_TOKEN}`,
+              'Content-Type': 'application/json',
+              'User-Agent': 'SS-TopUp-Worker'
+            },
+            body: JSON.stringify({ message: 'Price update via admin', content, sha })
+          });
+          return new Response(JSON.stringify({ success: saveR.ok }), {
+            headers: { ...cors, 'Content-Type': 'application/json' }
+          });
+        } catch (e) {
+          return new Response(JSON.stringify({ success: false, error: e.message }), {
+            status: 500, headers: { ...cors, 'Content-Type': 'application/json' }
+          });
+        }
+      }
+    }
+
     // POST /notify — Route notifications through worker (hide TG token from frontend)
     if (url.pathname === '/notify' && request.method === 'POST') {
       try {
