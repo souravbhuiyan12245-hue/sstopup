@@ -1,3 +1,4 @@
 User-agent: *
 Allow: /
+Disallow: /admin.html
 Sitemap: https://souravbhuiyan12245-hue.github.io/sstopup/sitemap.xml

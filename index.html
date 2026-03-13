@@ -1002,7 +1002,7 @@
 
         <div class="form-group">
             <label class="form-label">🎮 Player ID (UID)</label>
-            <input class="form-input" type="text" id="uidInput" placeholder="Enter your Free Fire UID" inputmode="numeric">
+            <input class="form-input" type="text" id="uidInput" placeholder="Enter your Free Fire UID" inputmode="numeric" maxlength="12" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
         </div>
 
         <div class="form-group" id="diamondSelectGroup">
@@ -1145,6 +1145,15 @@
         </button>
     </div>
     
+    <div class="status-card">
+        <h4 style="font-size:0.9rem;margin-bottom:14px;">🔍 Order Track</h4>
+        <div style="display:flex;gap:8px;">
+            <input class="form-input" type="text" id="trackTrxInput" placeholder="Transaction ID দাও" style="margin-bottom:0;" oninput="this.value=this.value.replace(/[^A-Za-z0-9]/g,'').toUpperCase()">
+            <button class="submit-btn" onclick="trackOrder()" style="width:auto;padding:12px 20px;margin:0;white-space:nowrap;">🔍 Track</button>
+        </div>
+        <div id="trackResult" style="margin-top:10px;"></div>
+    </div>
+
     <div class="status-card" style="cursor:pointer;" onclick="navigateTo('orders')">
         <div style="display:flex;align-items:center;gap:12px;">
             <i class="fas fa-receipt" style="font-size:1.2rem;color:var(--primary);"></i>
@@ -1597,6 +1606,7 @@ function openModal(type) {
         document.getElementById('payAmount').textContent = '৳' + price;
     }
     modal.classList.add('show');
+    if(typeof gtag==='function') gtag('event', 'view_item', {items:[{item_name: type}]});
 }
 
 function closeModal() {
@@ -1679,8 +1689,14 @@ async function submitOrder() {
     
     if (!savedEmail) { showEmailPopup(); return; }
     if (!uid) { showToast('❌ Player ID দাও!'); return; }
+    if (uid.length < 9) { showToast('❌ সঠিক Player ID দাও! (৯-১২ ডিজিট)'); return; }
     if (!phone) { showToast('❌ ফোন নম্বর দাও!'); return; }
     if (!trx) { showToast('❌ Transaction ID দাও!'); return; }
+    
+    const submitBtn = document.querySelector('#modalOverlay .submit-btn');
+    const origBtnText = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '⏳ Processing...';
     
     let item = '', price = 0;
     if (currentType === 'diamond') {
@@ -1722,6 +1738,8 @@ async function submitOrder() {
             const errData = await workerR.json().catch(() => null);
             if (errData && errData.limited) {
                 showToast(errData.message || '⛔ এই সপ্তাহে আপনি ইতিমধ্যে এই অফার কিনেছেন!');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = origBtnText;
                 return;
             }
         }
@@ -1733,6 +1751,10 @@ async function submitOrder() {
     localStorage.setItem('ss_orders', JSON.stringify(localOrders));
     
     showToast(savedToGH ? '✅ অর্ডার সফলভাবে দেওয়া হয়েছে!' : '✅ অর্ডার লোকালি সেভ হয়েছে!');
+    if(typeof gtag==='function') gtag('event', 'purchase', {currency:'BDT', value: price, items:[{item_name: item}]});
+    
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = origBtnText;
     
     setTimeout(() => {
         closeModal();
@@ -1853,6 +1875,11 @@ async function submitAddMoney() {
     if (!phone) { showToast('❌ ফোন নম্বর দাও!'); return; }
     if (!trx) { showToast('❌ Transaction ID দাও!'); return; }
     
+    const addMoneyBtn = document.querySelector('#addMoneySection .submit-btn');
+    const origAddBtnText = addMoneyBtn.innerHTML;
+    addMoneyBtn.disabled = true;
+    addMoneyBtn.innerHTML = '⏳ Processing...';
+    
     try {
         const ssUser = localStorage.getItem('ss_user');
         const userName = ssUser ? JSON.parse(ssUser).name : (localStorage.getItem('ss_email') || 'Unknown').split('@')[0];
@@ -1864,7 +1891,13 @@ async function submitAddMoney() {
         document.getElementById('addMoneyAmount').value = '';
         document.getElementById('addMoneyPhone').value = '';
         document.getElementById('addMoneyTrx').value = '';
-    } catch(e) { showToast('❌ ব্যর্থ! আবার চেষ্টা করো।'); }
+        addMoneyBtn.disabled = false;
+        addMoneyBtn.innerHTML = origAddBtnText;
+    } catch(e) { 
+        showToast('❌ ব্যর্থ! আবার চেষ্টা করো।');
+        addMoneyBtn.disabled = false;
+        addMoneyBtn.innerHTML = origAddBtnText;
+    }
 }
 
 function showToast(msg) {
@@ -2011,6 +2044,35 @@ function saveEmailPopup() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ type: 'new_user', name, email, phone: 'N/A', date: user.loginDate })
     }).catch(e => {});
+}
+
+// Order Tracking
+async function trackOrder() {
+    const trx = document.getElementById('trackTrxInput').value.trim();
+    const result = document.getElementById('trackResult');
+    if (!trx) { showToast('❌ Transaction ID দাও!'); return; }
+    result.innerHTML = '<div style="text-align:center;padding:10px;color:var(--text-muted);font-size:0.8rem;">⏳ খুঁজছি...</div>';
+    try {
+        const r = await fetch(WORKER_URL + '/orders', { cache: 'no-store' });
+        if (r.ok) {
+            const orders = await r.json();
+            const found = orders.filter(o => (o.trxId||'').toUpperCase() === trx.toUpperCase());
+            if (found.length > 0) {
+                result.innerHTML = found.map(o => {
+                    const sc = o.status==='Completed'?'background:#D1FAE5;color:#065F46;':o.status==='Rejected'?'background:#FEE2E2;color:#991B1B;':o.status==='Running'?'background:#DBEAFE;color:#1E40AF;':'background:#FEF3C7;color:#92400E;';
+                    return `<div style="background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:8px;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                            <span style="font-weight:700;font-size:0.85rem;">🎮 ${o.uid||'N/A'}</span>
+                            <span style="padding:3px 10px;border-radius:20px;font-size:0.7rem;font-weight:700;${sc}">${o.status||'Pending'}</span>
+                        </div>
+                        <div style="font-size:0.78rem;color:var(--text-muted);">📦 ${o.item||'N/A'} — ৳${o.price||0}</div>
+                    </div>`;
+                }).join('');
+            } else {
+                result.innerHTML = '<div style="text-align:center;padding:15px;color:var(--text-muted);font-size:0.82rem;">❌ কোনো অর্ডার পাওয়া যায়নি</div>';
+            }
+        }
+    } catch(e) { result.innerHTML = '<div style="color:var(--danger);font-size:0.8rem;">❌ Error</div>'; }
 }
 
 // Policy Modal
