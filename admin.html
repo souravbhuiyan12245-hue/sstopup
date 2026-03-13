@@ -280,6 +280,8 @@ const GH=`https://api.github.com/repos/${REPO}/contents/`;
 const RAW=`https://raw.githubusercontent.com/${REPO}/main/`;
 const WORKER='https://ss-topup-automation.sadmanbay2010.workers.dev';
 const DEFHASH='240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9';
+const ADMIN_KEY='ss_admin_2026_x9k7m';
+function adminFetch(url,opts){opts=opts||{};if(!opts.headers)opts.headers={};opts.headers['X-Admin-Key']=ADMIN_KEY;return fetch(url,opts);}
 
 let P=null,O=[],cf='all',oSha=null,pSha=null,changed=false;
 let loginAttempts=0, lockUntil=0;
@@ -334,14 +336,13 @@ function saveApiKey(){
 }
 
 async function loadP(){
-    try{const r=await fetch(WORKER+'/prices',{cache:'no-store'});if(r.ok){P=await r.json();renderP();}}catch(e){
-    try{const r2=await fetch(RAW+'data/prices.json?t='+Date.now(),{cache:'no-store'});if(r2.ok){P=await r2.json();renderP();}}catch(e2){}}
+    try{const r=await adminFetch(WORKER+'/admin/prices');if(r.ok){P=await r.json();renderP();}}catch(e){}
     try{const t=tok();if(t){const r=await fetch(GH+'data/prices.json',{headers:{Authorization:'token '+t}});if(r.ok){pSha=(await r.json()).sha;}}}catch(e){}
 }
 
 async function loadO(){
-    try{const t=tok();if(t){const r=await fetch(GH+'data/orders.json',{headers:{Authorization:'token '+t}});if(r.ok){const d=await r.json();oSha=d.sha;O=JSON.parse(atob(d.content));renderO();return;}}
-    const r=await fetch(RAW+'data/orders.json?t='+Date.now(),{cache:'no-store'});if(r.ok)O=await r.json();else O=[];}catch(e){O=[];}
+    try{const r=await adminFetch(WORKER+'/admin/orders');if(r.ok){O=await r.json();renderO();return;}}catch(e){}
+    try{const r=await fetch(RAW+'data/orders.json?t='+Date.now(),{cache:'no-store'});if(r.ok)O=await r.json();else O=[];}catch(e){O=[];}
     try{const t=tok();if(t){const r=await fetch(GH+'data/orders.json',{headers:{Authorization:'token '+t}});if(r.ok){oSha=(await r.json()).sha;}}}catch(e){}
     renderO();
 }
@@ -442,18 +443,14 @@ async function setS(i,s){O[i].status=s;await saveO();renderO();
 async function delO(i){if(!confirm('Delete?'))return;O.splice(i,1);await saveO();renderO();}
 
 async function saveO(){
-    const t=tok();if(!t){msg('Set GitHub Token first!',1);return;}
     try{
-        const sr=await fetch(GH+'data/orders.json',{headers:{Authorization:'token '+t}});
-        if(sr.ok)oSha=(await sr.json()).sha;
-        const r=await fetch(GH+'data/orders.json',{method:'PUT',headers:{Authorization:'token '+t,'Content-Type':'application/json'},
-            body:JSON.stringify({message:'orders update',content:btoa(unescape(encodeURIComponent(JSON.stringify(O,null,2)))),sha:oSha})});
-        if(r.ok){oSha=(await r.json()).content.sha;msg('✅ Saved!');}else msg('❌ Failed!',1);
+        const r=await adminFetch(WORKER+'/admin/orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(O)});
+        const d=await r.json();
+        if(d.success){msg('✅ Saved!');}else msg('❌ Failed!',1);
     }catch(e){msg('❌ '+e.message,1);}
 }
 
 async function savePrices(){
-    const t=tok();if(!t){msg('Set GitHub Token first!',1);return;}
     document.querySelectorAll('.pr input').forEach(inp=>{
         if(inp.dataset.f==='cost') P[inp.dataset.t][inp.dataset.k].cost=+inp.value;
         else if(inp.dataset.t && inp.dataset.k && !inp.dataset.f) P[inp.dataset.t][inp.dataset.k].price=+inp.value;
@@ -461,11 +458,9 @@ async function savePrices(){
     P.announcement=document.getElementById('ann').value.trim();
     P.updated=new Date().toISOString().split('T')[0];
     try{
-        const sr=await fetch(GH+'data/prices.json',{headers:{Authorization:'token '+t}});
-        if(sr.ok)pSha=(await sr.json()).sha;
-        const r=await fetch(GH+'data/prices.json',{method:'PUT',headers:{Authorization:'token '+t,'Content-Type':'application/json'},
-            body:JSON.stringify({message:'prices update',content:btoa(unescape(encodeURIComponent(JSON.stringify(P,null,2)))),sha:pSha})});
-        if(r.ok){changed=false;document.getElementById('saveBtn').classList.remove('show');msg('✅ Prices saved!');}else msg('❌ Failed!',1);
+        const r=await adminFetch(WORKER+'/admin/prices',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(P)});
+        const d=await r.json();
+        if(d.success){changed=false;document.getElementById('saveBtn').classList.remove('show');msg('✅ Prices saved!');}else msg('❌ Failed!',1);
     }catch(e){msg('❌ '+e.message,1);}
 }
 
