@@ -68,7 +68,7 @@
       "name": "Weekly Lite"
     },
     "weekly_1x": {
-      "price": 150,
+      "price": 145,
       "original": 290,
       "name": "1X Weekly"
     },
@@ -78,7 +78,7 @@
       "name": "2X Weekly"
     },
     "monthly": {
-      "price": 760,
+      "price": 735,
       "original": 1100,
       "name": "Monthly"
     }
