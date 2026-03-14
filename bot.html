@@ -456,9 +456,99 @@ async function processCommand(text) {
         const match = cmd.match(patterns.search);
         searchOrders(match[2].trim());
     }
-    // Fallback - friendly message
+    // Fallback - AI powered response
     else {
-        addBotMessage(`🤔 আমি এটা বুঝতে পারিনি।\n\n📝 <b>help</b> লিখুন বা নিচের বাটন ব্যবহার করুন!`);
+        await askGemini(text);
+    }
+}
+
+// ===== GEMINI AI =====
+
+const GEMINI_KEY = 'AIzaSyAaCT2xU6G-ocW2OmEESAc-I5T812W7wEg';
+const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`;
+
+let chatHistory = [];
+
+function buildBusinessContext() {
+    const total = orders.length;
+    const pending = orders.filter(o => !o.status || o.status === 'Pending').length;
+    const completed = orders.filter(o => o.status === 'Completed').length;
+    const rejected = orders.filter(o => o.status === 'Rejected').length;
+    const totalRevenue = orders.filter(o => o.status === 'Completed').reduce((s, o) => s + (o.price || 0), 0);
+    
+    const now = new Date();
+    const today = now.toISOString().split('T')[0];
+    const todayOrders = orders.filter(o => {
+        const d = (o.date || o.createdAt || '').toString();
+        return d.includes(today) || isToday(o.date);
+    });
+
+    const recentOrders = orders.slice(-10).map(o => 
+        `UID:${o.uid||'?'}, নাম:${o.name||'?'}, আইটেম:${o.item||'?'}, দাম:৳${o.price||0}, স্ট্যাটাস:${o.status||'Pending'}, তারিখ:${o.date||'?'}`
+    ).join('\n');
+
+    return `তুমি SS TOP-UP এর বিজনেস ম্যানেজার বট। SS TOP-UP হলো Free Fire Diamond টপআপ সার্ভিস।
+বাংলায় উত্তর দাও। সংক্ষিপ্ত, কিন্তু তথ্যপূর্ণ। ইমোজি ব্যবহার করো।
+মালিকের নাম Sourav।
+
+বর্তমান বিজনেস ডেটা:
+- মোট অর্ডার: ${total}টা
+- পেন্ডিং: ${pending}টা
+- সম্পন্ন: ${completed}টা
+- বাতিল: ${rejected}টা
+- মোট আয়: ৳${totalRevenue}
+- আজকের অর্ডার: ${todayOrders.length}টা
+
+সাম্প্রতিক ১০টা অর্ডার:
+${recentOrders || 'কোনো অর্ডার নেই'}
+
+এই ডেটা ব্যবহার করে উত্তর দাও। বিজনেস ছাড়া অন্য বিষয়েও সাহায্য করতে পারো।`;
+}
+
+async function askGemini(userText) {
+    chatHistory.push({ role: 'user', parts: [{ text: userText }] });
+    
+    // Keep only last 10 messages for context
+    if (chatHistory.length > 20) chatHistory = chatHistory.slice(-20);
+
+    const body = {
+        system_instruction: { parts: [{ text: buildBusinessContext() }] },
+        contents: chatHistory,
+        generationConfig: {
+            temperature: 0.7,
+            maxOutputTokens: 1024,
+        }
+    };
+
+    try {
+        const res = await fetch(GEMINI_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        });
+
+        if (!res.ok) {
+            const err = await res.text();
+            console.error('Gemini error:', err);
+            addBotMessage('⚠️ AI এর সাথে সংযোগে সমস্যা হচ্ছে। আবার চেষ্টা করো!');
+            return;
+        }
+
+        const data = await res.json();
+        const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || 'উত্তর পাওয়া যায়নি।';
+        
+        chatHistory.push({ role: 'model', parts: [{ text: reply }] });
+        
+        // Convert markdown-like formatting to HTML
+        const formatted = reply
+            .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+            .replace(/\*(.*?)\*/g, '<i>$1</i>')
+            .replace(/\n/g, '\n');
+        
+        addBotMessage(formatted);
+    } catch (e) {
+        console.error('Gemini fetch error:', e);
+        addBotMessage('⚠️ নেটওয়ার্ক সমস্যা। ইন্টারনেট চেক করো!');
     }
 }
 
