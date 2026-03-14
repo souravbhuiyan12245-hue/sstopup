@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Learn English 🇬🇧 — বাংলা থেকে ইংরেজি শিখো</title>
-    <meta name="description" content="বাংলা থেকে ইংরেজি শিখো — Vocabulary, Grammar, Quiz, Conversation Practice!">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <title>English Practice 🇬🇧 — AI এর সাথে ইংরেজি প্র্যাকটিস</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #0f172a;
@@ -13,877 +12,395 @@
             --bg3: #334155;
             --primary: #3b82f6;
             --primary-light: #60a5fa;
-            --primary-glow: rgba(59,130,246,0.3);
-            --accent: #10b981;
-            --accent2: #f59e0b;
             --text: #f1f5f9;
             --text-muted: #94a3b8;
-            --danger: #ef4444;
             --success: #22c55e;
-            --purple: #8b5cf6;
+            --danger: #ef4444;
+            --warning: #f59e0b;
         }
-        * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-        body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; padding-bottom:80px; }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; display:flex; flex-direction:column; }
 
         /* Header */
-        .header { 
-            background:linear-gradient(135deg,#1e40af,#3b82f6); padding:20px 16px; text-align:center;
-            position:sticky; top:0; z-index:50;
+        .header {
+            background:var(--bg2); padding:14px 16px; display:flex; align-items:center; gap:12px;
+            border-bottom:1px solid var(--bg3); position:sticky; top:0; z-index:10;
         }
-        .header h1 { font-size:1.2rem; font-weight:800; display:flex; align-items:center; justify-content:center; gap:8px; }
-        .header .streak { font-size:0.75rem; color:rgba(255,255,255,0.8); margin-top:4px; }
+        .header .avatar { width:40px; height:40px; border-radius:50%; background:linear-gradient(135deg,#3b82f6,#8b5cf6); display:flex; align-items:center; justify-content:center; font-size:1.2rem; }
+        .header .info { flex:1; }
+        .header .info .name { font-weight:700; font-size:0.95rem; }
+        .header .info .status { font-size:0.7rem; color:var(--success); }
+        .header .settings-btn { background:none; border:none; color:var(--text-muted); font-size:1.2rem; cursor:pointer; padding:8px; }
 
-        /* Bottom Nav */
-        .bottom-nav {
-            position:fixed; bottom:0; left:0; right:0; background:var(--bg2);
-            display:flex; justify-content:space-around; padding:8px 0 12px; z-index:100;
-            border-top:1px solid var(--bg3); backdrop-filter:blur(12px);
+        /* Chat Area */
+        .chat-area { flex:1; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:12px; }
+
+        /* Messages */
+        .msg { max-width:85%; animation:fadeIn 0.3s ease; }
+        .msg.bot { align-self:flex-start; }
+        .msg.user { align-self:flex-end; }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+        .msg .bubble {
+            padding:12px 16px; border-radius:18px; font-size:0.9rem; line-height:1.6;
+            word-wrap:break-word;
         }
-        .nav-item { text-align:center; cursor:pointer; padding:4px 12px; transition:all 0.2s; }
-        .nav-item .icon { font-size:1.3rem; }
-        .nav-item .label { font-size:0.6rem; font-weight:600; color:var(--text-muted); margin-top:2px; }
-        .nav-item.active .label { color:var(--primary-light); }
-        .nav-item.active .icon { transform:scale(1.1); }
+        .msg.bot .bubble { background:var(--bg2); border:1px solid var(--bg3); border-bottom-left-radius:4px; }
+        .msg.user .bubble { background:var(--primary); color:#fff; border-bottom-right-radius:4px; }
 
-        /* Pages */
-        .page { display:none; max-width:500px; margin:0 auto; padding:16px; }
-        .page.active { display:block; animation:fadeIn 0.3s ease; }
-        @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
-
-        /* Cards */
-        .card { background:var(--bg2); border:1px solid var(--bg3); border-radius:18px; padding:20px; margin-bottom:14px; }
-        .card h3 { font-size:0.95rem; font-weight:700; margin-bottom:12px; display:flex; align-items:center; gap:8px; }
-
-        /* Stats Row */
-        .stats { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:16px; }
-        .stat { background:var(--bg2); border:1px solid var(--bg3); border-radius:14px; padding:14px 8px; text-align:center; }
-        .stat .num { font-size:1.4rem; font-weight:800; }
-        .stat .lbl { font-size:0.65rem; color:var(--text-muted); margin-top:2px; }
-
-        /* Word Card */
-        .word-card {
-            background:linear-gradient(135deg,#1e3a5f,#1e293b); border:1px solid var(--bg3);
-            border-radius:20px; padding:28px 20px; text-align:center; margin-bottom:16px;
-            position:relative; overflow:hidden;
+        /* Correction Box */
+        .correction {
+            background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.2);
+            border-radius:12px; padding:10px 14px; margin-top:8px; font-size:0.82rem;
         }
-        .word-card .en { font-size:2rem; font-weight:900; color:#fff; margin-bottom:4px; }
-        .word-card .pron { font-size:0.85rem; color:var(--primary-light); margin-bottom:8px; }
-        .word-card .bn { font-size:1.1rem; color:var(--text-muted); margin-bottom:12px; }
-        .word-card .type { display:inline-block; padding:4px 12px; border-radius:20px; font-size:0.7rem; font-weight:700; background:var(--primary-glow); color:var(--primary-light); }
-        .word-card .example { font-size:0.82rem; color:var(--text-muted); margin-top:14px; font-style:italic; line-height:1.5; }
-        .word-card .example b { color:var(--primary-light); font-style:normal; }
+        .correction .label { color:var(--danger); font-weight:700; font-size:0.72rem; margin-bottom:4px; }
+        .correction .wrong { text-decoration:line-through; color:var(--danger); }
+        .correction .right { color:var(--success); font-weight:600; }
+        .correction .explain { color:var(--text-muted); margin-top:6px; font-size:0.78rem; }
 
-        /* Buttons */
-        .btn { 
-            width:100%; padding:14px; border:none; border-radius:14px; font-size:0.95rem; 
-            font-weight:700; cursor:pointer; font-family:inherit; transition:all 0.2s;
+        /* Typing indicator */
+        .typing { display:flex; gap:4px; padding:12px 16px; }
+        .typing span { width:8px; height:8px; border-radius:50%; background:var(--text-muted); animation:bounce 1.4s infinite; }
+        .typing span:nth-child(2) { animation-delay:0.2s; }
+        .typing span:nth-child(3) { animation-delay:0.4s; }
+        @keyframes bounce { 0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-8px)} }
+
+        /* Input Area */
+        .input-area {
+            background:var(--bg2); border-top:1px solid var(--bg3); padding:12px 16px;
+            display:flex; gap:10px; align-items:flex-end; position:sticky; bottom:0;
         }
-        .btn:active { transform:scale(0.97); }
-        .btn-primary { background:linear-gradient(135deg,var(--primary),var(--primary-light)); color:#fff; box-shadow:0 4px 15px var(--primary-glow); }
-        .btn-success { background:var(--success); color:#fff; }
-        .btn-outline { background:transparent; border:2px solid var(--bg3); color:var(--text); }
-        .btn-sm { width:auto; padding:10px 18px; font-size:0.8rem; border-radius:12px; display:inline-flex; align-items:center; gap:6px; }
-
-        /* Quiz Options */
-        .quiz-option {
-            padding:14px 18px; border:2px solid var(--bg3); border-radius:14px; margin-bottom:10px;
-            cursor:pointer; font-size:0.92rem; font-weight:600; transition:all 0.2s; text-align:left;
+        .input-area textarea {
+            flex:1; background:var(--bg); border:1.5px solid var(--bg3); border-radius:20px;
+            padding:12px 16px; font-size:0.92rem; font-family:inherit; color:var(--text);
+            outline:none; resize:none; max-height:120px; min-height:44px; line-height:1.4;
+            transition:border 0.2s;
         }
-        .quiz-option:hover { border-color:var(--primary); background:rgba(59,130,246,0.1); }
-        .quiz-option.correct { border-color:var(--success); background:rgba(34,197,94,0.15); color:var(--success); }
-        .quiz-option.wrong { border-color:var(--danger); background:rgba(239,68,68,0.15); color:var(--danger); }
-        .quiz-option.disabled { pointer-events:none; }
-
-        /* Category Chips */
-        .chips { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
-        .chip {
-            padding:8px 16px; border-radius:20px; font-size:0.78rem; font-weight:600;
-            cursor:pointer; background:var(--bg3); color:var(--text-muted); transition:all 0.2s;
+        .input-area textarea:focus { border-color:var(--primary); }
+        .input-area textarea::placeholder { color:#475569; }
+        .send-btn {
+            width:44px; height:44px; border-radius:50%; border:none;
+            background:linear-gradient(135deg,var(--primary),var(--primary-light));
+            color:#fff; font-size:1.1rem; cursor:pointer; display:flex;
+            align-items:center; justify-content:center; flex-shrink:0;
+            transition:transform 0.15s; box-shadow:0 2px 10px rgba(59,130,246,0.3);
         }
-        .chip.active { background:var(--primary); color:#fff; }
+        .send-btn:active { transform:scale(0.9); }
+        .send-btn:disabled { opacity:0.5; cursor:not-allowed; }
 
-        /* Lesson Item */
-        .lesson-item {
-            display:flex; align-items:center; gap:14px; padding:16px;
-            background:var(--bg2); border:1px solid var(--bg3); border-radius:16px; margin-bottom:10px;
-            cursor:pointer; transition:all 0.2s;
+        /* Setup Modal */
+        .modal-overlay {
+            position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:100;
+            display:flex; align-items:center; justify-content:center; padding:20px;
         }
-        .lesson-item:hover { border-color:var(--primary); }
-        .lesson-item .emoji { font-size:1.8rem; }
-        .lesson-item .info { flex:1; }
-        .lesson-item .info .title { font-weight:700; font-size:0.9rem; }
-        .lesson-item .info .desc { font-size:0.75rem; color:var(--text-muted); margin-top:2px; }
-        .lesson-item .arrow { color:var(--text-muted); }
-
-        /* Conversation */
-        .chat-bubble {
-            max-width:80%; padding:12px 16px; border-radius:16px; margin-bottom:10px;
-            font-size:0.88rem; line-height:1.5; position:relative;
+        .modal-overlay.hide { display:none; }
+        .modal {
+            background:var(--bg2); border:1px solid var(--bg3); border-radius:24px;
+            padding:32px 24px; max-width:400px; width:100%; text-align:center;
         }
-        .chat-bubble.bot { background:var(--bg3); border-bottom-left-radius:4px; align-self:flex-start; }
-        .chat-bubble.user { background:var(--primary); color:#fff; border-bottom-right-radius:4px; align-self:flex-end; margin-left:auto; }
-        .chat-bubble .trans { font-size:0.75rem; color:var(--text-muted); margin-top:4px; }
-        .chat-area { display:flex; flex-direction:column; gap:4px; }
-
-        /* Speak Button */
-        .speak-btn {
-            background:none; border:none; cursor:pointer; font-size:1.2rem; padding:4px;
-            transition:transform 0.2s;
-        }
-        .speak-btn:active { transform:scale(1.2); }
-
-        /* Progress Bar */
-        .progress { height:6px; background:var(--bg3); border-radius:10px; overflow:hidden; margin-bottom:12px; }
-        .progress-fill { height:100%; border-radius:10px; transition:width 0.5s ease; background:linear-gradient(90deg,var(--primary),var(--accent)); }
-
-        /* Toast */
-        .toast {
-            position:fixed; top:20px; left:50%; transform:translateX(-50%);
-            padding:12px 24px; border-radius:14px; font-size:0.85rem; font-weight:600;
-            z-index:200; display:none; box-shadow:0 8px 24px rgba(0,0,0,0.4);
-        }
-        .toast.success { background:var(--success); color:#fff; }
-        .toast.error { background:var(--danger); color:#fff; }
-
-        /* Flip Card */
-        .flip-container { perspective:1000px; margin-bottom:16px; cursor:pointer; }
-        .flip-card { transition:transform 0.6s; transform-style:preserve-3d; position:relative; min-height:200px; }
-        .flip-card.flipped { transform:rotateY(180deg); }
-        .flip-front, .flip-back {
-            position:absolute; width:100%; backface-visibility:hidden;
-            background:var(--bg2); border:1px solid var(--bg3); border-radius:20px; padding:28px 20px; text-align:center;
-        }
-        .flip-back { transform:rotateY(180deg); }
-
-        /* Level Badge */
-        .level-badge {
-            display:inline-flex; align-items:center; gap:6px; padding:6px 14px;
-            border-radius:20px; font-size:0.75rem; font-weight:700;
-        }
-        .level-beginner { background:rgba(34,197,94,0.15); color:var(--success); }
-        .level-intermediate { background:rgba(245,158,11,0.15); color:var(--accent2); }
-        .level-advanced { background:rgba(139,92,246,0.15); color:var(--purple); }
-
-        /* Typing input */
-        .type-input {
+        .modal h2 { font-size:1.2rem; font-weight:800; margin-bottom:8px; }
+        .modal p { font-size:0.82rem; color:var(--text-muted); margin-bottom:20px; line-height:1.5; }
+        .modal input {
             width:100%; padding:14px 16px; border:2px solid var(--bg3); border-radius:14px;
-            font-size:1rem; font-family:inherit; outline:none; background:var(--bg);
+            font-size:0.92rem; font-family:inherit; outline:none; background:var(--bg);
             color:var(--text); margin-bottom:12px; transition:border 0.2s;
         }
-        .type-input:focus { border-color:var(--primary); }
-        .type-input::placeholder { color:#475569; }
+        .modal input:focus { border-color:var(--primary); }
+        .modal input::placeholder { color:#475569; }
+        .modal .btn {
+            width:100%; padding:14px; border:none; border-radius:14px; font-size:0.95rem;
+            font-weight:700; cursor:pointer; font-family:inherit;
+            background:linear-gradient(135deg,var(--primary),var(--primary-light));
+            color:#fff; box-shadow:0 4px 15px rgba(59,130,246,0.3);
+        }
+        .modal .link { display:block; margin-top:12px; color:var(--primary-light); font-size:0.78rem; }
+
+        /* Suggestion chips */
+        .suggestions { display:flex; gap:8px; flex-wrap:wrap; padding:0 16px 8px; }
+        .suggestion {
+            padding:8px 14px; background:var(--bg2); border:1px solid var(--bg3);
+            border-radius:20px; font-size:0.78rem; color:var(--text-muted); cursor:pointer;
+            transition:all 0.2s;
+        }
+        .suggestion:hover { border-color:var(--primary); color:var(--text); }
+
+        /* Score bar */
+        .score-bar {
+            display:flex; gap:16px; justify-content:center; padding:8px 16px;
+            font-size:0.72rem; color:var(--text-muted); background:var(--bg);
+        }
+        .score-bar span b { color:var(--text); }
     </style>
 </head>
 <body>
 
+<!-- Setup Modal -->
+<div class="modal-overlay" id="setupModal">
+    <div class="modal">
+        <div style="font-size:3rem;margin-bottom:12px;">🇬🇧</div>
+        <h2>English Practice Bot</h2>
+        <p>AI এর সাথে ইংরেজিতে কথা বলো।<br>তোমার ভুল ধরে দিবে এবং ঠিক করে দিবে! 🔥</p>
+        <input type="password" id="apiKeyInput" placeholder="Gemini API Key দাও">
+        <button class="btn" onclick="saveSetup()">🚀 শুরু করো!</button>
+        <a class="link" href="https://aistudio.google.com/apikey" target="_blank">🔑 ফ্রি API Key নাও এখান থেকে →</a>
+    </div>
+</div>
+
 <!-- Header -->
 <div class="header">
-    <h1>🇬🇧 Learn English</h1>
-    <div class="streak" id="streakText">🔥 0 দিন streak | 0 শব্দ শিখেছো</div>
+    <div class="avatar">🤖</div>
+    <div class="info">
+        <div class="name">English Teacher</div>
+        <div class="status">● Online — তোমার ভুল ঠিক করে দিবে</div>
+    </div>
+    <button class="settings-btn" onclick="document.getElementById('setupModal').classList.remove('hide')">⚙️</button>
 </div>
 
-<!-- Home Page -->
-<div class="page active" id="page-home">
-    <div class="stats">
-        <div class="stat"><div class="num" id="statWords" style="color:var(--primary)">0</div><div class="lbl">শব্দ শিখেছো</div></div>
-        <div class="stat"><div class="num" id="statStreak" style="color:var(--accent2)">0</div><div class="lbl">🔥 Streak</div></div>
-        <div class="stat"><div class="num" id="statQuiz" style="color:var(--accent)">0%</div><div class="lbl">Quiz Score</div></div>
-    </div>
-
-    <!-- Today's Word -->
-    <div class="card">
-        <h3>📖 আজকের শব্দ</h3>
-        <div id="todayWord"></div>
-    </div>
-
-    <!-- Quick Actions -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
-        <button class="btn btn-primary btn-sm" onclick="goPage('vocab')" style="width:100%;justify-content:center;">📚 Vocabulary</button>
-        <button class="btn btn-success btn-sm" onclick="goPage('quiz')" style="width:100%;justify-content:center;">🧠 Quiz</button>
-        <button class="btn btn-outline btn-sm" onclick="goPage('grammar')" style="width:100%;justify-content:center;">📝 Grammar</button>
-        <button class="btn btn-outline btn-sm" onclick="goPage('chat')" style="width:100%;justify-content:center;">💬 Practice</button>
-    </div>
-
-    <!-- Daily Challenge -->
-    <div class="card" style="background:linear-gradient(135deg,#1e3a5f,#1e293b);">
-        <h3>🎯 Daily Challenge</h3>
-        <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:12px;" id="dailyChallengeText">Loading...</p>
-        <div id="dailyChallengeArea"></div>
-    </div>
+<!-- Score Bar -->
+<div class="score-bar">
+    <span>💬 Messages: <b id="msgCount">0</b></span>
+    <span>✅ Correct: <b id="correctCount">0</b></span>
+    <span>❌ Mistakes: <b id="mistakeCount">0</b></span>
 </div>
 
-<!-- Vocabulary Page -->
-<div class="page" id="page-vocab">
-    <div class="chips" id="vocabChips"></div>
-    <div id="vocabList"></div>
-    <div style="text-align:center;margin-top:12px;">
-        <button class="btn btn-primary" onclick="loadMoreVocab()">আরো শব্দ দেখো →</button>
-    </div>
-</div>
-
-<!-- Quiz Page -->
-<div class="page" id="page-quiz">
-    <div class="card" id="quizCard">
-        <div class="progress"><div class="progress-fill" id="quizProgress" style="width:0%"></div></div>
-        <div id="quizContent">
-            <h3 style="text-align:center;margin-bottom:16px;">🧠 Quiz Time!</h3>
-            <p style="text-align:center;color:var(--text-muted);margin-bottom:20px;">তোমার ইংরেজি জ্ঞান পরীক্ষা করো</p>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-                <button class="btn btn-primary btn-sm" style="width:100%;justify-content:center;" onclick="startQuiz('bn2en')">🇧🇩→🇬🇧 বাংলা→ইংরেজি</button>
-                <button class="btn btn-success btn-sm" style="width:100%;justify-content:center;" onclick="startQuiz('en2bn')">🇬🇧→🇧🇩 ইংরেজি→বাংলা</button>
-                <button class="btn btn-outline btn-sm" style="width:100%;justify-content:center;" onclick="startQuiz('fill')">✏️ Fill in Blank</button>
-                <button class="btn btn-outline btn-sm" style="width:100%;justify-content:center;" onclick="startQuiz('listen')">🔊 শুনে বলো</button>
-            </div>
+<!-- Chat Area -->
+<div class="chat-area" id="chatArea">
+    <div class="msg bot">
+        <div class="bubble">
+            Hey! 👋 I'm your English practice buddy.<br><br>
+            তুমি ইংরেজিতে যেকোনো কিছু লেখো — আমি তোমার ভুল ধরে দিবো এবং ঠিক করে দিবো।<br><br>
+            কোনো টপিক নিয়ে কথা বলতে চাইলে বলো, অথবা নিচের সাজেশন থেকে বেছে নাও! 😊
         </div>
     </div>
-    <div id="quizResult" style="display:none;"></div>
 </div>
 
-<!-- Grammar Page -->
-<div class="page" id="page-grammar">
-    <h3 style="margin-bottom:16px;">📝 Grammar Lessons</h3>
-    <div id="grammarList"></div>
+<!-- Suggestions -->
+<div class="suggestions" id="suggestions">
+    <div class="suggestion" onclick="useSuggestion('Hi, how are you?')">Hi, how are you?</div>
+    <div class="suggestion" onclick="useSuggestion('Tell me about yourself')">Tell me about yourself</div>
+    <div class="suggestion" onclick="useSuggestion('I want to talk about my day')">My day</div>
+    <div class="suggestion" onclick="useSuggestion('Can we talk about food?')">Food talk</div>
+    <div class="suggestion" onclick="useSuggestion('Help me practice for a job interview')">Job interview</div>
 </div>
 
-<!-- Grammar Detail -->
-<div class="page" id="page-grammar-detail">
-    <button class="btn btn-outline btn-sm" onclick="goPage('grammar')" style="margin-bottom:16px;">← Back</button>
-    <div id="grammarContent"></div>
+<!-- Input Area -->
+<div class="input-area">
+    <textarea id="msgInput" placeholder="ইংরেজিতে লেখো..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg()}" oninput="autoResize(this)"></textarea>
+    <button class="send-btn" id="sendBtn" onclick="sendMsg()">➤</button>
 </div>
-
-<!-- Chat Practice Page -->
-<div class="page" id="page-chat">
-    <div class="chips" id="chatChips"></div>
-    <div class="card">
-        <h3>💬 Conversation Practice</h3>
-        <div class="chat-area" id="chatArea"></div>
-        <div style="margin-top:12px;" id="chatOptions"></div>
-    </div>
-</div>
-
-<!-- Bottom Nav -->
-<div class="bottom-nav">
-    <div class="nav-item active" onclick="goPage('home')"><div class="icon">🏠</div><div class="label">Home</div></div>
-    <div class="nav-item" onclick="goPage('vocab')"><div class="icon">📚</div><div class="label">Vocab</div></div>
-    <div class="nav-item" onclick="goPage('quiz')"><div class="icon">🧠</div><div class="label">Quiz</div></div>
-    <div class="nav-item" onclick="goPage('grammar')"><div class="icon">📝</div><div class="label">Grammar</div></div>
-    <div class="nav-item" onclick="goPage('chat')"><div class="icon">💬</div><div class="label">Chat</div></div>
-</div>
-
-<div class="toast" id="toast"></div>
 
 <script>
-// ============ VOCABULARY DATABASE ============
-const vocab = {
-    'দৈনন্দিন': [
-        { en:'Hello', bn:'হ্যালো/নমস্কার', pron:'হেলো', type:'greeting', ex:'<b>Hello</b>, how are you?' },
-        { en:'Thank you', bn:'ধন্যবাদ', pron:'থ্যাংক ইউ', type:'phrase', ex:'<b>Thank you</b> for your help.' },
-        { en:'Sorry', bn:'দুঃখিত', pron:'সরি', type:'phrase', ex:'I am <b>sorry</b> for being late.' },
-        { en:'Please', bn:'দয়া করে', pron:'প্লিজ', type:'phrase', ex:'<b>Please</b> sit down.' },
-        { en:'Good morning', bn:'সুপ্রভাত', pron:'গুড মর্নিং', type:'greeting', ex:'<b>Good morning</b>, sir!' },
-        { en:'Good night', bn:'শুভরাত্রি', pron:'গুড নাইট', type:'greeting', ex:'<b>Good night</b>, see you tomorrow.' },
-        { en:'Excuse me', bn:'মাফ করবেন', pron:'এক্সকিউজ মি', type:'phrase', ex:'<b>Excuse me</b>, where is the bank?' },
-        { en:'Welcome', bn:'স্বাগতম', pron:'ওয়েলকাম', type:'greeting', ex:'<b>Welcome</b> to Bangladesh!' },
-        { en:'Goodbye', bn:'বিদায়', pron:'গুডবাই', type:'greeting', ex:'<b>Goodbye</b>, take care!' },
-        { en:'Yes', bn:'হ্যাঁ', pron:'ইয়েস', type:'word', ex:'<b>Yes</b>, I understand.' },
-        { en:'No', bn:'না', pron:'নো', type:'word', ex:'<b>No</b>, I don\'t want it.' },
-        { en:'Help', bn:'সাহায্য', pron:'হেল্প', type:'verb', ex:'Can you <b>help</b> me?' },
-    ],
-    'খাবার': [
-        { en:'Water', bn:'পানি', pron:'ওয়াটার', type:'noun', ex:'I need a glass of <b>water</b>.' },
-        { en:'Rice', bn:'ভাত', pron:'রাইস', type:'noun', ex:'We eat <b>rice</b> every day.' },
-        { en:'Fish', bn:'মাছ', pron:'ফিশ', type:'noun', ex:'I like to eat <b>fish</b>.' },
-        { en:'Chicken', bn:'মুরগি', pron:'চিকেন', type:'noun', ex:'This <b>chicken</b> curry is delicious.' },
-        { en:'Bread', bn:'রুটি', pron:'ব্রেড', type:'noun', ex:'I had <b>bread</b> for breakfast.' },
-        { en:'Egg', bn:'ডিম', pron:'এগ', type:'noun', ex:'I eat two <b>eggs</b> daily.' },
-        { en:'Milk', bn:'দুধ', pron:'মিল্ক', type:'noun', ex:'<b>Milk</b> is good for health.' },
-        { en:'Tea', bn:'চা', pron:'টি', type:'noun', ex:'Would you like some <b>tea</b>?' },
-        { en:'Sugar', bn:'চিনি', pron:'শুগার', type:'noun', ex:'No <b>sugar</b> in my tea, please.' },
-        { en:'Salt', bn:'লবণ', pron:'সল্ট', type:'noun', ex:'This food needs more <b>salt</b>.' },
-        { en:'Fruit', bn:'ফল', pron:'ফ্রুট', type:'noun', ex:'Eating <b>fruit</b> is healthy.' },
-        { en:'Vegetable', bn:'সবজি', pron:'ভেজিটেবল', type:'noun', ex:'We should eat more <b>vegetables</b>.' },
-    ],
-    'পরিবার': [
-        { en:'Father', bn:'বাবা', pron:'ফাদার', type:'noun', ex:'My <b>father</b> is a teacher.' },
-        { en:'Mother', bn:'মা', pron:'মাদার', type:'noun', ex:'My <b>mother</b> cooks well.' },
-        { en:'Brother', bn:'ভাই', pron:'ব্রাদার', type:'noun', ex:'I have one <b>brother</b>.' },
-        { en:'Sister', bn:'বোন', pron:'সিস্টার', type:'noun', ex:'My <b>sister</b> is a doctor.' },
-        { en:'Son', bn:'ছেলে', pron:'সান', type:'noun', ex:'Their <b>son</b> is very smart.' },
-        { en:'Daughter', bn:'মেয়ে', pron:'ডটার', type:'noun', ex:'Their <b>daughter</b> studies well.' },
-        { en:'Husband', bn:'স্বামী', pron:'হাজব্যান্ড', type:'noun', ex:'Her <b>husband</b> works abroad.' },
-        { en:'Wife', bn:'স্ত্রী', pron:'ওয়াইফ', type:'noun', ex:'His <b>wife</b> is a nurse.' },
-        { en:'Friend', bn:'বন্ধু', pron:'ফ্রেন্ড', type:'noun', ex:'He is my best <b>friend</b>.' },
-        { en:'Uncle', bn:'চাচা/মামা', pron:'আংকল', type:'noun', ex:'My <b>uncle</b> lives in Dhaka.' },
-    ],
-    'সংখ্যা': [
-        { en:'One', bn:'এক (১)', pron:'ওয়ান', type:'number', ex:'I have <b>one</b> pen.' },
-        { en:'Two', bn:'দুই (২)', pron:'টু', type:'number', ex:'She has <b>two</b> cats.' },
-        { en:'Three', bn:'তিন (৩)', pron:'থ্রি', type:'number', ex:'There are <b>three</b> chairs.' },
-        { en:'Ten', bn:'দশ (১০)', pron:'টেন', type:'number', ex:'I have <b>ten</b> fingers.' },
-        { en:'Twenty', bn:'বিশ (২০)', pron:'টুয়েন্টি', type:'number', ex:'He is <b>twenty</b> years old.' },
-        { en:'Fifty', bn:'পঞ্চাশ (৫০)', pron:'ফিফটি', type:'number', ex:'It costs <b>fifty</b> taka.' },
-        { en:'Hundred', bn:'একশ (১০০)', pron:'হান্ড্রেড', type:'number', ex:'There are <b>hundred</b> students.' },
-        { en:'Thousand', bn:'হাজার (১০০০)', pron:'থাউজ্যান্ড', type:'number', ex:'It costs five <b>thousand</b> taka.' },
-        { en:'First', bn:'প্রথম', pron:'ফার্স্ট', type:'ordinal', ex:'I came <b>first</b> in the race.' },
-        { en:'Last', bn:'শেষ', pron:'লাস্ট', type:'ordinal', ex:'This is the <b>last</b> one.' },
-    ],
-    'ক্রিয়া': [
-        { en:'Go', bn:'যাওয়া', pron:'গো', type:'verb', ex:'I <b>go</b> to school every day.' },
-        { en:'Come', bn:'আসা', pron:'কাম', type:'verb', ex:'<b>Come</b> here, please.' },
-        { en:'Eat', bn:'খাওয়া', pron:'ইট', type:'verb', ex:'I <b>eat</b> rice for lunch.' },
-        { en:'Drink', bn:'পান করা', pron:'ড্রিংক', type:'verb', ex:'I <b>drink</b> water every hour.' },
-        { en:'Sleep', bn:'ঘুমানো', pron:'স্লিপ', type:'verb', ex:'I <b>sleep</b> at 10 PM.' },
-        { en:'Read', bn:'পড়া', pron:'রিড', type:'verb', ex:'I <b>read</b> books daily.' },
-        { en:'Write', bn:'লেখা', pron:'রাইট', type:'verb', ex:'<b>Write</b> your name here.' },
-        { en:'Speak', bn:'বলা', pron:'স্পিক', type:'verb', ex:'Can you <b>speak</b> English?' },
-        { en:'Listen', bn:'শোনা', pron:'লিসেন', type:'verb', ex:'<b>Listen</b> to me carefully.' },
-        { en:'Buy', bn:'কেনা', pron:'বাই', type:'verb', ex:'I want to <b>buy</b> a phone.' },
-        { en:'Sell', bn:'বেচা', pron:'সেল', type:'verb', ex:'He <b>sells</b> vegetables.' },
-        { en:'Work', bn:'কাজ করা', pron:'ওয়ার্ক', type:'verb', ex:'I <b>work</b> from home.' },
-    ],
-    'বিশেষণ': [
-        { en:'Big', bn:'বড়', pron:'বিগ', type:'adj', ex:'This is a <b>big</b> house.' },
-        { en:'Small', bn:'ছোট', pron:'স্মল', type:'adj', ex:'I have a <b>small</b> garden.' },
-        { en:'Good', bn:'ভালো', pron:'গুড', type:'adj', ex:'She is a <b>good</b> student.' },
-        { en:'Bad', bn:'খারাপ', pron:'ব্যাড', type:'adj', ex:'This is a <b>bad</b> idea.' },
-        { en:'Hot', bn:'গরম', pron:'হট', type:'adj', ex:'The weather is very <b>hot</b>.' },
-        { en:'Cold', bn:'ঠান্ডা', pron:'কোল্ড', type:'adj', ex:'The water is <b>cold</b>.' },
-        { en:'New', bn:'নতুন', pron:'নিউ', type:'adj', ex:'I bought a <b>new</b> shirt.' },
-        { en:'Old', bn:'পুরনো', pron:'ওল্ড', type:'adj', ex:'This is an <b>old</b> building.' },
-        { en:'Beautiful', bn:'সুন্দর', pron:'বিউটিফুল', type:'adj', ex:'Bangladesh is a <b>beautiful</b> country.' },
-        { en:'Fast', bn:'দ্রুত', pron:'ফাস্ট', type:'adj', ex:'This car is very <b>fast</b>.' },
-        { en:'Slow', bn:'ধীর', pron:'স্লো', type:'adj', ex:'The turtle is <b>slow</b>.' },
-        { en:'Happy', bn:'খুশি', pron:'হ্যাপি', type:'adj', ex:'I am very <b>happy</b> today.' },
-    ],
-    'জায়গা': [
-        { en:'Home', bn:'বাড়ি', pron:'হোম', type:'noun', ex:'I am going <b>home</b>.' },
-        { en:'School', bn:'স্কুল', pron:'স্কুল', type:'noun', ex:'My <b>school</b> is nearby.' },
-        { en:'Hospital', bn:'হাসপাতাল', pron:'হসপিটাল', type:'noun', ex:'The <b>hospital</b> is far from here.' },
-        { en:'Market', bn:'বাজার', pron:'মার্কেট', type:'noun', ex:'I go to the <b>market</b> every week.' },
-        { en:'Bank', bn:'ব্যাংক', pron:'ব্যাংক', type:'noun', ex:'The <b>bank</b> opens at 10 AM.' },
-        { en:'Mosque', bn:'মসজিদ', pron:'মস্ক', type:'noun', ex:'The <b>mosque</b> is next to our house.' },
-        { en:'Road', bn:'রাস্তা', pron:'রোড', type:'noun', ex:'This <b>road</b> is very busy.' },
-        { en:'River', bn:'নদী', pron:'রিভার', type:'noun', ex:'The <b>river</b> is very deep.' },
-        { en:'Country', bn:'দেশ', pron:'কান্ট্রি', type:'noun', ex:'Bangladesh is my <b>country</b>.' },
-        { en:'City', bn:'শহর', pron:'সিটি', type:'noun', ex:'Dhaka is a big <b>city</b>.' },
-    ],
-    'ব্যবসা': [
-        { en:'Money', bn:'টাকা', pron:'মানি', type:'noun', ex:'I need some <b>money</b>.' },
-        { en:'Price', bn:'দাম', pron:'প্রাইস', type:'noun', ex:'What is the <b>price</b>?' },
-        { en:'Cheap', bn:'সস্তা', pron:'চিপ', type:'adj', ex:'This phone is very <b>cheap</b>.' },
-        { en:'Expensive', bn:'দামী', pron:'এক্সপেনসিভ', type:'adj', ex:'This watch is too <b>expensive</b>.' },
-        { en:'Customer', bn:'ক্রেতা', pron:'কাস্টমার', type:'noun', ex:'The <b>customer</b> is always right.' },
-        { en:'Order', bn:'অর্ডার', pron:'অর্ডার', type:'noun', ex:'Your <b>order</b> is ready.' },
-        { en:'Delivery', bn:'ডেলিভারি', pron:'ডেলিভারি', type:'noun', ex:'Free <b>delivery</b> available!' },
-        { en:'Payment', bn:'পেমেন্ট', pron:'পেমেন্ট', type:'noun', ex:'<b>Payment</b> received, thank you.' },
-        { en:'Discount', bn:'ছাড়', pron:'ডিসকাউন্ট', type:'noun', ex:'Is there any <b>discount</b>?' },
-        { en:'Profit', bn:'লাভ', pron:'প্রফিট', type:'noun', ex:'We made good <b>profit</b> this month.' },
-    ],
-};
+const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 
-// ============ GRAMMAR LESSONS ============
-const grammarLessons = [
-    {
-        title: 'Am/Is/Are ব্যবহার', emoji: '🔤', level: 'beginner',
-        desc: 'I am, You are, He/She is — কখন কোনটা?',
-        content: `
-            <div class="card"><h3>📖 নিয়ম</h3>
-            <p style="line-height:2;font-size:0.9rem;">
-            <b style="color:var(--primary)">I → am</b><br>
-            I <b>am</b> a student. (আমি ছাত্র)<br><br>
-            <b style="color:var(--accent)">He/She/It → is</b><br>
-            He <b>is</b> my friend. (সে আমার বন্ধু)<br>
-            She <b>is</b> a doctor. (সে ডাক্তার)<br>
-            It <b>is</b> hot today. (আজ গরম)<br><br>
-            <b style="color:var(--accent2)">You/We/They → are</b><br>
-            You <b>are</b> smart. (তুমি চালাক)<br>
-            We <b>are</b> friends. (আমরা বন্ধু)<br>
-            They <b>are</b> happy. (তারা খুশি)
-            </p></div>
-            <div class="card"><h3>❌ Negative (না বোঝাতে)</h3>
-            <p style="line-height:2;font-size:0.9rem;">
-            am/is/are এর পরে <b>not</b> বসাও:<br>
-            I am <b>not</b> tired. (আমি ক্লান্ত না)<br>
-            He is <b>not</b> here. (সে এখানে নেই)<br>
-            They are <b>not</b> ready. (তারা প্রস্তুত না)
-            </p></div>
-            <div class="card"><h3>❓ Question (প্রশ্ন করতে)</h3>
-            <p style="line-height:2;font-size:0.9rem;">
-            am/is/are আগে আনো:<br>
-            <b>Am</b> I late? (আমি কি দেরি করেছি?)<br>
-            <b>Is</b> he your brother? (সে কি তোমার ভাই?)<br>
-            <b>Are</b> you okay? (তুমি ঠিক আছো?)
-            </p></div>`
-    },
-    {
-        title: 'Present Simple Tense', emoji: '⏰', level: 'beginner',
-        desc: 'প্রতিদিনের কাজ বলতে — I go, He goes',
-        content: `
-            <div class="card"><h3>📖 নিয়ম</h3>
-            <p style="line-height:2;font-size:0.9rem;">
-            প্রতিদিন/সবসময় হয় এমন কাজে ব্যবহার হয়।<br><br>
-            <b style="color:var(--primary)">I/You/We/They → verb</b><br>
-            I <b>go</b> to school. (আমি স্কুলে যাই)<br>
-            They <b>play</b> cricket. (তারা ক্রিকেট খেলে)<br><br>
-            <b style="color:var(--accent)">He/She/It → verb + s/es</b><br>
-            He <b>goes</b> to office. (সে অফিসে যায়)<br>
-            She <b>eats</b> rice. (সে ভাত খায়)<br>
-            It <b>rains</b> a lot. (অনেক বৃষ্টি হয়)
-            </p></div>
-            <div class="card"><h3>⚡ কখন s, কখন es?</h3>
-            <p style="line-height:2;font-size:0.9rem;">
-            বেশিরভাগ verb → <b>s</b>: eat→eats, play→plays<br>
-            sh/ch/x/o/ss শেষে → <b>es</b>: go→goes, watch→watches<br>
-            y শেষে → <b>y বাদ + ies</b>: study→studies, carry→carries
-            </p></div>`
-    },
-    {
-        title: 'Past Simple Tense', emoji: '⏪', level: 'beginner',
-        desc: 'গতকাল/আগে হয়েছে — I went, He ate',
-        content: `
-            <div class="card"><h3>📖 নিয়ম</h3>
-            <p style="line-height:2;font-size:0.9rem;">
-            আগে/গতকাল হয়ে গেছে এমন কাজে ব্যবহার হয়।<br><br>
-            <b style="color:var(--primary)">Regular verb → verb + ed</b><br>
-            I <b>played</b> cricket yesterday. (গতকাল ক্রিকেট খেলেছি)<br>
-            She <b>worked</b> hard. (সে কঠোর পরিশ্রম করেছে)<br><br>
-            <b style="color:var(--accent)">Irregular verbs (মুখস্ত করতে হবে!)</b><br>
-            go → <b>went</b> | eat → <b>ate</b> | come → <b>came</b><br>
-            buy → <b>bought</b> | see → <b>saw</b> | give → <b>gave</b><br>
-            take → <b>took</b> | make → <b>made</b> | do → <b>did</b>
-            </p></div>
-            <div class="card"><h3>❌ Negative</h3>
-            <p style="line-height:2;font-size:0.9rem;">
-            <b>did not (didn't)</b> + verb (ed ছাড়া!):<br>
-            I <b>didn't go</b> to school. (আমি স্কুলে যাইনি)<br>
-            She <b>didn't eat</b> rice. (সে ভাত খায়নি)
-            </p></div>`
-    },
-    {
-        title: 'Articles: A, An, The', emoji: '📌', level: 'beginner',
-        desc: 'A book, An apple, The sun — কখন কোনটা?',
-        content: `
-            <div class="card"><h3>📖 নিয়ম</h3>
-            <p style="line-height:2;font-size:0.9rem;">
-            <b style="color:var(--primary)">A</b> → ব্যঞ্জনবর্ণের আগে (consonant sound):<br>
-            <b>a</b> book, <b>a</b> cat, <b>a</b> university (ইউ sound)<br><br>
-            <b style="color:var(--accent)">An</b> → স্বরবর্ণের আগে (vowel sound):<br>
-            <b>an</b> apple, <b>an</b> egg, <b>an</b> hour (আওয়ার sound)<br><br>
-            <b style="color:var(--accent2)">The</b> → নির্দিষ্ট কিছু বোঝাতে:<br>
-            <b>The</b> sun is bright. (সূর্য — একটাই)<br>
-            Give me <b>the</b> book. (ওই নির্দিষ্ট বইটা)
-            </p></div>`
-    },
-    {
-        title: 'Can / Can\'t', emoji: '💪', level: 'beginner',
-        desc: 'পারা/না পারা — I can swim, I can\'t drive',
-        content: `
-            <div class="card"><h3>📖 নিয়ম</h3>
-            <p style="line-height:2;font-size:0.9rem;">
-            <b style="color:var(--primary)">Can</b> = পারি/পারো/পারে<br>
-            I <b>can</b> speak English. (আমি ইংরেজি বলতে পারি)<br>
-            She <b>can</b> cook well. (সে ভালো রান্না করতে পারে)<br><br>
-            <b style="color:var(--danger)">Can't (Cannot)</b> = পারি না<br>
-            I <b>can't</b> swim. (আমি সাঁতার কাটতে পারি না)<br>
-            He <b>can't</b> drive. (সে গাড়ি চালাতে পারে না)<br><br>
-            <b style="color:var(--accent)">Can you...?</b> = তুমি কি পারো?<br>
-            <b>Can you</b> help me? (আমাকে সাহায্য করতে পারবে?)<br>
-            <b>Can I</b> sit here? (আমি কি এখানে বসতে পারি?)
-            </p></div>`
-    },
-    {
-        title: 'Prepositions: In, On, At', emoji: '📍', level: 'intermediate',
-        desc: 'In the room, On the table, At the door',
-        content: `
-            <div class="card"><h3>📖 নিয়ম</h3>
-            <p style="line-height:2;font-size:0.9rem;">
-            <b style="color:var(--primary)">In</b> = ভিতরে:<br>
-            <b>In</b> the room, <b>in</b> Dhaka, <b>in</b> March, <b>in</b> 2026<br><br>
-            <b style="color:var(--accent)">On</b> = উপরে/নির্দিষ্ট দিনে:<br>
-            <b>On</b> the table, <b>on</b> Monday, <b>on</b> March 14<br><br>
-            <b style="color:var(--accent2)">At</b> = নির্দিষ্ট জায়গা/সময়ে:<br>
-            <b>At</b> home, <b>at</b> school, <b>at</b> 10 AM, <b>at</b> night
-            </p></div>`
-    },
-];
+let apiKey = localStorage.getItem('eng_api_key') || '';
+let chatHistory = [];
+let stats = JSON.parse(localStorage.getItem('eng_stats') || '{"msgs":0,"correct":0,"mistakes":0}');
 
-// ============ CONVERSATIONS ============
-const conversations = {
-    'দোকানে 🛒': [
-        { bot:'Hello! How can I help you?', botBn:'হ্যালো! আপনাকে কিভাবে সাহায্য করতে পারি?', options:[
-            { en:'I want to buy a phone.', bn:'আমি একটা ফোন কিনতে চাই।' },
-            { en:'How much is this?', bn:'এটার দাম কত?' },
-        ]},
-        { bot:'This phone costs 15,000 taka. It has a good camera.', botBn:'এই ফোনের দাম ১৫,০০০ টাকা। এতে ভালো ক্যামেরা আছে।', options:[
-            { en:'Can you give me a discount?', bn:'একটু কম করবেন?' },
-            { en:'Do you have a cheaper one?', bn:'আরো সস্তা কি আছে?' },
-        ]},
-        { bot:'I can give you 500 taka discount. Final price 14,500.', botBn:'৫০০ টাকা কম দিতে পারি। ফাইনাল প্রাইস ১৪,৫০০।', options:[
-            { en:'Okay, I will take it.', bn:'ঠিক আছে, এটাই নিব।' },
-            { en:'Let me think about it.', bn:'একটু ভেবে দেখি।' },
-        ]},
-    ],
-    'রেস্টুরেন্টে 🍽️': [
-        { bot:'Welcome! Table for how many?', botBn:'স্বাগতম! কয়জনের টেবিল?', options:[
-            { en:'Table for two, please.', bn:'দুইজনের টেবিল, প্লিজ।' },
-            { en:'Just one, thank you.', bn:'একজন, ধন্যবাদ।' },
-        ]},
-        { bot:'Here is the menu. What would you like to order?', botBn:'এই নিন মেনু। কী অর্ডার করবেন?', options:[
-            { en:'I would like chicken biryani.', bn:'আমি চিকেন বিরিয়ানি নিব।' },
-            { en:'What do you recommend?', bn:'আপনার সাজেশন কী?' },
-        ]},
-        { bot:'Great choice! Anything to drink?', botBn:'দারুণ চয়েস! কিছু পান করবেন?', options:[
-            { en:'A glass of water, please.', bn:'এক গ্লাস পানি, প্লিজ।' },
-            { en:'One cold drink, please.', bn:'একটা কোল্ড ড্রিংক, প্লিজ।' },
-        ]},
-    ],
-    'ডাক্তারের কাছে 🏥': [
-        { bot:'Good morning. What seems to be the problem?', botBn:'সুপ্রভাত। সমস্যা কী?', options:[
-            { en:'I have a headache and fever.', bn:'আমার মাথাব্যথা আর জ্বর।' },
-            { en:'I have a stomachache.', bn:'আমার পেটব্যথা।' },
-        ]},
-        { bot:'How long have you had this problem?', botBn:'কতদিন ধরে এই সমস্যা?', options:[
-            { en:'Since yesterday.', bn:'গতকাল থেকে।' },
-            { en:'For three days.', bn:'তিন দিন ধরে।' },
-        ]},
-        { bot:'I will prescribe some medicine. Take rest and drink water.', botBn:'কিছু ওষুধ লিখে দিচ্ছি। বিশ্রাম নিন আর পানি খান।', options:[
-            { en:'Thank you, doctor.', bn:'ধন্যবাদ, ডাক্তার সাহেব।' },
-            { en:'How many days to take medicine?', bn:'কতদিন ওষুধ খেতে হবে?' },
-        ]},
-    ],
-    'পরিচয় 🤝': [
-        { bot:'Hi! What is your name?', botBn:'হাই! তোমার নাম কী?', options:[
-            { en:'My name is Sourav. Nice to meet you!', bn:'আমার নাম সৌরভ। আপনার সাথে পরিচিত হয়ে ভালো লাগলো!' },
-            { en:'I am Sourav. And you?', bn:'আমি সৌরভ। আর তুমি?' },
-        ]},
-        { bot:'Nice to meet you too! Where are you from?', botBn:'আমারও ভালো লাগলো! তুমি কোথা থেকে?', options:[
-            { en:'I am from Bangladesh.', bn:'আমি বাংলাদেশ থেকে।' },
-            { en:'I live in Dhaka.', bn:'আমি ঢাকায় থাকি।' },
-        ]},
-        { bot:'That\'s great! What do you do?', botBn:'দারুণ! তুমি কী করো?', options:[
-            { en:'I am a student.', bn:'আমি একজন ছাত্র।' },
-            { en:'I run a small business.', bn:'আমি একটা ছোট ব্যবসা চালাই।' },
-        ]},
-    ],
-};
-
-// ============ APP STATE ============
-let state = JSON.parse(localStorage.getItem('eng_learn_state') || '{}');
-if (!state.wordsLearned) state.wordsLearned = [];
-if (!state.streak) state.streak = 0;
-if (!state.lastDate) state.lastDate = '';
-if (!state.quizScore) state.quizScore = { correct:0, total:0 };
-if (!state.currentCat) state.currentCat = 'দৈনন্দিন';
-
-function saveState() { localStorage.setItem('eng_learn_state', JSON.stringify(state)); }
-
-// Check streak
-const today = new Date().toISOString().split('T')[0];
-if (state.lastDate !== today) {
-    const yesterday = new Date(Date.now()-86400000).toISOString().split('T')[0];
-    if (state.lastDate === yesterday) { state.streak++; }
-    else if (state.lastDate && state.lastDate !== today) { state.streak = 1; }
-    else if (!state.lastDate) { state.streak = 1; }
-    state.lastDate = today;
-    saveState();
+// Check setup
+if (apiKey) {
+    document.getElementById('setupModal').classList.add('hide');
 }
 
-// ============ NAVIGATION ============
-function goPage(name) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    document.getElementById('page-'+name).classList.add('active');
-    const navIdx = {home:0,vocab:1,quiz:2,grammar:3,chat:4};
-    if (navIdx[name] !== undefined) document.querySelectorAll('.nav-item')[navIdx[name]].classList.add('active');
-    if (name==='vocab') renderVocab();
-    if (name==='grammar') renderGrammar();
-    if (name==='chat') renderChat();
+function saveSetup() {
+    const key = document.getElementById('apiKeyInput').value.trim();
+    if (!key) { alert('API Key দাও!'); return; }
+    apiKey = key;
+    localStorage.setItem('eng_api_key', key);
+    document.getElementById('setupModal').classList.add('hide');
 }
 
-// ============ HOME ============
-function renderHome() {
-    document.getElementById('statWords').textContent = state.wordsLearned.length;
-    document.getElementById('statStreak').textContent = state.streak;
-    const pct = state.quizScore.total > 0 ? Math.round(state.quizScore.correct/state.quizScore.total*100) : 0;
-    document.getElementById('statQuiz').textContent = pct+'%';
-    document.getElementById('streakText').textContent = `🔥 ${state.streak} দিন streak | ${state.wordsLearned.length} শব্দ শিখেছো`;
+function updateStats() {
+    document.getElementById('msgCount').textContent = stats.msgs;
+    document.getElementById('correctCount').textContent = stats.correct;
+    document.getElementById('mistakeCount').textContent = stats.mistakes;
+    localStorage.setItem('eng_stats', JSON.stringify(stats));
+}
+updateStats();
 
-    // Today's word
-    const allWords = Object.values(vocab).flat();
-    const wordOfDay = allWords[Math.floor(new Date().getDate() * 7.3) % allWords.length];
-    document.getElementById('todayWord').innerHTML = renderWordCard(wordOfDay);
-
-    // Daily challenge
-    renderDailyChallenge();
+function autoResize(el) {
+    el.style.height = 'auto';
+    el.style.height = Math.min(el.scrollHeight, 120) + 'px';
 }
 
-function renderWordCard(w) {
-    const learned = state.wordsLearned.includes(w.en);
-    return `<div class="word-card">
-        <div style="display:flex;justify-content:space-between;align-items:center;">
-            <span class="type">${w.type}</span>
-            <button class="speak-btn" onclick="speak('${w.en}')">🔊</button>
-        </div>
-        <div class="en">${w.en}</div>
-        <div class="pron">/${w.pron}/</div>
-        <div class="bn">${w.bn}</div>
-        <div class="example">${w.ex}</div>
-        <button class="btn ${learned?'btn-success':'btn-primary'}" style="margin-top:14px;" onclick="markLearned('${w.en}',this)">
-            ${learned?'✅ শিখেছো!':'📖 শিখে ফেললাম!'}
-        </button>
-    </div>`;
+function useSuggestion(text) {
+    document.getElementById('msgInput').value = text;
+    sendMsg();
 }
 
-function markLearned(word, btn) {
-    if (!state.wordsLearned.includes(word)) {
-        state.wordsLearned.push(word);
-        saveState();
-        btn.textContent = '✅ শিখেছো!';
-        btn.className = 'btn btn-success';
-        btn.style.marginTop = '14px';
-        renderHome();
-        toast('🎉 নতুন শব্দ শিখেছো!', 'success');
-    }
-}
-
-function speak(text) {
-    if ('speechSynthesis' in window) {
-        const u = new SpeechSynthesisUtterance(text);
-        u.lang = 'en-US';
-        u.rate = 0.8;
-        speechSynthesis.speak(u);
-    }
-}
-
-// ============ DAILY CHALLENGE ============
-function renderDailyChallenge() {
-    const allWords = Object.values(vocab).flat();
-    const idx = Math.floor(new Date().getDate() * 13.7) % allWords.length;
-    const w = allWords[idx];
-    const wrongs = allWords.filter(x => x.en !== w.en).sort(() => Math.random()-0.5).slice(0,3);
-    const opts = [...wrongs.map(x => x.en), w.en].sort(() => Math.random()-0.5);
-
-    document.getElementById('dailyChallengeText').textContent = `"${w.bn}" ইংরেজিতে কী?`;
-    document.getElementById('dailyChallengeArea').innerHTML = opts.map(o =>
-        `<div class="quiz-option" onclick="checkDaily(this,'${o}','${w.en}')">${o}</div>`
-    ).join('');
-}
-
-function checkDaily(el, selected, correct) {
-    document.querySelectorAll('#dailyChallengeArea .quiz-option').forEach(o => {
-        o.classList.add('disabled');
-        if (o.textContent === correct) o.classList.add('correct');
-    });
-    if (selected !== correct) el.classList.add('wrong');
-    else toast('🎉 সঠিক!', 'success');
-}
-
-// ============ VOCABULARY ============
-let vocabPage = 0;
-function renderVocab() {
-    const cats = Object.keys(vocab);
-    document.getElementById('vocabChips').innerHTML = cats.map(c =>
-        `<div class="chip ${c===state.currentCat?'active':''}" onclick="switchCat('${c}')">${c}</div>`
-    ).join('');
-    vocabPage = 0;
-    renderVocabList();
-}
-
-function switchCat(cat) {
-    state.currentCat = cat;
-    saveState();
-    vocabPage = 0;
-    renderVocab();
-}
-
-function renderVocabList() {
-    const words = vocab[state.currentCat] || [];
-    const show = words.slice(0, (vocabPage+1)*6);
-    document.getElementById('vocabList').innerHTML = show.map(w => renderWordCard(w)).join('');
-}
-
-function loadMoreVocab() {
-    vocabPage++;
-    renderVocabList();
-}
-
-// ============ QUIZ ============
-let quizQs=[], quizIdx=0, quizCorrect=0, quizType='';
-
-function startQuiz(type) {
-    quizType = type;
-    quizIdx = 0;
-    quizCorrect = 0;
-    const allWords = Object.values(vocab).flat();
-    quizQs = allWords.sort(() => Math.random()-0.5).slice(0, 10);
-    document.getElementById('quizResult').style.display = 'none';
-    renderQuizQ();
-}
-
-function renderQuizQ() {
-    if (quizIdx >= quizQs.length) { showQuizResult(); return; }
-    const w = quizQs[quizIdx];
-    const allWords = Object.values(vocab).flat();
-    const pct = Math.round((quizIdx/quizQs.length)*100);
-    document.getElementById('quizProgress').style.width = pct+'%';
-
-    let question, options, correctAnswer;
-
-    if (quizType === 'bn2en') {
-        question = `"${w.bn}" ইংরেজিতে কী?`;
-        correctAnswer = w.en;
-        const wrongs = allWords.filter(x=>x.en!==w.en).sort(()=>Math.random()-0.5).slice(0,3);
-        options = [...wrongs.map(x=>x.en), w.en].sort(()=>Math.random()-0.5);
-    } else if (quizType === 'en2bn') {
-        question = `"${w.en}" বাংলায় কী?`;
-        correctAnswer = w.bn;
-        const wrongs = allWords.filter(x=>x.bn!==w.bn).sort(()=>Math.random()-0.5).slice(0,3);
-        options = [...wrongs.map(x=>x.bn), w.bn].sort(()=>Math.random()-0.5);
-    } else if (quizType === 'fill') {
-        const sentence = w.ex.replace(/<b>/g,'').replace(/<\/b>/g,'');
-        const blank = sentence.replace(new RegExp(w.en,'i'), '_____');
-        question = `খালি ঘর পূরণ করো: "${blank}"`;
-        correctAnswer = w.en;
-        const wrongs = allWords.filter(x=>x.en!==w.en).sort(()=>Math.random()-0.5).slice(0,3);
-        options = [...wrongs.map(x=>x.en), w.en].sort(()=>Math.random()-0.5);
-    } else {
-        // Listen
-        question = `🔊 শুনো এবং সঠিক বাংলা অর্থ বলো:`;
-        correctAnswer = w.bn;
-        speak(w.en);
-        const wrongs = allWords.filter(x=>x.bn!==w.bn).sort(()=>Math.random()-0.5).slice(0,3);
-        options = [...wrongs.map(x=>x.bn), w.bn].sort(()=>Math.random()-0.5);
-    }
-
-    document.getElementById('quizContent').innerHTML = `
-        <div style="text-align:center;margin-bottom:8px;font-size:0.8rem;color:var(--text-muted);">প্রশ্ন ${quizIdx+1}/${quizQs.length}</div>
-        <p style="font-size:1rem;font-weight:700;text-align:center;margin-bottom:20px;line-height:1.5;">${question}</p>
-        ${quizType==='listen'?`<button class="btn btn-outline btn-sm" onclick="speak('${w.en}')" style="margin:0 auto 16px;display:flex;">🔊 আবার শুনো</button>`:''}
-        ${options.map(o => `<div class="quiz-option" onclick="checkQuiz(this,'${o.replace(/'/g,"\\'")}','${correctAnswer.replace(/'/g,"\\'")}')">${o}</div>`).join('')}
-    `;
-}
-
-function checkQuiz(el, selected, correct) {
-    document.querySelectorAll('#quizContent .quiz-option').forEach(o => {
-        o.classList.add('disabled');
-        if (o.textContent === correct) o.classList.add('correct');
-    });
-    if (selected === correct) {
-        quizCorrect++;
-        state.quizScore.correct++;
-    } else {
-        el.classList.add('wrong');
-    }
-    state.quizScore.total++;
-    saveState();
-
-    setTimeout(() => { quizIdx++; renderQuizQ(); }, 1200);
-}
-
-function showQuizResult() {
-    const pct = Math.round(quizCorrect/quizQs.length*100);
-    document.getElementById('quizProgress').style.width = '100%';
-    let emoji, msg;
-    if (pct >= 90) { emoji='🏆'; msg='অসাধারণ! তুমি ইংরেজি মাস্টার!'; }
-    else if (pct >= 70) { emoji='🌟'; msg='বেশ ভালো! আরেকটু প্র্যাকটিস করো!'; }
-    else if (pct >= 50) { emoji='💪'; msg='ভালো চেষ্টা! আরো শিখতে থাকো!'; }
-    else { emoji='📚'; msg='আরো শব্দ শেখো, তারপর আবার try করো!'; }
-
-    document.getElementById('quizContent').innerHTML = `
-        <div style="text-align:center;">
-            <div style="font-size:4rem;margin-bottom:12px;">${emoji}</div>
-            <div style="font-size:2.5rem;font-weight:900;color:var(--primary);margin-bottom:8px;">${pct}%</div>
-            <div style="font-size:1rem;font-weight:700;margin-bottom:8px;">${quizCorrect}/${quizQs.length} সঠিক</div>
-            <p style="color:var(--text-muted);margin-bottom:20px;">${msg}</p>
-            <button class="btn btn-primary" onclick="goPage('quiz')">🔄 আবার খেলো</button>
-        </div>
-    `;
-    renderHome();
-}
-
-// ============ GRAMMAR ============
-function renderGrammar() {
-    document.getElementById('grammarList').innerHTML = grammarLessons.map((l,i) => `
-        <div class="lesson-item" onclick="showGrammar(${i})">
-            <div class="emoji">${l.emoji}</div>
-            <div class="info">
-                <div class="title">${l.title}</div>
-                <div class="desc">${l.desc}</div>
-                <span class="level-badge level-${l.level}" style="margin-top:6px;">${l.level==='beginner'?'🟢 সহজ':l.level==='intermediate'?'🟡 মাঝারি':'🔴 কঠিন'}</span>
-            </div>
-            <div class="arrow">→</div>
-        </div>
-    `).join('');
-}
-
-function showGrammar(idx) {
-    const l = grammarLessons[idx];
-    document.getElementById('grammarContent').innerHTML = `
-        <h2 style="font-size:1.2rem;font-weight:800;margin-bottom:16px;">${l.emoji} ${l.title}</h2>
-        ${l.content}
-    `;
-    goPage('grammar-detail');
-}
-
-// ============ CHAT PRACTICE ============
-let chatScenario='', chatStep=0;
-
-function renderChat() {
-    const cats = Object.keys(conversations);
-    document.getElementById('chatChips').innerHTML = cats.map(c =>
-        `<div class="chip ${c===chatScenario?'active':''}" onclick="startChat('${c}')">${c}</div>`
-    ).join('');
-    if (!chatScenario) startChat(cats[0]);
-}
-
-function startChat(scenario) {
-    chatScenario = scenario;
-    chatStep = 0;
-    renderChat();
-    renderChatStep();
-}
-
-function renderChatStep() {
-    const conv = conversations[chatScenario];
-    if (!conv || chatStep >= conv.length) {
-        document.getElementById('chatArea').innerHTML += `<div class="chat-bubble bot">🎉 দারুণ! Conversation শেষ! তুমি ভালো করেছো!</div>`;
-        document.getElementById('chatOptions').innerHTML = `<button class="btn btn-primary" onclick="startChat('${chatScenario}')">🔄 আবার শুরু করো</button>`;
-        return;
-    }
-    const step = conv[chatStep];
+function addMsg(text, type, correction) {
     const area = document.getElementById('chatArea');
-    if (chatStep === 0) area.innerHTML = '';
-
-    area.innerHTML += `<div class="chat-bubble bot">${step.bot}<div class="trans">${step.botBn}</div></div>`;
-
-    document.getElementById('chatOptions').innerHTML = step.options.map(o =>
-        `<button class="btn btn-outline" style="margin-bottom:8px;text-align:left;" onclick="chatReply(this,'${o.en.replace(/'/g,"\\'")}','${o.bn.replace(/'/g,"\\'")}')">
-            🇬🇧 ${o.en}<br><span style="font-size:0.75rem;color:var(--text-muted);">🇧🇩 ${o.bn}</span>
-        </button>`
-    ).join('');
-
+    const div = document.createElement('div');
+    div.className = 'msg ' + type;
+    let html = `<div class="bubble">${text}</div>`;
+    if (correction) {
+        html += correction;
+    }
+    div.innerHTML = html;
+    area.appendChild(div);
     area.scrollTop = area.scrollHeight;
 }
 
-function chatReply(btn, en, bn) {
+function showTyping() {
     const area = document.getElementById('chatArea');
-    area.innerHTML += `<div class="chat-bubble user">${en}<div class="trans" style="color:rgba(255,255,255,0.7);">${bn}</div></div>`;
-    speak(en);
-    chatStep++;
-    setTimeout(() => renderChatStep(), 800);
+    const div = document.createElement('div');
+    div.className = 'msg bot';
+    div.id = 'typingIndicator';
+    div.innerHTML = `<div class="bubble"><div class="typing"><span></span><span></span><span></span></div></div>`;
+    area.appendChild(div);
+    area.scrollTop = area.scrollHeight;
 }
 
-// ============ UTILS ============
-function toast(text, type) {
-    const el = document.getElementById('toast');
-    el.textContent = text;
-    el.className = 'toast ' + (type||'success');
-    el.style.display = 'block';
-    setTimeout(() => el.style.display='none', 2500);
+function removeTyping() {
+    const el = document.getElementById('typingIndicator');
+    if (el) el.remove();
 }
 
-// ============ INIT ============
-renderHome();
+async function sendMsg() {
+    const input = document.getElementById('msgInput');
+    const text = input.value.trim();
+    if (!text) return;
+    if (!apiKey) { document.getElementById('setupModal').classList.remove('hide'); return; }
+
+    input.value = '';
+    input.style.height = 'auto';
+    document.getElementById('sendBtn').disabled = true;
+    document.getElementById('suggestions').style.display = 'none';
+
+    // Add user message
+    addMsg(text, 'user');
+    stats.msgs++;
+    updateStats();
+
+    // Add to history
+    chatHistory.push({ role: 'user', parts: [{ text }] });
+
+    showTyping();
+
+    try {
+        const systemPrompt = `You are a friendly English practice partner for a Bangla-speaking person from Bangladesh named Sourav. Your job:
+
+1. ALWAYS check their English for grammar, spelling, word choice, and sentence structure mistakes.
+2. If there are mistakes, respond in this EXACT JSON format:
+{
+  "reply": "Your natural conversational reply in English (keep it friendly, ask follow-up questions to keep the conversation going)",
+  "hasMistakes": true,
+  "corrections": [
+    {
+      "wrong": "what they wrote wrong",
+      "right": "the correct version",
+      "explain": "Short explanation in Bangla why it's wrong and the rule"
+    }
+  ]
+}
+
+3. If their English is PERFECT with no mistakes:
+{
+  "reply": "Your conversational reply",
+  "hasMistakes": false,
+  "corrections": [],
+  "praise": "A short encouragement in Bangla like 'দারুণ! কোনো ভুল নেই! 🎉'"
+}
+
+4. Keep conversations natural and interesting. Ask questions back. Be encouraging.
+5. Don't be too strict with casual chat style, but do correct actual grammar/spelling errors.
+6. ALWAYS reply in valid JSON format, nothing else.
+7. Explain corrections in simple Bangla so they understand the rule.
+8. If they write in Bangla, gently remind them to write in English for practice.`;
+
+        const contents = [
+            { role: 'user', parts: [{ text: systemPrompt }] },
+            { role: 'model', parts: [{ text: '{"reply": "Got it! I will help with English practice and correct mistakes.", "hasMistakes": false, "corrections": []}' }] },
+            ...chatHistory
+        ];
+
+        const res = await fetch(GEMINI_URL + '?key=' + apiKey, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents,
+                generationConfig: { temperature: 0.7, maxOutputTokens: 1024 }
+            })
+        });
+
+        removeTyping();
+
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            addMsg('❌ API Error. Key চেক করো।<br><small style="color:var(--text-muted);">' + (err.error?.message || res.status) + '</small>', 'bot');
+            document.getElementById('sendBtn').disabled = false;
+            return;
+        }
+
+        const data = await res.json();
+        const rawReply = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+
+        // Parse JSON response
+        let parsed;
+        try {
+            // Clean up response - remove markdown code blocks if present
+            let clean = rawReply.trim();
+            if (clean.startsWith('```')) clean = clean.replace(/^```json?\n?/, '').replace(/\n?```$/, '');
+            parsed = JSON.parse(clean);
+        } catch(e) {
+            // If not valid JSON, just show as text
+            addMsg(rawReply, 'bot');
+            chatHistory.push({ role: 'model', parts: [{ text: rawReply }] });
+            document.getElementById('sendBtn').disabled = false;
+            return;
+        }
+
+        // Build correction HTML
+        let correctionHTML = '';
+        if (parsed.hasMistakes && parsed.corrections?.length > 0) {
+            stats.mistakes++;
+            correctionHTML = `<div class="correction">
+                <div class="label">✏️ ভুল সংশোধন:</div>
+                ${parsed.corrections.map(c => `
+                    <div style="margin-bottom:6px;">
+                        <span class="wrong">${c.wrong}</span> → <span class="right">${c.right}</span>
+                        <div class="explain">💡 ${c.explain}</div>
+                    </div>
+                `).join('')}
+            </div>`;
+        } else {
+            stats.correct++;
+            if (parsed.praise) {
+                correctionHTML = `<div style="background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);border-radius:12px;padding:8px 14px;margin-top:8px;font-size:0.82rem;color:var(--success);">
+                    ✅ ${parsed.praise}
+                </div>`;
+            }
+        }
+        updateStats();
+
+        addMsg(parsed.reply, 'bot', correctionHTML);
+        chatHistory.push({ role: 'model', parts: [{ text: rawReply }] });
+
+        // Show new suggestions after a few messages
+        if (stats.msgs % 5 === 0) {
+            showNewSuggestions();
+        }
+
+    } catch(e) {
+        removeTyping();
+        addMsg('❌ কিছু সমস্যা হয়েছে: ' + e.message, 'bot');
+    }
+
+    document.getElementById('sendBtn').disabled = false;
+    document.getElementById('msgInput').focus();
+}
+
+function showNewSuggestions() {
+    const topics = [
+        ['Tell me about your hobby', 'What did you do today?', 'Describe your best friend'],
+        ['What is your favorite movie?', 'Tell me about Bangladesh', 'What do you want to be?'],
+        ['Describe your room', 'What did you eat today?', 'Tell me a funny story'],
+        ['What makes you happy?', 'Describe your school/work', 'What is your dream?'],
+    ];
+    const set = topics[Math.floor(Math.random() * topics.length)];
+    const el = document.getElementById('suggestions');
+    el.style.display = 'flex';
+    el.innerHTML = set.map(s => `<div class="suggestion" onclick="useSuggestion('${s}')">${s}</div>`).join('');
+}
 </script>
 </body>
 </html>
