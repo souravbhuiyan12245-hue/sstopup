@@ -405,28 +405,117 @@ async function processCommand(text) {
 
     const cmd = text.toLowerCase().trim();
 
-    if (cmd === 'orders' || cmd === 'অর্ডার') {
-        showOrders('all');
-    } else if (cmd === 'pending' || cmd === 'পেন্ডিং') {
-        showOrders('Pending');
-    } else if (cmd === 'completed' || cmd === 'সম্পন্ন') {
-        showOrders('Completed');
-    } else if (cmd === 'today' || cmd === 'আজকে') {
-        showToday();
-    } else if (cmd === 'stats' || cmd === 'পরিসংখ্যান') {
-        showStats();
-    } else if (cmd === 'revenue' || cmd === 'আয়') {
-        showRevenue();
-    } else if (cmd === 'profit' || cmd === 'প্রফিট' || cmd === 'লাভ') {
-        showProfit();
-    } else if (cmd === 'help' || cmd === 'সাহায্য') {
-        showHelp();
-    } else if (cmd.startsWith('search ') || cmd.startsWith('খুঁজুন ')) {
-        const query = text.substring(text.indexOf(' ') + 1).trim();
-        searchOrders(query);
-    } else {
-        addBotMessage(`🤔 কমান্ড বুঝতে পারিনি: "<b>${escHtml(text)}</b>"\n\n💡 <b>help</b> লিখুন সব কমান্ড দেখতে!`);
+    // Natural language matching - understands conversational Bengali & English
+    const patterns = {
+        orders: /^(orders|অর্ডার|সব অর্ডার|all orders|অর্ডার দেখাও|অর্ডার গুলো|কি কি অর্ডার|order list|অর্ডার লিস্ট)$/i,
+        pending: /^(pending|পেন্ডিং|বাকি অর্ডার|কোনটা বাকি|বাকি আছে|pending order|অপেক্ষায়)$/i,
+        completed: /^(completed|done|সম্পন্ন|কমপ্লিট|শেষ হয়েছে|ডেলিভারি হয়েছে|completed order)$/i,
+        today: /^(today|আজকে|আজকের|আজ কি হলো|আজকের খবর|আজকে কি|আজকের অর্ডার|আজ কয়টা|today.?s?)$/i,
+        stats: /^(stats|পরিসংখ্যান|স্ট্যাটস|কি অবস্থা|অবস্থা|overall|সামগ্রিক|মোট কত|কত অর্ডার)$/i,
+        revenue: /^(revenue|আয়|ইনকাম|income|কত আয়|কত টাকা|মোট আয়|earnings|আয় কত|কত ইনকাম)$/i,
+        profit: /^(profit|প্রফিট|লাভ|কত লাভ|লাভ কত|profit কত|আজকে লাভ|মোট লাভ|লাভ ক্ষতি)$/i,
+        help: /^(help|সাহায্য|হেল্প|কি কি পারো|কি করতে পারো|commands|কমান্ড)$/i,
+        search: /^(search|খুঁজুন|খোঁজো|খুঁজে দাও)\s+(.+)/i,
+        greeting: /^(hi|hello|hey|হ্যালো|হাই|হেই|আস+ালামু|স্লামালেকুম|কেমন আছ|কি খবর|ভাই|বস)$/i,
+        bizUpdate: /(বিজনেস|business).*(খবর|কেমন|অবস্থা|update|চলছে|হচ্ছে|news)/i,
+        bizUpdate2: /(কি|কী).*(খবর|অবস্থা|চলছে|হচ্ছে)/i,
+        howsIt: /^(কেমন চলছে|কি চলছে|কি হচ্ছে|কেমন যাচ্ছে|চলছে কেমন|সব ঠিক|কি অবস্থা আজকে)$/i,
+    };
+
+    // Greeting
+    if (patterns.greeting.test(cmd)) {
+        const greetings = [
+            `👋 হ্যালো বস! SS TOP-UP এ স্বাগতম!\n\nআজকের বিজনেস দেখতে চাইলে বলো "আজকে কি খবর" বা নিচের বাটন চাপো! 😎`,
+            `🙌 হাই! বলো কি দরকার?\n\n📋 অর্ডার, 📊 স্ট্যাটস, 💰 লাভ — যেকোনো কিছু জিজ্ঞেস করো!`,
+            `👋 ওয়েলকাম বস! আমি রেডি।\n\nবিজনেসের খবর জানতে চাইলে বলো! 😎`
+        ];
+        addBotMessage(greetings[Math.floor(Math.random() * greetings.length)]);
     }
+    // Business update / conversational queries
+    else if (patterns.bizUpdate.test(cmd) || patterns.bizUpdate2.test(cmd) || patterns.howsIt.test(cmd)) {
+        await showBizSummary();
+    }
+    // Exact/pattern commands
+    else if (patterns.orders.test(cmd)) {
+        showOrders('all');
+    } else if (patterns.pending.test(cmd)) {
+        showOrders('Pending');
+    } else if (patterns.completed.test(cmd)) {
+        showOrders('Completed');
+    } else if (patterns.today.test(cmd)) {
+        showToday();
+    } else if (patterns.stats.test(cmd)) {
+        showStats();
+    } else if (patterns.revenue.test(cmd)) {
+        showRevenue();
+    } else if (patterns.profit.test(cmd)) {
+        showProfit();
+    } else if (patterns.help.test(cmd)) {
+        showHelp();
+    } else if (patterns.search.test(cmd)) {
+        const match = cmd.match(patterns.search);
+        searchOrders(match[2].trim());
+    }
+    // Fallback - friendly message
+    else {
+        addBotMessage(`🤔 আমি এটা বুঝতে পারিনি।\n\n📝 <b>help</b> লিখুন বা নিচের বাটন ব্যবহার করুন!`);
+    }
+}
+
+// ===== BUSINESS SUMMARY (conversational) =====
+
+async function showBizSummary() {
+    const total = orders.length;
+    const pending = orders.filter(o => !o.status || o.status === 'Pending').length;
+    const completed = orders.filter(o => o.status === 'Completed').length;
+    const rejected = orders.filter(o => o.status === 'Rejected').length;
+
+    // Today's orders
+    const now = new Date();
+    const today = now.toISOString().split('T')[0];
+    const todayOrders = orders.filter(o => {
+        const d = (o.date || o.createdAt || '').toString();
+        return d.includes(today) || isToday(o.date);
+    });
+    const todayCount = todayOrders.length;
+    const todayRevenue = todayOrders.filter(o => o.status === 'Completed').reduce((s, o) => s + (o.price || 0), 0);
+    const todayPending = todayOrders.filter(o => !o.status || o.status === 'Pending').length;
+
+    // Total revenue
+    const totalRevenue = orders.filter(o => o.status === 'Completed').reduce((s, o) => s + (o.price || 0), 0);
+
+    // Build conversational summary
+    let msg = `📊 <b>বিজনেস আপডেট</b>\n\n`;
+
+    // Today section
+    msg += `🗓️ <b>আজকে:</b>\n`;
+    if (todayCount === 0) {
+        msg += `• আজকে কোনো অর্ডার আসেনি এখনো\n\n`;
+    } else {
+        msg += `• ${todayCount}টা অর্ডার এসেছে\n`;
+        if (todayPending > 0) msg += `• ⚠️ ${todayPending}টা পেন্ডিং আছে — দেখো!\n`;
+        if (todayRevenue > 0) msg += `• আজকের আয়: ৳${todayRevenue}\n`;
+        msg += `\n`;
+    }
+
+    // Overall
+    msg += `📈 <b>সামগ্রিক:</b>\n`;
+    msg += `• মোট অর্ডার: ${total}টা\n`;
+    msg += `• সম্পন্ন: ${completed}টা ✅\n`;
+    if (pending > 0) msg += `• পেন্ডিং: ${pending}টা ⏳\n`;
+    if (rejected > 0) msg += `• বাতিল: ${rejected}টা ❌\n`;
+    msg += `• মোট আয়: ৳${totalRevenue}\n\n`;
+
+    // Status message
+    if (pending > 0) {
+        msg += `🔔 <b>${pending}টা অর্ডার পেন্ডিং!</b> "pending" বলো দেখতে।`;
+    } else if (todayCount > 0) {
+        msg += `💪 সব ঠিকঠাক চলছে বস! 😎`;
+    } else {
+        msg += `😴 আজকে একটু শান্ত। নতুন অর্ডার আসলে জানাব!`;
+    }
+
+    addBotMessage(msg);
 }
 
 // ===== COMMAND HANDLERS =====
