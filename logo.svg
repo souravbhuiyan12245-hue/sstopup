@@ -41,10 +41,104 @@
     </clipPath>
   </defs>
 
+  <style>
+    /* Diamond float animation */
+    @keyframes diamondFloat {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-12px); }
+    }
+    /* Diamond pulse glow */
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 0.08; r: 180; }
+      50% { opacity: 0.15; r: 200; }
+    }
+    @keyframes pulseGlowInner {
+      0%, 100% { opacity: 0.06; r: 120; }
+      50% { opacity: 0.12; r: 135; }
+    }
+    /* Lightning flash */
+    @keyframes boltFlash {
+      0%, 70%, 100% { opacity: 0.95; }
+      75% { opacity: 0.3; }
+      80% { opacity: 1; }
+      85% { opacity: 0.5; }
+      90% { opacity: 1; }
+    }
+    /* Sparkle twinkle */
+    @keyframes twinkle1 {
+      0%, 100% { opacity: 0; transform: scale(0); }
+      50% { opacity: 1; transform: scale(1); }
+    }
+    @keyframes twinkle2 {
+      0%, 100% { opacity: 0; transform: scale(0); }
+      40% { opacity: 0; }
+      70% { opacity: 1; transform: scale(1.2); }
+      90% { opacity: 0.3; }
+    }
+    @keyframes twinkle3 {
+      0%, 30% { opacity: 0; transform: scale(0); }
+      60% { opacity: 1; transform: scale(1); }
+      100% { opacity: 0; transform: scale(0); }
+    }
+    /* Shine sweep across diamond */
+    @keyframes shineSweep {
+      0% { transform: translateX(-100px); opacity: 0; }
+      40% { opacity: 0; }
+      50% { opacity: 0.3; }
+      60% { opacity: 0; }
+      100% { transform: translateX(100px); opacity: 0; }
+    }
+    /* Text fade in */
+    @keyframes textSlideUp {
+      0% { opacity: 0; transform: translateY(15px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    /* Rotate subtle for diamond */
+    @keyframes diamondRotate {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(1.5deg); }
+      75% { transform: rotate(-1.5deg); }
+    }
+
+    .diamond-group {
+      animation: diamondFloat 3s ease-in-out infinite;
+      transform-origin: 400px 320px;
+    }
+    .glow-outer {
+      animation: pulseGlow 3s ease-in-out infinite;
+    }
+    .glow-inner {
+      animation: pulseGlowInner 3s ease-in-out infinite 0.3s;
+    }
+    .bolt {
+      animation: boltFlash 4s ease-in-out infinite;
+    }
+    .sparkle-1 { animation: twinkle1 2.5s ease-in-out infinite; transform-origin: center; }
+    .sparkle-2 { animation: twinkle2 3s ease-in-out infinite 0.5s; transform-origin: center; }
+    .sparkle-3 { animation: twinkle3 2s ease-in-out infinite 1s; transform-origin: center; }
+    .sparkle-4 { animation: twinkle1 2.8s ease-in-out infinite 1.5s; transform-origin: center; }
+    .sparkle-5 { animation: twinkle2 2.2s ease-in-out infinite 0.8s; transform-origin: center; }
+    .sparkle-6 { animation: twinkle3 3.2s ease-in-out infinite 0.3s; transform-origin: center; }
+    .sparkle-7 { animation: twinkle1 2s ease-in-out infinite 2s; transform-origin: center; }
+    .sparkle-8 { animation: twinkle2 2.6s ease-in-out infinite 1.2s; transform-origin: center; }
+    .shine-sweep {
+      animation: shineSweep 4s ease-in-out infinite;
+    }
+    .text-ss {
+      animation: textSlideUp 0.8s ease-out both;
+    }
+    .text-topup {
+      animation: textSlideUp 0.8s ease-out 0.2s both;
+    }
+    .text-tagline {
+      animation: textSlideUp 0.8s ease-out 0.4s both;
+    }
+  </style>
+
   <!-- Background -->
   <rect width="800" height="800" rx="160" ry="160" fill="url(#bgGrad)"/>
 
-  <!-- Subtle grid pattern -->
+  <!-- Subtle grid -->
   <g opacity="0.04" clip-path="url(#roundClip)">
     <line x1="0" y1="200" x2="800" y2="200" stroke="#fff" stroke-width="1"/>
     <line x1="0" y1="400" x2="800" y2="400" stroke="#fff" stroke-width="1"/>
@@ -54,48 +148,60 @@
     <line x1="600" y1="0" x2="600" y2="800" stroke="#fff" stroke-width="1"/>
   </g>
 
-  <!-- Glow circle behind diamond -->
-  <circle cx="400" cy="320" r="180" fill="#6C3CE1" opacity="0.08"/>
-  <circle cx="400" cy="320" r="120" fill="#6C3CE1" opacity="0.06"/>
+  <!-- Pulsing glow circles -->
+  <circle class="glow-outer" cx="400" cy="320" r="180" fill="#6C3CE1"/>
+  <circle class="glow-inner" cx="400" cy="320" r="120" fill="#6C3CE1"/>
 
-  <!-- Diamond shape -->
-  <g filter="url(#outerGlow)">
-    <!-- Diamond body -->
-    <polygon points="400,130 540,280 400,510 260,280" fill="url(#diamondGrad)" filter="url(#softShadow)"/>
-    <!-- Diamond top facet -->
-    <polygon points="400,130 540,280 400,240 260,280" fill="url(#diamondShine)" opacity="0.6"/>
-    <!-- Diamond left facet -->
-    <polygon points="260,280 400,240 400,510" fill="#5B34C4" opacity="0.8"/>
-    <!-- Diamond right facet -->
-    <polygon points="540,280 400,240 400,510" fill="#7C5AE8" opacity="0.7"/>
-    <!-- Diamond top-left edge -->
-    <polygon points="400,130 330,210 400,240" fill="#a78bfa" opacity="0.4"/>
-    <!-- Diamond top-right edge -->
-    <polygon points="400,130 470,210 400,240" fill="#8B5CF6" opacity="0.5"/>
-    <!-- Shine highlight -->
-    <polygon points="310,200 370,180 350,250 290,260" fill="#ffffff" opacity="0.15"/>
+  <!-- Floating diamond group -->
+  <g class="diamond-group">
+    <!-- Diamond with outer glow -->
+    <g filter="url(#outerGlow)">
+      <polygon points="400,130 540,280 400,510 260,280" fill="url(#diamondGrad)" filter="url(#softShadow)"/>
+      <polygon points="400,130 540,280 400,240 260,280" fill="url(#diamondShine)" opacity="0.6"/>
+      <polygon points="260,280 400,240 400,510" fill="#5B34C4" opacity="0.8"/>
+      <polygon points="540,280 400,240 400,510" fill="#7C5AE8" opacity="0.7"/>
+      <polygon points="400,130 330,210 400,240" fill="#a78bfa" opacity="0.4"/>
+      <polygon points="400,130 470,210 400,240" fill="#8B5CF6" opacity="0.5"/>
+      <!-- Static highlight -->
+      <polygon points="310,200 370,180 350,250 290,260" fill="#ffffff" opacity="0.15"/>
+    </g>
+
+    <!-- Animated shine sweep -->
+    <rect class="shine-sweep" x="300" y="130" width="60" height="380" rx="30" fill="#ffffff" opacity="0"/>
+
+    <!-- Lightning bolt with flash -->
+    <g class="bolt" filter="url(#glow)">
+      <path d="M420 200 L370 310 L405 310 L385 420 L445 280 L412 280 Z" fill="url(#boltGrad)"/>
+      <path d="M420 200 L370 310 L405 310 L385 420 L445 280 L412 280 Z" fill="#fff" opacity="0.2"/>
+    </g>
   </g>
 
-  <!-- Lightning bolt inside diamond -->
-  <g filter="url(#glow)">
-    <path d="M420 200 L370 310 L405 310 L385 420 L445 280 L412 280 Z" fill="url(#boltGrad)" opacity="0.95"/>
-    <path d="M420 200 L370 310 L405 310 L385 420 L445 280 L412 280 Z" fill="#fff" opacity="0.2"/>
-  </g>
+  <!-- Animated sparkles -->
+  <circle class="sparkle-1" cx="560" cy="170" r="4" fill="#fbbf24"/>
+  <circle class="sparkle-2" cx="590" cy="210" r="3" fill="#fbbf24"/>
+  <circle class="sparkle-3" cx="230" cy="180" r="3.5" fill="#a78bfa"/>
+  <circle class="sparkle-4" cx="210" cy="230" r="2.5" fill="#a78bfa"/>
+  <circle class="sparkle-5" cx="570" cy="400" r="3" fill="#8B5CF6"/>
+  <circle class="sparkle-6" cx="230" cy="390" r="3" fill="#8B5CF6"/>
+  <circle class="sparkle-7" cx="310" cy="140" r="2.5" fill="#fbbf24"/>
+  <circle class="sparkle-8" cx="500" cy="150" r="2" fill="#a78bfa"/>
 
-  <!-- Sparkles -->
-  <circle cx="560" cy="180" r="4" fill="#fbbf24" opacity="0.8"/>
-  <circle cx="580" cy="200" r="2.5" fill="#fbbf24" opacity="0.5"/>
-  <circle cx="240" cy="190" r="3" fill="#a78bfa" opacity="0.7"/>
-  <circle cx="220" cy="220" r="2" fill="#a78bfa" opacity="0.4"/>
-  <circle cx="560" cy="400" r="3" fill="#8B5CF6" opacity="0.5"/>
-  <circle cx="240" cy="380" r="2.5" fill="#8B5CF6" opacity="0.4"/>
+  <!-- Star sparkles (cross shape) -->
+  <g class="sparkle-1">
+    <line x1="175" y1="310" x2="195" y2="310" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+    <line x1="185" y1="300" x2="185" y2="320" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+  </g>
+  <g class="sparkle-4">
+    <line x1="605" y1="310" x2="625" y2="310" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+    <line x1="615" y1="300" x2="615" y2="320" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+  </g>
 
   <!-- SS Text -->
-  <text x="400" y="640" text-anchor="middle" font-family="'Inter','Segoe UI','Helvetica Neue',sans-serif" font-size="110" font-weight="900" letter-spacing="10" fill="#ffffff" filter="url(#textGlow)">SS</text>
+  <text class="text-ss" x="400" y="640" text-anchor="middle" font-family="'Inter','Segoe UI','Helvetica Neue',sans-serif" font-size="110" font-weight="900" letter-spacing="10" fill="#ffffff" filter="url(#textGlow)">SS</text>
 
   <!-- TOP-UP Text -->
-  <text x="400" y="710" text-anchor="middle" font-family="'Inter','Segoe UI','Helvetica Neue',sans-serif" font-size="44" font-weight="700" letter-spacing="16" fill="#a78bfa">TOP-UP</text>
+  <text class="text-topup" x="400" y="710" text-anchor="middle" font-family="'Inter','Segoe UI','Helvetica Neue',sans-serif" font-size="44" font-weight="700" letter-spacing="16" fill="#a78bfa">TOP-UP</text>
 
-  <!-- Subtle tagline -->
-  <text x="400" y="752" text-anchor="middle" font-family="'Inter','Segoe UI',sans-serif" font-size="18" font-weight="500" letter-spacing="6" fill="#6b7280">DIAMOND STORE</text>
+  <!-- Tagline -->
+  <text class="text-tagline" x="400" y="752" text-anchor="middle" font-family="'Inter','Segoe UI',sans-serif" font-size="18" font-weight="500" letter-spacing="6" fill="#6b7280">DIAMOND STORE</text>
 </svg>
