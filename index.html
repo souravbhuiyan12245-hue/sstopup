@@ -1818,6 +1818,7 @@ async function submitOrder() {
     } catch(e) { console.log('Worker error', e); }
     
     // Save to localStorage too
+    order.status = 'Pending';
     const localOrders = getOrders();
     localOrders.push(order);
     localStorage.setItem('ss_orders', JSON.stringify(localOrders));
@@ -1864,8 +1865,14 @@ async function renderOrders() {
                     const serverMatch = allOrders.find(so => 
                         so.uid === lo.uid && so.item === lo.item && so.trxId === lo.trxId
                     );
-                    return serverMatch || lo;
+                    if (serverMatch) {
+                        lo.status = serverMatch.status;
+                        return serverMatch;
+                    }
+                    return lo;
                 });
+                // Update localStorage with synced statuses
+                localStorage.setItem('ss_orders', JSON.stringify(localOrders));
             }
             
             // Also add any server orders matching by email/name that aren't in local
