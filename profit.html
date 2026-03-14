@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SS TOP-UP — লাভ ড্যাশবোর্ড</title>
+    <link rel="manifest" href="profit-manifest.json">
+    <meta name="theme-color" content="#6C3CE1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="SS Profit">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --bg: #0f0a1a;
+            --bg2: #1a1128;
+            --bg3: #241a35;
+            --primary: #6C3CE1;
+            --primary-light: #8B5CF6;
+            --primary-glow: rgba(108,60,225,0.3);
+            --accent: #a78bfa;
+            --text: #f1f0f5;
+            --text-muted: #9ca3af;
+            --text-dim: #6b7280;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --blue: #3b82f6;
+            --orange: #f97316;
+            --purple: #a855f7;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+        /* ===== LOGIN ===== */
+        .login-screen {
+            display: flex; align-items: center; justify-content: center;
+            min-height: 100vh; padding: 20px;
+            background: linear-gradient(145deg, #0f0a1a 0%, #1a1128 50%, #0f0a1a 100%);
+        }
+        .login-screen.hide { display: none; }
+        .login-card {
+            background: var(--bg2); border: 1px solid rgba(108,60,225,0.2);
+            border-radius: 24px; padding: 48px 32px; max-width: 360px; width: 100%;
+            text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+        .login-card .avatar { font-size: 4rem; margin-bottom: 12px; }
+        .login-card h2 { font-size: 1.2rem; font-weight: 800; color: var(--text); margin-bottom: 4px; }
+        .login-card p { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 28px; }
+        .login-card .err { color: var(--danger); font-size: 0.78rem; margin-bottom: 10px; display: none; }
+        .login-card input {
+            width: 100%; padding: 14px 16px; border: 2px solid var(--bg3);
+            border-radius: 14px; font-size: 0.92rem; font-family: inherit;
+            outline: none; background: var(--bg); color: var(--text);
+            margin-bottom: 14px; transition: border 0.2s;
+        }
+        .login-card input:focus { border-color: var(--primary); }
+        .login-card input::placeholder { color: var(--text-dim); }
+        .login-btn {
+            width: 100%; padding: 14px; border: none; border-radius: 14px;
+            font-size: 0.95rem; font-weight: 700; cursor: pointer; font-family: inherit;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: #fff; box-shadow: 0 4px 20px var(--primary-glow);
+            transition: transform 0.15s;
+        }
+        .login-btn:active { transform: scale(0.97); }
+
+        /* ===== DASHBOARD ===== */
+        .dashboard { display: none; padding: 0 16px 40px; max-width: 900px; margin: 0 auto; }
+        .dashboard.show { display: block; animation: fadeUp 0.4s ease; }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes cardPop {
+            from { opacity: 0; transform: scale(0.92); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Header */
+        .header {
+            position: sticky; top: 0; z-index: 50;
+            background: rgba(15,10,26,0.92); backdrop-filter: blur(16px);
+            padding: 16px 0; display: flex; align-items: center; justify-content: space-between;
+            border-bottom: 1px solid rgba(108,60,225,0.15); margin-bottom: 20px;
+        }
+        .header h1 { font-size: 1.05rem; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+        .header-right { display: flex; align-items: center; gap: 8px; }
+        .btn-out {
+            background: none; border: 1px solid var(--bg3); padding: 8px 14px;
+            border-radius: 10px; font-size: 0.72rem; color: var(--text-muted);
+            cursor: pointer; font-family: inherit; transition: all 0.2s;
+        }
+        .btn-out:hover { border-color: var(--primary); color: var(--text); }
+
+        /* Date Range */
+        .range-bar {
+            display: flex; gap: 6px; margin-bottom: 20px; overflow-x: auto;
+            -webkit-overflow-scrolling: touch; padding-bottom: 4px;
+        }
+        .range-btn {
+            padding: 10px 18px; background: var(--bg2); border: 1.5px solid var(--bg3);
+            border-radius: 12px; font-size: 0.78rem; font-weight: 600;
+            cursor: pointer; white-space: nowrap; color: var(--text-muted);
+            font-family: inherit; transition: all 0.2s;
+        }
+        .range-btn.on {
+            background: var(--primary); color: #fff; border-color: var(--primary);
+            box-shadow: 0 4px 12px var(--primary-glow);
+        }
+
+        /* Summary Cards */
+        .cards {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
+            margin-bottom: 20px;
+        }
+        .card {
+            background: var(--bg2); border: 1px solid var(--bg3);
+            border-radius: 16px; padding: 16px; text-align: center;
+            animation: cardPop 0.3s ease both;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+        .card:nth-child(5) { grid-column: 1 / -1; }
+        .card .icon { font-size: 1.4rem; margin-bottom: 4px; }
+        .card .val { font-size: 1.4rem; font-weight: 800; }
+        .card .lbl { font-size: 0.68rem; color: var(--text-muted); margin-top: 2px; }
+
+        /* Chart Sections */
+        .section {
+            background: var(--bg2); border: 1px solid var(--bg3);
+            border-radius: 18px; padding: 20px; margin-bottom: 16px;
+            animation: cardPop 0.4s ease both;
+        }
+        .section h3 {
+            font-size: 0.88rem; font-weight: 700; margin-bottom: 14px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .chart-wrap { position: relative; width: 100%; max-height: 280px; }
+        .chart-wrap canvas { width: 100% !important; }
+
+        /* Table */
+        .tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        table {
+            width: 100%; border-collapse: collapse; font-size: 0.78rem;
+        }
+        thead th {
+            text-align: left; padding: 10px 8px; font-weight: 700;
+            color: var(--text-muted); border-bottom: 2px solid var(--bg3);
+            white-space: nowrap; font-size: 0.72rem;
+        }
+        tbody td {
+            padding: 10px 8px; border-bottom: 1px solid rgba(108,60,225,0.08);
+            white-space: nowrap;
+        }
+        tbody tr:hover { background: rgba(108,60,225,0.06); }
+        .pos { color: var(--success); font-weight: 700; }
+        .neg { color: var(--danger); font-weight: 700; }
+
+        /* Refresh indicator */
+        .refresh-bar {
+            text-align: center; font-size: 0.65rem; color: var(--text-dim);
+            padding: 8px 0; margin-top: 12px;
+        }
+
+        /* Loading */
+        .loader {
+            text-align: center; padding: 40px; color: var(--text-muted); font-size: 0.85rem;
+        }
+        .spinner {
+            width: 36px; height: 36px; border: 3px solid var(--bg3);
+            border-top-color: var(--primary); border-radius: 50%;
+            animation: spin 0.8s linear infinite; margin: 0 auto 12px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Toast */
+        .toast {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            background: var(--success); color: #fff; padding: 12px 24px;
+            border-radius: 14px; font-size: 0.85rem; font-weight: 600;
+            z-index: 200; display: none; box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+        }
+        .toast.err { background: var(--danger); }
+
+        /* Responsive */
+        @media (min-width: 600px) {
+            .cards { grid-template-columns: repeat(3, 1fr); }
+            .card:nth-child(4) { grid-column: auto; }
+            .card:nth-child(5) { grid-column: auto; }
+            .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Login -->
+<div class="login-screen" id="loginPage">
+    <div class="login-card">
+        <div class="avatar">📊</div>
+        <h2>SS TOP-UP</h2>
+        <p>লাভ ড্যাশবোর্ড</p>
+        <div class="err" id="err">পাসওয়ার্ড ভুল!</div>
+        <input type="password" id="pw" placeholder="পাসওয়ার্ড দিন" onkeydown="if(event.key==='Enter')doLogin()">
+        <button class="login-btn" onclick="doLogin()">🔓 লগইন</button>
+    </div>
+</div>
+
+<!-- Dashboard -->
+<div class="dashboard" id="dash">
+    <div class="header">
+        <h1>📊 লাভ ড্যাশবোর্ড</h1>
+        <div class="header-right">
+            <button class="btn-out" onclick="loadData()" title="রিফ্রেশ">🔄</button>
+            <button class="btn-out" onclick="doLogout()">🚪 লগআউট</button>
+        </div>
+    </div>
+
+    <!-- Date Range -->
+    <div class="range-bar">
+        <button class="range-btn on" onclick="setRange('today',this)">📅 আজকে</button>
+        <button class="range-btn" onclick="setRange('week',this)">📆 এই সপ্তাহ</button>
+        <button class="range-btn" onclick="setRange('month',this)">🗓 এই মাস</button>
+        <button class="range-btn" onclick="setRange('all',this)">♾ সর্বকাল</button>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="cards">
+        <div class="card" style="animation-delay:0.05s"><div class="icon">💰</div><div class="val pos" id="cRevenue">৳0</div><div class="lbl">মোট আয়</div></div>
+        <div class="card" style="animation-delay:0.1s"><div class="icon">📉</div><div class="val neg" id="cCost">৳0</div><div class="lbl">মোট খরচ</div></div>
+        <div class="card" style="animation-delay:0.15s"><div class="icon">✨</div><div class="val" id="cProfit" style="color:var(--purple)">৳0</div><div class="lbl">নিট লাভ</div></div>
+        <div class="card" style="animation-delay:0.2s"><div class="icon">📦</div><div class="val" id="cOrders" style="color:var(--blue)">0</div><div class="lbl">মোট অর্ডার</div></div>
+        <div class="card" style="animation-delay:0.25s"><div class="icon">🎯</div><div class="val" id="cRate" style="color:var(--orange)">0%</div><div class="lbl">সাকসেস রেট</div></div>
+    </div>
+
+    <!-- Charts -->
+    <div class="chart-grid">
+        <div class="section" style="animation-delay:0.3s">
+            <h3>📈 দৈনিক আয় ও লাভ (৩০ দিন)</h3>
+            <div class="chart-wrap"><canvas id="chartLine"></canvas></div>
+        </div>
+        <div class="section" style="animation-delay:0.35s">
+            <h3>🍩 অর্ডার স্ট্যাটাস</h3>
+            <div class="chart-wrap" style="max-height:240px;max-width:260px;margin:0 auto;"><canvas id="chartPie"></canvas></div>
+        </div>
+    </div>
+    <div class="chart-grid" style="margin-top:0;">
+        <div class="section" style="animation-delay:0.4s">
+            <h3>🏆 টপ সেলিং আইটেম</h3>
+            <div class="chart-wrap"><canvas id="chartBar"></canvas></div>
+        </div>
+        <div class="section" style="animation-delay:0.45s">
+            <h3>📊 সাপ্তাহিক তুলনা</h3>
+            <div class="chart-wrap"><canvas id="chartWeek"></canvas></div>
+        </div>
+    </div>
+
+    <!-- Detailed Table -->
+    <div class="section" style="animation-delay:0.5s">
+        <h3>📋 বিস্তারিত হিসাব</h3>
+        <div class="tbl-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>তারিখ</th>
+                        <th>অর্ডার</th>
+                        <th>আয়</th>
+                        <th>খরচ</th>
+                        <th>লাভ</th>
+                        <th>মার্জিন%</th>
+                    </tr>
+                </thead>
+                <tbody id="tblBody">
+                    <tr><td colspan="6" class="loader"><div class="spinner"></div>লোড হচ্ছে...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="refresh-bar" id="refreshInfo">অটো-রিফ্রেশ: ৬০ সেকেন্ড</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const WORKER = 'https://ss-topup-automation.sstopupofficial.workers.dev';
+const ADMIN_KEY = 'ss_admin_2026_x9k7m';
+const DEFHASH = '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9';
+
+function adminFetch(url, opts) {
+    opts = opts || {};
+    if (!opts.headers) opts.headers = {};
+    opts.headers['X-Admin-Key'] = ADMIN_KEY;
+    return fetch(url, opts);
+}
+
+const ph = () => localStorage.getItem('ss_ph') || DEFHASH;
+const h = async s => {
+    const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+    return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join('');
+};
+
+let allOrders = [], pricesData = null, currentRange = 'today';
+let chartLine = null, chartPie = null, chartBar = null, chartWeek = null;
+let refreshTimer = null;
+let loginAttempts = 0, lockUntil = 0;
+
+// ===== LOGIN =====
+async function doLogin() {
+    if (Date.now() < lockUntil) {
+        const el = document.getElementById('err');
+        el.textContent = '⛔ অনেক চেষ্টা! ' + Math.ceil((lockUntil - Date.now()) / 1000) + 's অপেক্ষা করুন';
+        el.style.display = 'block'; return;
+    }
+    const v = document.getElementById('pw').value;
+    if (await h(v) === ph()) {
+        loginAttempts = 0;
+        document.getElementById('loginPage').classList.add('hide');
+        document.getElementById('dash').classList.add('show');
+        sessionStorage.setItem('profit_auth', '1');
+        loadData();
+        startAutoRefresh();
+    } else {
+        loginAttempts++;
+        if (loginAttempts >= 5) lockUntil = Date.now() + 30000;
+        const el = document.getElementById('err');
+        el.textContent = '❌ পাসওয়ার্ড ভুল!';
+        el.style.display = 'block';
+    }
+}
+
+function doLogout() {
+    sessionStorage.removeItem('profit_auth');
+    clearInterval(refreshTimer);
+    document.getElementById('dash').classList.remove('show');
+    document.getElementById('loginPage').classList.remove('hide');
+    document.getElementById('pw').value = '';
+}
+
+// Auto-login check
+if (sessionStorage.getItem('profit_auth') === '1') {
+    document.getElementById('loginPage').classList.add('hide');
+    document.getElementById('dash').classList.add('show');
+    loadData();
+    startAutoRefresh();
+}
+
+// ===== DATA =====
+async function loadData() {
+    try {
+        const [ordersRes, pricesRes] = await Promise.all([
+            adminFetch(WORKER + '/admin/orders'),
+            adminFetch(WORKER + '/admin/prices')
+        ]);
+        if (ordersRes.ok) allOrders = await ordersRes.json();
+        if (pricesRes.ok) pricesData = await pricesRes.json();
+        renderAll();
+        msg('✅ ডেটা লোড হয়েছে');
+    } catch (e) {
+        msg('❌ ডেটা লোড ব্যর্থ: ' + e.message, 1);
+    }
+}
+
+function startAutoRefresh() {
+    clearInterval(refreshTimer);
+    refreshTimer = setInterval(() => {
+        loadData();
+        updateRefreshInfo();
+    }, 60000);
+}
+
+function updateRefreshInfo() {
+    const now = new Date();
+    document.getElementById('refreshInfo').textContent =
+        `সর্বশেষ আপডেট: ${now.toLocaleTimeString('bn-BD')} | অটো-রিফ্রেশ: ৬০ সেকেন্ড`;
+}
+
+// ===== DATE RANGE =====
+function setRange(range, btn) {
+    currentRange = range;
+    document.querySelectorAll('.range-btn').forEach(b => b.classList.remove('on'));
+    btn.classList.add('on');
+    renderAll();
+}
+
+function filterByRange(orders) {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    return orders.filter(o => {
+        if (currentRange === 'all') return true;
+        const d = parseDate(o.date);
+        if (!d) return false;
+        if (currentRange === 'today') return d >= today;
+        if (currentRange === 'week') {
+            const weekStart = new Date(today);
+            weekStart.setDate(today.getDate() - today.getDay());
+            return d >= weekStart;
+        }
+        if (currentRange === 'month') {
+            const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+            return d >= monthStart;
+        }
+        return true;
+    });
+}
+
+function parseDate(dateStr) {
+    if (!dateStr) return null;
+    // Try various formats
+    const d = new Date(dateStr);
+    if (!isNaN(d.getTime())) return d;
+    // Try DD/MM/YYYY
+    const parts = dateStr.split(/[\/\-\.]/);
+    if (parts.length === 3) {
+        const attempt = new Date(parts[2], parts[1] - 1, parts[0]);
+        if (!isNaN(attempt.getTime())) return attempt;
+    }
+    return null;
+}
+
+function dateKey(dateStr) {
+    const d = parseDate(dateStr);
+    if (!d) return 'Unknown';
+    return d.toISOString().split('T')[0];
+}
+
+// ===== COST CALCULATION =====
+function getCost(order) {
+    if (!pricesData || !order.item) return (order.price || 0) * 0.7;
+
+    const item = (order.item || '').toLowerCase().trim();
+
+    // Check diamonds
+    if (pricesData.diamonds) {
+        for (const [key, val] of Object.entries(pricesData.diamonds)) {
+            if (item.includes(key) || item.includes(key + ' diamond') || item.includes(key + ' ডায়মন্ড')) {
+                if (val.cost !== undefined && val.cost !== null) return val.cost;
+                if (val.price) return val.price * 0.7;
+            }
+        }
+    }
+
+    // Check passes
+    if (pricesData.passes) {
+        for (const [key, val] of Object.entries(pricesData.passes)) {
+            if (item.includes(key.toLowerCase())) {
+                if (val.cost !== undefined && val.cost !== null) return val.cost;
+                if (val.price) return val.price * 0.7;
+            }
+        }
+    }
+
+    // Check specials
+    if (pricesData.specials) {
+        for (const [key, val] of Object.entries(pricesData.specials)) {
+            if (item.includes(key.toLowerCase())) {
+                if (val.cost !== undefined && val.cost !== null) return val.cost;
+                if (val.price) return val.price * 0.7;
+            }
+        }
+    }
+
+    // Default: 70% of price
+    return (order.price || 0) * 0.7;
+}
+
+// ===== RENDER ALL =====
+function renderAll() {
+    const filtered = filterByRange(allOrders);
+    const completed = filtered.filter(o => o.status === 'Completed');
+
+    // Summary
+    const totalRevenue = completed.reduce((s, o) => s + (o.price || 0), 0);
+    const totalCost = completed.reduce((s, o) => s + getCost(o), 0);
+    const netProfit = totalRevenue - totalCost;
+    const totalOrders = filtered.length;
+    const successRate = totalOrders > 0 ? ((completed.length / totalOrders) * 100).toFixed(1) : 0;
+
+    document.getElementById('cRevenue').textContent = '৳' + totalRevenue.toLocaleString('bn-BD');
+    document.getElementById('cCost').textContent = '৳' + Math.round(totalCost).toLocaleString('bn-BD');
+    document.getElementById('cProfit').textContent = '৳' + Math.round(netProfit).toLocaleString('bn-BD');
+    document.getElementById('cOrders').textContent = totalOrders.toLocaleString('bn-BD');
+    document.getElementById('cRate').textContent = successRate + '%';
+
+    renderLineChart(allOrders);
+    renderPieChart(filtered);
+    renderBarChart(completed);
+    renderWeekChart(allOrders);
+    renderTable(completed);
+    updateRefreshInfo();
+}
+
+// ===== CHARTS =====
+const chartColors = {
+    primary: '#6C3CE1',
+    primaryLight: '#8B5CF6',
+    success: '#22c55e',
+    danger: '#ef4444',
+    warning: '#f59e0b',
+    blue: '#3b82f6',
+    orange: '#f97316',
+    purple: '#a855f7',
+    teal: '#14b8a6',
+    pink: '#ec4899'
+};
+
+function renderLineChart(orders) {
+    const ctx = document.getElementById('chartLine').getContext('2d');
+    if (chartLine) chartLine.destroy();
+
+    // Last 30 days
+    const days = [];
+    const now = new Date();
+    for (let i = 29; i >= 0; i--) {
+        const d = new Date(now);
+        d.setDate(d.getDate() - i);
+        days.push(d.toISOString().split('T')[0]);
+    }
+
+    const completed = orders.filter(o => o.status === 'Completed');
+    const revenueByDay = {}, profitByDay = {};
+    days.forEach(d => { revenueByDay[d] = 0; profitByDay[d] = 0; });
+
+    completed.forEach(o => {
+        const dk = dateKey(o.date);
+        if (revenueByDay[dk] !== undefined) {
+            revenueByDay[dk] += (o.price || 0);
+            profitByDay[dk] += (o.price || 0) - getCost(o);
+        }
+    });
+
+    chartLine = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: days.map(d => d.slice(5)),
+            datasets: [
+                {
+                    label: 'আয়',
+                    data: days.map(d => revenueByDay[d]),
+                    borderColor: chartColors.success,
+                    backgroundColor: 'rgba(34,197,94,0.1)',
+                    fill: true, tension: 0.4, pointRadius: 2, borderWidth: 2
+                },
+                {
+                    label: 'লাভ',
+                    data: days.map(d => Math.round(profitByDay[d])),
+                    borderColor: chartColors.purple,
+                    backgroundColor: 'rgba(168,85,247,0.1)',
+                    fill: true, tension: 0.4, pointRadius: 2, borderWidth: 2
+                }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: {
+                legend: { labels: { color: '#9ca3af', font: { size: 11 } } }
+            },
+            scales: {
+                x: { ticks: { color: '#6b7280', font: { size: 9 }, maxRotation: 45 }, grid: { color: 'rgba(108,60,225,0.06)' } },
+                y: { ticks: { color: '#6b7280', font: { size: 10 } }, grid: { color: 'rgba(108,60,225,0.06)' } }
+            }
+        }
+    });
+}
+
+function renderPieChart(orders) {
+    const ctx = document.getElementById('chartPie').getContext('2d');
+    if (chartPie) chartPie.destroy();
+
+    const statusCount = { Pending: 0, Completed: 0, Running: 0, Rejected: 0 };
+    orders.forEach(o => {
+        const s = o.status || 'Pending';
+        if (statusCount[s] !== undefined) statusCount[s]++;
+    });
+
+    chartPie = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['পেন্ডিং', 'সম্পন্ন', 'চলমান', 'বাতিল'],
+            datasets: [{
+                data: [statusCount.Pending, statusCount.Completed, statusCount.Running, statusCount.Rejected],
+                backgroundColor: [chartColors.warning, chartColors.success, chartColors.blue, chartColors.danger],
+                borderColor: '#0f0a1a', borderWidth: 3
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom', labels: { color: '#9ca3af', font: { size: 11 }, padding: 12 } }
+            }
+        }
+    });
+}
+
+function renderBarChart(completed) {
+    const ctx = document.getElementById('chartBar').getContext('2d');
+    if (chartBar) chartBar.destroy();
+
+    const itemCount = {};
+    completed.forEach(o => {
+        const item = o.item || 'অজানা';
+        itemCount[item] = (itemCount[item] || 0) + 1;
+    });
+
+    const sorted = Object.entries(itemCount).sort((a, b) => b[1] - a[1]).slice(0, 8);
+    const colors = [chartColors.primary, chartColors.success, chartColors.orange, chartColors.blue, chartColors.purple, chartColors.pink, chartColors.teal, chartColors.warning];
+
+    chartBar = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: sorted.map(s => s[0].length > 15 ? s[0].slice(0, 15) + '…' : s[0]),
+            datasets: [{
+                label: 'অর্ডার সংখ্যা',
+                data: sorted.map(s => s[1]),
+                backgroundColor: sorted.map((_, i) => colors[i % colors.length] + '99'),
+                borderColor: sorted.map((_, i) => colors[i % colors.length]),
+                borderWidth: 1.5, borderRadius: 6
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            indexAxis: 'y',
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { ticks: { color: '#6b7280', font: { size: 10 } }, grid: { color: 'rgba(108,60,225,0.06)' } },
+                y: { ticks: { color: '#9ca3af', font: { size: 10 } }, grid: { display: false } }
+            }
+        }
+    });
+}
+
+function renderWeekChart(orders) {
+    const ctx = document.getElementById('chartWeek').getContext('2d');
+    if (chartWeek) chartWeek.destroy();
+
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const dayOfWeek = today.getDay();
+
+    const thisWeekStart = new Date(today);
+    thisWeekStart.setDate(today.getDate() - dayOfWeek);
+    const lastWeekStart = new Date(thisWeekStart);
+    lastWeekStart.setDate(thisWeekStart.getDate() - 7);
+    const lastWeekEnd = new Date(thisWeekStart);
+
+    const completed = orders.filter(o => o.status === 'Completed');
+    const dayNames = ['রবি', 'সোম', 'মঙ্গল', 'বুধ', 'বৃহঃ', 'শুক্র', 'শনি'];
+
+    const thisWeekData = Array(7).fill(0);
+    const lastWeekData = Array(7).fill(0);
+
+    completed.forEach(o => {
+        const d = parseDate(o.date);
+        if (!d) return;
+        if (d >= thisWeekStart && d <= now) {
+            thisWeekData[d.getDay()] += (o.price || 0);
+        } else if (d >= lastWeekStart && d < lastWeekEnd) {
+            lastWeekData[d.getDay()] += (o.price || 0);
+        }
+    });
+
+    chartWeek = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: dayNames,
+            datasets: [
+                {
+                    label: 'এই সপ্তাহ',
+                    data: thisWeekData,
+                    backgroundColor: chartColors.primary + '99',
+                    borderColor: chartColors.primary,
+                    borderWidth: 1.5, borderRadius: 6
+                },
+                {
+                    label: 'গত সপ্তাহ',
+                    data: lastWeekData,
+                    backgroundColor: chartColors.orange + '66',
+                    borderColor: chartColors.orange,
+                    borderWidth: 1.5, borderRadius: 6
+                }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { labels: { color: '#9ca3af', font: { size: 11 } } } },
+            scales: {
+                x: { ticks: { color: '#9ca3af', font: { size: 10 } }, grid: { display: false } },
+                y: { ticks: { color: '#6b7280', font: { size: 10 } }, grid: { color: 'rgba(108,60,225,0.06)' } }
+            }
+        }
+    });
+}
+
+// ===== TABLE =====
+function renderTable(completed) {
+    const tbody = document.getElementById('tblBody');
+
+    // Group by date
+    const byDate = {};
+    completed.forEach(o => {
+        const dk = dateKey(o.date);
+        if (!byDate[dk]) byDate[dk] = [];
+        byDate[dk].push(o);
+    });
+
+    const sortedDates = Object.keys(byDate).sort((a, b) => b.localeCompare(a));
+
+    if (!sortedDates.length) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--text-muted);">📭 কোন ডেটা নেই</td></tr>';
+        return;
+    }
+
+    let totalRev = 0, totalCostSum = 0, totalCount = 0;
+
+    tbody.innerHTML = sortedDates.map(date => {
+        const orders = byDate[date];
+        const rev = orders.reduce((s, o) => s + (o.price || 0), 0);
+        const cost = orders.reduce((s, o) => s + getCost(o), 0);
+        const profit = rev - cost;
+        const margin = rev > 0 ? ((profit / rev) * 100).toFixed(1) : 0;
+
+        totalRev += rev;
+        totalCostSum += cost;
+        totalCount += orders.length;
+
+        return `<tr>
+            <td><strong>${date}</strong></td>
+            <td>${orders.length}</td>
+            <td class="pos">৳${rev.toLocaleString('bn-BD')}</td>
+            <td class="neg">৳${Math.round(cost).toLocaleString('bn-BD')}</td>
+            <td style="color:${profit >= 0 ? 'var(--success)' : 'var(--danger)'}; font-weight:700;">৳${Math.round(profit).toLocaleString('bn-BD')}</td>
+            <td style="color:${parseFloat(margin) >= 20 ? 'var(--success)' : 'var(--warning)'}; font-weight:600;">${margin}%</td>
+        </tr>`;
+    }).join('');
+
+    // Totals row
+    const totalProfit = totalRev - totalCostSum;
+    const totalMargin = totalRev > 0 ? ((totalProfit / totalRev) * 100).toFixed(1) : 0;
+    tbody.innerHTML += `<tr style="border-top:2px solid var(--primary); font-weight:800;">
+        <td>মোট</td>
+        <td>${totalCount}</td>
+        <td class="pos">৳${totalRev.toLocaleString('bn-BD')}</td>
+        <td class="neg">৳${Math.round(totalCostSum).toLocaleString('bn-BD')}</td>
+        <td style="color:${totalProfit >= 0 ? 'var(--success)' : 'var(--danger)'}">৳${Math.round(totalProfit).toLocaleString('bn-BD')}</td>
+        <td style="color:${parseFloat(totalMargin) >= 20 ? 'var(--success)' : 'var(--warning)'}">${totalMargin}%</td>
+    </tr>`;
+}
+
+// ===== UTILS =====
+function msg(t, e) {
+    const el = document.getElementById('toast');
+    el.textContent = t;
+    el.className = 'toast' + (e ? ' err' : '');
+    el.style.display = 'block';
+    setTimeout(() => el.style.display = 'none', 2500);
+}
+
+// PWA
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>
