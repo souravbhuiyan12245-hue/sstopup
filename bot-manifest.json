@@ -1,0 +1,17 @@
+{
+  "name": "SS Manager Bot",
+  "short_name": "SS Bot",
+  "description": "SS TOP-UP Business Management Bot",
+  "start_url": "/bot.html",
+  "display": "standalone",
+  "background_color": "#0f0a1a",
+  "theme_color": "#6C3CE1",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%236C3CE1'/><text x='50' y='62' text-anchor='middle' font-size='50'>🤖</text></svg>",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

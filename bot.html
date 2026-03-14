@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SS Manager Bot 🤖</title>
+    <link rel="manifest" href="bot-manifest.json">
+    <meta name="theme-color" content="#6C3CE1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="SS Bot">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f0a1a;
+            --bg2: #1a1128;
+            --bg3: #241a35;
+            --primary: #6C3CE1;
+            --primary-light: #8B5CF6;
+            --primary-glow: rgba(108,60,225,0.3);
+            --accent: #a78bfa;
+            --text: #f1f0f5;
+            --text-muted: #9ca3af;
+            --text-dim: #6b7280;
+            --user-bubble: #6C3CE1;
+            --bot-bubble: #1e1533;
+            --bot-border: #2d2145;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --blue: #3b82f6;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        html, body { height: 100%; overflow: hidden; }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); }
+
+        /* ===== LOGIN ===== */
+        .login-screen {
+            display: flex; align-items: center; justify-content: center;
+            min-height: 100vh; padding: 20px;
+            background: linear-gradient(145deg, #0f0a1a 0%, #1a1128 50%, #0f0a1a 100%);
+        }
+        .login-screen.hide { display: none; }
+        .login-card {
+            background: var(--bg2); border: 1px solid var(--bot-border);
+            border-radius: 24px; padding: 48px 32px; max-width: 360px; width: 100%;
+            text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+        .login-card .avatar { font-size: 4rem; margin-bottom: 12px; }
+        .login-card h2 { font-size: 1.2rem; font-weight: 800; color: var(--text); margin-bottom: 4px; }
+        .login-card p { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 28px; }
+        .login-card .err { color: var(--danger); font-size: 0.78rem; margin-bottom: 10px; display: none; }
+        .login-card input {
+            width: 100%; padding: 14px 16px; border: 2px solid var(--bg3);
+            border-radius: 14px; font-size: 0.92rem; font-family: inherit;
+            outline: none; background: var(--bg); color: var(--text);
+            margin-bottom: 14px; transition: border 0.2s;
+        }
+        .login-card input:focus { border-color: var(--primary); }
+        .login-card input::placeholder { color: var(--text-dim); }
+        .login-btn {
+            width: 100%; padding: 14px; border: none; border-radius: 14px;
+            font-size: 0.95rem; font-weight: 700; cursor: pointer; font-family: inherit;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: #fff; box-shadow: 0 4px 20px var(--primary-glow);
+            transition: transform 0.15s;
+        }
+        .login-btn:active { transform: scale(0.97); }
+
+        /* ===== CHAT APP ===== */
+        .chat-app { display: none; flex-direction: column; height: 100vh; height: 100dvh; }
+        .chat-app.show { display: flex; }
+
+        /* Header */
+        .chat-header {
+            padding: 12px 16px; display: flex; align-items: center; gap: 12px;
+            background: var(--bg2); border-bottom: 1px solid var(--bot-border);
+            flex-shrink: 0; z-index: 10;
+        }
+        .header-avatar {
+            width: 42px; height: 42px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            display: flex; align-items: center; justify-content: center; font-size: 1.3rem;
+            box-shadow: 0 2px 12px var(--primary-glow);
+        }
+        .header-info { flex: 1; }
+        .header-info .name { font-size: 0.95rem; font-weight: 700; }
+        .header-info .status { font-size: 0.7rem; color: var(--success); display: flex; align-items: center; gap: 4px; }
+        .header-info .status::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--success); }
+        .header-actions { display: flex; gap: 8px; }
+        .header-btn {
+            background: var(--bg3); border: none; color: var(--text-muted);
+            width: 36px; height: 36px; border-radius: 50%; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+        .header-btn:hover { background: var(--primary); color: #fff; }
+
+        /* Messages */
+        .chat-messages {
+            flex: 1; overflow-y: auto; padding: 16px; display: flex;
+            flex-direction: column; gap: 8px;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+        }
+        .chat-messages::-webkit-scrollbar { width: 4px; }
+        .chat-messages::-webkit-scrollbar-thumb { background: var(--bg3); border-radius: 4px; }
+
+        .msg { max-width: 88%; display: flex; flex-direction: column; animation: msgIn 0.25s ease; }
+        @keyframes msgIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+        .msg.bot { align-self: flex-start; }
+        .msg.user { align-self: flex-end; }
+
+        .msg .bubble {
+            padding: 10px 14px; border-radius: 18px;
+            font-size: 0.85rem; line-height: 1.55; word-break: break-word;
+        }
+        .msg.bot .bubble {
+            background: var(--bot-bubble); border: 1px solid var(--bot-border);
+            border-bottom-left-radius: 6px; color: var(--text);
+        }
+        .msg.user .bubble {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-bottom-right-radius: 6px; color: #fff;
+        }
+        .msg .time {
+            font-size: 0.62rem; color: var(--text-dim); margin-top: 3px; padding: 0 4px;
+        }
+        .msg.user .time { text-align: right; }
+
+        /* Bot message content formatting */
+        .bubble .section { margin: 8px 0; }
+        .bubble .section-title { font-weight: 700; font-size: 0.88rem; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+        .bubble .stat-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 0.82rem; }
+        .bubble .stat-row:last-child { border-bottom: none; }
+        .bubble .stat-label { color: var(--text-muted); }
+        .bubble .stat-value { font-weight: 700; }
+        .bubble .order-card {
+            background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px; padding: 10px 12px; margin: 6px 0;
+        }
+        .bubble .order-card .oc-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+        .bubble .order-card .oc-uid { font-weight: 700; font-size: 0.84rem; }
+        .bubble .badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 0.65rem; font-weight: 700; }
+        .bubble .b-pending { background: rgba(245,158,11,0.2); color: #fbbf24; }
+        .bubble .b-completed { background: rgba(34,197,94,0.2); color: #4ade80; }
+        .bubble .b-running { background: rgba(59,130,246,0.2); color: #60a5fa; }
+        .bubble .b-rejected { background: rgba(239,68,68,0.2); color: #f87171; }
+        .bubble .oc-detail { font-size: 0.78rem; color: var(--text-muted); line-height: 1.6; }
+        .bubble .oc-detail b { color: var(--text); font-weight: 600; }
+        .bubble .divider { height: 1px; background: rgba(255,255,255,0.06); margin: 8px 0; }
+        .bubble .help-cmd { display: flex; gap: 8px; padding: 4px 0; font-size: 0.8rem; align-items: flex-start; }
+        .bubble .help-cmd .cmd { color: var(--accent); font-weight: 600; min-width: 90px; }
+        .bubble .help-cmd .desc { color: var(--text-muted); }
+        .bubble .empty-state { text-align: center; padding: 12px; color: var(--text-dim); font-size: 0.82rem; }
+
+        /* Typing indicator */
+        .typing { display: flex; gap: 4px; padding: 12px 16px; align-self: flex-start; }
+        .typing span {
+            width: 8px; height: 8px; border-radius: 50%; background: var(--text-dim);
+            animation: typingBounce 1.4s infinite;
+        }
+        .typing span:nth-child(2) { animation-delay: 0.2s; }
+        .typing span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typingBounce { 0%,60%,100% { transform: translateY(0); opacity:0.4; } 30% { transform: translateY(-6px); opacity:1; } }
+
+        /* Quick Actions */
+        .quick-bar {
+            padding: 8px 16px; display: flex; gap: 6px; overflow-x: auto;
+            background: var(--bg); border-top: 1px solid var(--bot-border);
+            -webkit-overflow-scrolling: touch; flex-shrink: 0;
+        }
+        .quick-bar::-webkit-scrollbar { display: none; }
+        .quick-btn {
+            padding: 8px 16px; border-radius: 20px; border: 1px solid var(--bot-border);
+            background: var(--bg2); color: var(--accent); font-size: 0.76rem;
+            font-weight: 600; cursor: pointer; white-space: nowrap; font-family: inherit;
+            transition: all 0.2s; flex-shrink: 0;
+        }
+        .quick-btn:active { background: var(--primary); color: #fff; border-color: var(--primary); transform: scale(0.95); }
+
+        /* Input Area */
+        .chat-input-area {
+            padding: 10px 16px 14px; display: flex; gap: 8px; align-items: center;
+            background: var(--bg); border-top: 1px solid var(--bot-border); flex-shrink: 0;
+        }
+        .chat-input-area input {
+            flex: 1; padding: 12px 16px; border-radius: 24px;
+            border: 1.5px solid var(--bot-border); background: var(--bg2);
+            color: var(--text); font-size: 0.88rem; font-family: inherit;
+            outline: none; transition: border 0.2s;
+        }
+        .chat-input-area input:focus { border-color: var(--primary); }
+        .chat-input-area input::placeholder { color: var(--text-dim); }
+        .send-btn {
+            width: 44px; height: 44px; border-radius: 50%; border: none;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: #fff; cursor: pointer; display: flex; align-items: center;
+            justify-content: center; font-size: 1.1rem; flex-shrink: 0;
+            box-shadow: 0 2px 12px var(--primary-glow); transition: transform 0.15s;
+        }
+        .send-btn:active { transform: scale(0.9); }
+
+        /* Refresh indicator */
+        .refresh-dot {
+            position: absolute; top: 8px; right: 8px; width: 8px; height: 8px;
+            border-radius: 50%; background: var(--success);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+
+        /* Scrollbar */
+        @media (max-width: 768px) {
+            .chat-messages::-webkit-scrollbar { display: none; }
+        }
+
+        /* Safe area for notch phones */
+        @supports (padding-top: env(safe-area-inset-top)) {
+            .chat-header { padding-top: calc(12px + env(safe-area-inset-top)); }
+            .chat-input-area { padding-bottom: calc(14px + env(safe-area-inset-bottom)); }
+        }
+    </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-screen" id="loginScreen">
+    <div class="login-card">
+        <div class="avatar">🤖</div>
+        <h2>SS Manager Bot</h2>
+        <p>ব্যবসা ম্যানেজমেন্ট বট — লগইন করুন</p>
+        <div class="err" id="loginErr">❌ পাসওয়ার্ড ভুল!</div>
+        <input type="password" id="loginPw" placeholder="পাসওয়ার্ড দিন" onkeydown="if(event.key==='Enter')doLogin()">
+        <button class="login-btn" onclick="doLogin()">🔓 লগইন</button>
+    </div>
+</div>
+
+<!-- CHAT APP -->
+<div class="chat-app" id="chatApp">
+    <!-- Header -->
+    <div class="chat-header">
+        <div class="header-avatar">🤖</div>
+        <div class="header-info">
+            <div class="name">SS Manager Bot</div>
+            <div class="status">অনলাইন</div>
+        </div>
+        <div class="header-actions">
+            <button class="header-btn" onclick="refreshData()" title="রিফ্রেশ">🔄</button>
+            <button class="header-btn" onclick="doLogout()" title="লগআউট">🚪</button>
+        </div>
+    </div>
+
+    <!-- Messages -->
+    <div class="chat-messages" id="chatMessages"></div>
+
+    <!-- Quick Actions -->
+    <div class="quick-bar">
+        <button class="quick-btn" onclick="sendCmd('orders')">📋 অর্ডার</button>
+        <button class="quick-btn" onclick="sendCmd('today')">📅 আজকে</button>
+        <button class="quick-btn" onclick="sendCmd('stats')">📊 পরিসংখ্যান</button>
+        <button class="quick-btn" onclick="sendCmd('profit')">💰 প্রফিট</button>
+        <button class="quick-btn" onclick="sendCmd('pending')">⏳ পেন্ডিং</button>
+        <button class="quick-btn" onclick="sendCmd('completed')">✅ সম্পন্ন</button>
+        <button class="quick-btn" onclick="sendCmd('revenue')">💵 আয়</button>
+        <button class="quick-btn" onclick="sendCmd('help')">❓ সাহায্য</button>
+    </div>
+
+    <!-- Input -->
+    <div class="chat-input-area">
+        <input type="text" id="chatInput" placeholder="কমান্ড লিখুন..." onkeydown="if(event.key==='Enter')sendFromInput()">
+        <button class="send-btn" onclick="sendFromInput()">➤</button>
+    </div>
+</div>
+
+<script>
+// ===== CONFIG =====
+const WORKER = 'https://ss-topup-automation.sstopupofficial.workers.dev';
+const API_KEY = 'ss_admin_2026_x9k7m';
+const DEFAULT_HASH = '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9';
+
+let orders = [];
+let prices = null;
+let refreshTimer = null;
+
+// ===== AUTH =====
+async function sha256(str) {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+function getHash() { return localStorage.getItem('ss_ph') || DEFAULT_HASH; }
+
+async function doLogin() {
+    const pw = document.getElementById('loginPw').value;
+    if (!pw) return;
+    const hash = await sha256(pw);
+    if (hash === getHash()) {
+        document.getElementById('loginScreen').classList.add('hide');
+        document.getElementById('chatApp').classList.add('show');
+        init();
+    } else {
+        const err = document.getElementById('loginErr');
+        err.style.display = 'block';
+        setTimeout(() => err.style.display = 'none', 3000);
+    }
+}
+
+function doLogout() {
+    if (refreshTimer) clearInterval(refreshTimer);
+    document.getElementById('chatApp').classList.remove('show');
+    document.getElementById('loginScreen').classList.remove('hide');
+    document.getElementById('loginPw').value = '';
+}
+
+// ===== INIT =====
+async function init() {
+    addBotMessage('আসসালামু আলাইকুম! 👋\n\nআমি <b>SS Manager Bot</b> 🤖\nআপনার ব্যবসা ম্যানেজ করতে সাহায্য করব।\n\nডাটা লোড করছি...');
+    await refreshData();
+    addBotMessage(`✅ ডাটা লোড সম্পন্ন!\n\n📋 মোট অর্ডার: <b>${orders.length}</b>\n⏳ পেন্ডিং: <b>${orders.filter(o=>o.status==='Pending'||!o.status).length}</b>\n✅ সম্পন্ন: <b>${orders.filter(o=>o.status==='Completed').length}</b>\n\n💡 <b>help</b> লিখুন সব কমান্ড দেখতে, অথবা নিচের বাটন চাপুন!`);
+    refreshTimer = setInterval(refreshData, 60000);
+}
+
+// ===== API =====
+async function refreshData() {
+    try {
+        const [oRes, pRes] = await Promise.all([
+            fetch(WORKER + '/admin/orders', { headers: { 'X-Admin-Key': API_KEY } }),
+            fetch(WORKER + '/admin/prices', { headers: { 'X-Admin-Key': API_KEY } })
+        ]);
+        if (oRes.ok) orders = await oRes.json();
+        if (pRes.ok) prices = await pRes.json();
+    } catch (e) {
+        console.error('Refresh failed:', e);
+    }
+}
+
+// ===== CHAT ENGINE =====
+const msgArea = () => document.getElementById('chatMessages');
+
+function timeStr() {
+    return new Date().toLocaleTimeString('bn-BD', { hour: '2-digit', minute: '2-digit', hour12: true });
+}
+
+function addUserMessage(text) {
+    const div = document.createElement('div');
+    div.className = 'msg user';
+    div.innerHTML = `<div class="bubble">${escHtml(text)}</div><div class="time">${timeStr()}</div>`;
+    msgArea().appendChild(div);
+    scrollBottom();
+}
+
+function addBotMessage(html) {
+    const div = document.createElement('div');
+    div.className = 'msg bot';
+    div.innerHTML = `<div class="bubble">${html}</div><div class="time">🤖 ${timeStr()}</div>`;
+    msgArea().appendChild(div);
+    scrollBottom();
+}
+
+function showTyping() {
+    const t = document.createElement('div');
+    t.className = 'typing';
+    t.id = 'typingIndicator';
+    t.innerHTML = '<span></span><span></span><span></span>';
+    msgArea().appendChild(t);
+    scrollBottom();
+}
+
+function hideTyping() {
+    const t = document.getElementById('typingIndicator');
+    if (t) t.remove();
+}
+
+function scrollBottom() {
+    const m = msgArea();
+    setTimeout(() => m.scrollTop = m.scrollHeight, 50);
+}
+
+function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ===== COMMANDS =====
+function sendFromInput() {
+    const inp = document.getElementById('chatInput');
+    const text = inp.value.trim();
+    if (!text) return;
+    inp.value = '';
+    processCommand(text);
+}
+
+function sendCmd(cmd) {
+    processCommand(cmd);
+}
+
+async function processCommand(text) {
+    addUserMessage(text);
+    showTyping();
+
+    await refreshData();
+    await new Promise(r => setTimeout(r, 400 + Math.random() * 400));
+    hideTyping();
+
+    const cmd = text.toLowerCase().trim();
+
+    if (cmd === 'orders' || cmd === 'অর্ডার') {
+        showOrders('all');
+    } else if (cmd === 'pending' || cmd === 'পেন্ডিং') {
+        showOrders('Pending');
+    } else if (cmd === 'completed' || cmd === 'সম্পন্ন') {
+        showOrders('Completed');
+    } else if (cmd === 'today' || cmd === 'আজকে') {
+        showToday();
+    } else if (cmd === 'stats' || cmd === 'পরিসংখ্যান') {
+        showStats();
+    } else if (cmd === 'revenue' || cmd === 'আয়') {
+        showRevenue();
+    } else if (cmd === 'profit' || cmd === 'প্রফিট' || cmd === 'লাভ') {
+        showProfit();
+    } else if (cmd === 'help' || cmd === 'সাহায্য') {
+        showHelp();
+    } else if (cmd.startsWith('search ') || cmd.startsWith('খুঁজুন ')) {
+        const query = text.substring(text.indexOf(' ') + 1).trim();
+        searchOrders(query);
+    } else {
+        addBotMessage(`🤔 কমান্ড বুঝতে পারিনি: "<b>${escHtml(text)}</b>"\n\n💡 <b>help</b> লিখুন সব কমান্ড দেখতে!`);
+    }
+}
+
+// ===== COMMAND HANDLERS =====
+
+function showOrders(filter) {
+    let list = filter === 'all' ? orders : orders.filter(o => (o.status || 'Pending') === filter);
+    const title = filter === 'all' ? '📋 সব অর্ডার' : filter === 'Pending' ? '⏳ পেন্ডিং অর্ডার' : '✅ সম্পন্ন অর্ডার';
+
+    if (!list.length) {
+        addBotMessage(`${title}\n\n<div class="empty-state">📭 কোনো অর্ডার নেই</div>`);
+        return;
+    }
+
+    let html = `<div class="section-title">${title} (${list.length}টি)</div>`;
+    list.slice().reverse().slice(0, 15).forEach(o => {
+        const st = o.status || 'Pending';
+        const bc = st === 'Completed' ? 'b-completed' : st === 'Running' ? 'b-running' : st === 'Rejected' ? 'b-rejected' : 'b-pending';
+        const stBn = st === 'Completed' ? 'সম্পন্ন' : st === 'Running' ? 'চলমান' : st === 'Rejected' ? 'বাতিল' : 'পেন্ডিং';
+        html += `<div class="order-card">
+            <div class="oc-head">
+                <span class="oc-uid">🎮 ${escHtml(o.uid||'—')}</span>
+                <span class="badge ${bc}">${stBn}</span>
+            </div>
+            <div class="oc-detail">
+                👤 <b>${escHtml(o.name||'—')}</b><br>
+                📦 ${escHtml(o.item||'—')} — <b>৳${o.price||0}</b><br>
+                💳 ${escHtml(o.payment||'—')} | 📱 ${escHtml(o.phone||'—')}<br>
+                🧾 TrxID: <b>${escHtml(o.trxId||'—')}</b><br>
+                📅 ${escHtml(o.date||'—')}
+            </div>
+        </div>`;
+    });
+
+    if (list.length > 15) {
+        html += `<div class="empty-state">... আরো ${list.length - 15}টি অর্ডার আছে</div>`;
+    }
+
+    addBotMessage(html);
+}
+
+function showToday() {
+    const today = new Date().toISOString().split('T')[0];
+    const todayOrders = orders.filter(o => {
+        if (!o.date) return false;
+        const d = o.date.split(',')[0]?.trim() || o.date;
+        return d.includes(today) || isToday(o.date);
+    });
+
+    const pending = todayOrders.filter(o => o.status === 'Pending' || !o.status).length;
+    const completed = todayOrders.filter(o => o.status === 'Completed').length;
+    const revenue = todayOrders.filter(o => o.status === 'Completed').reduce((s, o) => s + (o.price || 0), 0);
+    const totalValue = todayOrders.reduce((s, o) => s + (o.price || 0), 0);
+
+    let html = `<div class="section-title">📅 আজকের সামারি</div>
+        <div class="divider"></div>
+        <div class="stat-row"><span class="stat-label">মোট অর্ডার</span><span class="stat-value">${todayOrders.length}টি</span></div>
+        <div class="stat-row"><span class="stat-label">⏳ পেন্ডিং</span><span class="stat-value" style="color:#fbbf24">${pending}টি</span></div>
+        <div class="stat-row"><span class="stat-label">✅ সম্পন্ন</span><span class="stat-value" style="color:#4ade80">${completed}টি</span></div>
+        <div class="stat-row"><span class="stat-label">💰 আয় (সম্পন্ন)</span><span class="stat-value" style="color:#a78bfa">৳${revenue}</span></div>
+        <div class="stat-row"><span class="stat-label">📊 মোট মূল্য</span><span class="stat-value">৳${totalValue}</span></div>`;
+
+    if (todayOrders.length === 0) {
+        html += `<div class="divider"></div><div class="empty-state">😴 আজকে কোনো অর্ডার আসেনি</div>`;
+    }
+
+    addBotMessage(html);
+}
+
+function isToday(dateStr) {
+    if (!dateStr) return false;
+    const now = new Date();
+    const today = `${now.getDate()}/${now.getMonth()+1}/${now.getFullYear()}`;
+    const todayAlt = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+    return dateStr.includes(today) || dateStr.includes(todayAlt);
+}
+
+function showStats() {
+    const total = orders.length;
+    const pending = orders.filter(o => o.status === 'Pending' || !o.status).length;
+    const completed = orders.filter(o => o.status === 'Completed').length;
+    const running = orders.filter(o => o.status === 'Running').length;
+    const rejected = orders.filter(o => o.status === 'Rejected').length;
+    const revenue = orders.filter(o => o.status === 'Completed').reduce((s, o) => s + (o.price || 0), 0);
+    const avgOrder = completed > 0 ? Math.round(revenue / completed) : 0;
+
+    const html = `<div class="section-title">📊 ওভারঅল পরিসংখ্যান</div>
+        <div class="divider"></div>
+        <div class="stat-row"><span class="stat-label">📦 মোট অর্ডার</span><span class="stat-value">${total}টি</span></div>
+        <div class="stat-row"><span class="stat-label">⏳ পেন্ডিং</span><span class="stat-value" style="color:#fbbf24">${pending}টি</span></div>
+        <div class="stat-row"><span class="stat-label">🔄 চলমান</span><span class="stat-value" style="color:#60a5fa">${running}টি</span></div>
+        <div class="stat-row"><span class="stat-label">✅ সম্পন্ন</span><span class="stat-value" style="color:#4ade80">${completed}টি</span></div>
+        <div class="stat-row"><span class="stat-label">❌ বাতিল</span><span class="stat-value" style="color:#f87171">${rejected}টি</span></div>
+        <div class="divider"></div>
+        <div class="stat-row"><span class="stat-label">💰 মোট আয়</span><span class="stat-value" style="color:#a78bfa">৳${revenue}</span></div>
+        <div class="stat-row"><span class="stat-label">📈 গড় অর্ডার</span><span class="stat-value">৳${avgOrder}</span></div>
+        <div class="stat-row"><span class="stat-label">🎯 সফলতার হার</span><span class="stat-value">${total>0?Math.round(completed/total*100):0}%</span></div>`;
+
+    addBotMessage(html);
+}
+
+function showRevenue() {
+    const completedOrders = orders.filter(o => o.status === 'Completed');
+    const revenue = completedOrders.reduce((s, o) => s + (o.price || 0), 0);
+
+    // Group by item type
+    const byItem = {};
+    completedOrders.forEach(o => {
+        const item = o.item || 'অন্যান্য';
+        if (!byItem[item]) byItem[item] = { count: 0, total: 0 };
+        byItem[item].count++;
+        byItem[item].total += (o.price || 0);
+    });
+
+    let html = `<div class="section-title">💵 আয়ের বিবরণ</div>
+        <div class="divider"></div>
+        <div class="stat-row"><span class="stat-label">💰 মোট আয়</span><span class="stat-value" style="color:#4ade80;font-size:1.1rem">৳${revenue}</span></div>
+        <div class="stat-row"><span class="stat-label">📦 সম্পন্ন অর্ডার</span><span class="stat-value">${completedOrders.length}টি</span></div>
+        <div class="divider"></div>
+        <div class="section-title" style="font-size:0.82rem">📊 আইটেম অনুযায়ী</div>`;
+
+    const sorted = Object.entries(byItem).sort((a, b) => b[1].total - a[1].total);
+    sorted.forEach(([item, data]) => {
+        html += `<div class="stat-row"><span class="stat-label">${escHtml(item)} (${data.count}x)</span><span class="stat-value">৳${data.total}</span></div>`;
+    });
+
+    if (sorted.length === 0) {
+        html += `<div class="empty-state">📭 এখনো কোনো সম্পন্ন অর্ডার নেই</div>`;
+    }
+
+    addBotMessage(html);
+}
+
+function showProfit() {
+    const completedOrders = orders.filter(o => o.status === 'Completed');
+    const revenue = completedOrders.reduce((s, o) => s + (o.price || 0), 0);
+
+    let totalCost = 0;
+    completedOrders.forEach(o => {
+        totalCost += getCost(o.item || '', o.price || 0);
+    });
+
+    const profit = revenue - totalCost;
+    const margin = revenue > 0 ? Math.round((profit / revenue) * 100) : 0;
+
+    const html = `<div class="section-title">💰 প্রফিট রিপোর্ট</div>
+        <div class="divider"></div>
+        <div class="stat-row"><span class="stat-label">💵 মোট আয়</span><span class="stat-value" style="color:#4ade80">৳${revenue}</span></div>
+        <div class="stat-row"><span class="stat-label">💸 মোট খরচ</span><span class="stat-value" style="color:#f87171">৳${totalCost}</span></div>
+        <div class="divider"></div>
+        <div class="stat-row"><span class="stat-label">🏆 নেট প্রফিট</span><span class="stat-value" style="color:${profit>=0?'#4ade80':'#f87171'};font-size:1.1rem">৳${profit}</span></div>
+        <div class="stat-row"><span class="stat-label">📈 প্রফিট মার্জিন</span><span class="stat-value">${margin}%</span></div>
+        <div class="stat-row"><span class="stat-label">📦 সম্পন্ন অর্ডার</span><span class="stat-value">${completedOrders.length}টি</span></div>
+        <div class="divider"></div>
+        <div style="font-size:0.72rem;color:var(--text-dim);padding-top:4px;">⚠️ খরচ প্রাইস সেটিংস থেকে ক্যালকুলেট করা হয়েছে</div>`;
+
+    addBotMessage(html);
+}
+
+function getCost(item, price) {
+    if (!prices) return Math.round(price * 0.7);
+    if (prices.diamonds) {
+        for (const k of Object.keys(prices.diamonds)) {
+            if (item.includes(k + ' Diamond') || item.includes(k + ' ডায়মন্ড') || item.includes(k)) {
+                return prices.diamonds[k].cost || Math.round(prices.diamonds[k].price * 0.7);
+            }
+        }
+    }
+    if (prices.passes) {
+        for (const k of Object.keys(prices.passes)) {
+            if (prices.passes[k].name && item.includes(prices.passes[k].name)) {
+                return prices.passes[k].cost || Math.round(prices.passes[k].price * 0.7);
+            }
+        }
+    }
+    if (prices.specials) {
+        for (const k of Object.keys(prices.specials)) {
+            if (prices.specials[k].name && item.includes(prices.specials[k].name)) {
+                return prices.specials[k].cost || Math.round(prices.specials[k].price * 0.7);
+            }
+        }
+    }
+    return Math.round(price * 0.7);
+}
+
+function searchOrders(query) {
+    const q = query.toLowerCase();
+    const results = orders.filter(o =>
+        (o.uid && o.uid.toLowerCase().includes(q)) ||
+        (o.name && o.name.toLowerCase().includes(q)) ||
+        (o.phone && o.phone.includes(q)) ||
+        (o.trxId && o.trxId.toLowerCase().includes(q))
+    );
+
+    if (!results.length) {
+        addBotMessage(`🔍 "<b>${escHtml(query)}</b>" দিয়ে খুঁজেছি\n\n<div class="empty-state">😕 কোনো অর্ডার পাওয়া যায়নি</div>`);
+        return;
+    }
+
+    let html = `<div class="section-title">🔍 সার্চ রেজাল্ট: "${escHtml(query)}" (${results.length}টি)</div>`;
+    results.slice(0, 10).forEach(o => {
+        const st = o.status || 'Pending';
+        const bc = st === 'Completed' ? 'b-completed' : st === 'Running' ? 'b-running' : st === 'Rejected' ? 'b-rejected' : 'b-pending';
+        const stBn = st === 'Completed' ? 'সম্পন্ন' : st === 'Running' ? 'চলমান' : st === 'Rejected' ? 'বাতিল' : 'পেন্ডিং';
+        html += `<div class="order-card">
+            <div class="oc-head">
+                <span class="oc-uid">🎮 ${escHtml(o.uid||'—')}</span>
+                <span class="badge ${bc}">${stBn}</span>
+            </div>
+            <div class="oc-detail">
+                👤 <b>${escHtml(o.name||'—')}</b><br>
+                📦 ${escHtml(o.item||'—')} — <b>৳${o.price||0}</b><br>
+                💳 ${escHtml(o.payment||'—')} | 📱 ${escHtml(o.phone||'—')}<br>
+                🧾 TrxID: <b>${escHtml(o.trxId||'—')}</b>
+            </div>
+        </div>`;
+    });
+
+    addBotMessage(html);
+}
+
+function showHelp() {
+    const html = `<div class="section-title">❓ সাহায্য — সব কমান্ড</div>
+        <div class="divider"></div>
+        <div class="help-cmd"><span class="cmd">orders</span><span class="desc">সব অর্ডার দেখুন</span></div>
+        <div class="help-cmd"><span class="cmd">pending</span><span class="desc">পেন্ডিং অর্ডার</span></div>
+        <div class="help-cmd"><span class="cmd">completed</span><span class="desc">সম্পন্ন অর্ডার</span></div>
+        <div class="help-cmd"><span class="cmd">today</span><span class="desc">আজকের সামারি</span></div>
+        <div class="help-cmd"><span class="cmd">stats</span><span class="desc">ওভারঅল পরিসংখ্যান</span></div>
+        <div class="help-cmd"><span class="cmd">revenue</span><span class="desc">আয়ের বিবরণ</span></div>
+        <div class="help-cmd"><span class="cmd">profit</span><span class="desc">প্রফিট ক্যালকুলেশন</span></div>
+        <div class="help-cmd"><span class="cmd">search [text]</span><span class="desc">UID/নাম দিয়ে খুঁজুন</span></div>
+        <div class="help-cmd"><span class="cmd">help</span><span class="desc">এই মেসেজ দেখুন</span></div>
+        <div class="divider"></div>
+        <div style="font-size:0.75rem;color:var(--text-dim);">🔄 ডাটা প্রতি ৬০ সেকেন্ডে অটো-রিফ্রেশ হয়<br>🇧🇩 বাংলা ও ইংরেজি দুটোই কাজ করবে</div>`;
+
+    addBotMessage(html);
+}
+
+// ===== PWA =====
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('bot-sw.js').catch(() => {});
+}
+
+// ===== AUTO-LOGIN CHECK =====
+(function() {
+    // If already has hash in localStorage, check if session still valid
+})();
+</script>
+</body>
+</html>
