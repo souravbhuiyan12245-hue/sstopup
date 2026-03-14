@@ -265,6 +265,7 @@
         <button class="quick-btn" onclick="sendCmd('completed')">✅ সম্পন্ন</button>
         <button class="quick-btn" onclick="sendCmd('revenue')">💵 আয়</button>
         <button class="quick-btn" onclick="sendCmd('help')">❓ সাহায্য</button>
+        <button class="quick-btn" onclick="showApiKeySetup()">🔑 API Key</button>
     </div>
 
     <!-- Input -->
@@ -464,8 +465,11 @@ async function processCommand(text) {
 
 // ===== GEMINI AI =====
 
-const GEMINI_KEY = 'AIzaSyDXb5dytlWOt_JhaPHXhgxwDxx5xuT5Oi0';
-const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_KEY}`;
+function getGeminiKey() { return localStorage.getItem('ss_gemini_key') || ''; }
+function getGeminiUrl() { 
+    const k = getGeminiKey();
+    return k ? `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${k}` : '';
+}
 
 let chatHistory = [];
 
@@ -506,6 +510,12 @@ ${recentOrders || 'কোনো অর্ডার নেই'}
 }
 
 async function askGemini(userText) {
+    const geminiUrl = getGeminiUrl();
+    if (!geminiUrl) {
+        addBotMessage('🔑 AI সেটআপ করা হয়নি।\n\n⚙️ Settings থেকে Gemini API Key সেট করো!\n\nKey পেতে যাও: <a href="https://aistudio.google.com/apikey" target="_blank" style="color:var(--accent);">aistudio.google.com/apikey</a>');
+        return;
+    }
+
     chatHistory.push({ role: 'user', parts: [{ text: userText }] });
     
     // Keep only last 10 messages for context
@@ -521,7 +531,7 @@ async function askGemini(userText) {
     };
 
     try {
-        const res = await fetch(GEMINI_URL, {
+        const res = await fetch(geminiUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(body)
@@ -842,6 +852,42 @@ function showHelp() {
         <div style="font-size:0.75rem;color:var(--text-dim);">🔄 ডাটা প্রতি ৬০ সেকেন্ডে অটো-রিফ্রেশ হয়<br>🇧🇩 বাংলা ও ইংরেজি দুটোই কাজ করবে</div>`;
 
     addBotMessage(html);
+}
+
+function showApiKeySetup() {
+    const currentKey = getGeminiKey();
+    const masked = currentKey ? currentKey.substring(0,10) + '...' : 'সেট করা হয়নি';
+    const html = `<div class="section-title">🔑 Gemini API Key সেটআপ</div>
+        <div style="margin:10px 0;font-size:0.82rem;color:var(--text-muted);">
+            বর্তমান: <b>${masked}</b>
+        </div>
+        <div style="margin:8px 0;">
+            <input type="text" id="geminiKeyInput" placeholder="API Key paste করো" 
+                style="width:100%;padding:10px 12px;border:1px solid var(--bot-border);border-radius:10px;background:var(--bg2);color:var(--text);font-size:0.85rem;outline:none;">
+        </div>
+        <div style="display:flex;gap:8px;margin-top:8px;">
+            <button onclick="saveGeminiKey()" style="flex:1;padding:10px;border:none;border-radius:10px;background:var(--primary);color:#fff;font-weight:700;font-size:0.85rem;cursor:pointer;">💾 Save</button>
+            <button onclick="clearGeminiKey()" style="padding:10px 16px;border:1px solid var(--bot-border);border-radius:10px;background:none;color:#ef4444;font-size:0.85rem;cursor:pointer;">🗑️</button>
+        </div>
+        <div style="margin-top:10px;font-size:0.72rem;color:var(--text-dim);">
+            ফ্রি key পেতে: <a href="https://aistudio.google.com/apikey" target="_blank" style="color:var(--accent);">aistudio.google.com/apikey</a><br>
+            Key শুধু তোমার ব্রাউজারে সেভ হবে, কোথাও পাঠানো হবে না।
+        </div>`;
+    addBotMessage(html);
+}
+
+function saveGeminiKey() {
+    const input = document.getElementById('geminiKeyInput');
+    if (!input) return;
+    const key = input.value.trim();
+    if (!key) { addBotMessage('❌ Key দাও!'); return; }
+    localStorage.setItem('ss_gemini_key', key);
+    addBotMessage('✅ API Key সেভ হয়েছে! এখন যেকোনো কিছু জিজ্ঞেস করো। 😎');
+}
+
+function clearGeminiKey() {
+    localStorage.removeItem('ss_gemini_key');
+    addBotMessage('🗑️ API Key মুছে ফেলা হয়েছে।');
 }
 
 // ===== PWA =====
