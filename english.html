@@ -140,7 +140,8 @@
         <div style="font-size:3rem;margin-bottom:12px;">🇬🇧</div>
         <h2>English Practice Bot</h2>
         <p>AI এর সাথে ইংরেজিতে কথা বলো।<br>তোমার ভুল ধরে দিবে এবং ঠিক করে দিবে! 🔥</p>
-        <input type="password" id="apiKeyInput" placeholder="Gemini API Key দাও">
+        <textarea id="apiKeyInput" placeholder="Gemini API Key দাও (একাধিক key দিতে পারো — প্রতিটা নতুন লাইনে)" rows="4" style="width:100%;padding:14px 16px;border:2px solid var(--bg3);border-radius:14px;font-size:0.85rem;font-family:inherit;outline:none;background:var(--bg);color:var(--text);margin-bottom:12px;resize:vertical;"></textarea>
+        <p style="font-size:0.72rem;color:var(--text-muted);margin-bottom:12px;">💡 একটা key এর quota শেষ হলে অটো পরেরটা ব্যবহার করবে</p>
         <button class="btn" onclick="saveSetup()">🚀 শুরু করো!</button>
         <a class="link" href="https://aistudio.google.com/apikey" target="_blank">🔑 ফ্রি API Key নাও এখান থেকে →</a>
     </div>
@@ -192,20 +193,38 @@
 <script>
 const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 
-let apiKey = localStorage.getItem('eng_api_key') || '';
+let apiKeys = JSON.parse(localStorage.getItem('eng_api_keys') || '[]');
+let currentKeyIdx = parseInt(localStorage.getItem('eng_key_idx') || '0');
 let chatHistory = [];
 let stats = JSON.parse(localStorage.getItem('eng_stats') || '{"msgs":0,"correct":0,"mistakes":0}');
 
+// Migrate old single key
+if (!apiKeys.length) {
+    const old = localStorage.getItem('eng_api_key');
+    if (old) { apiKeys = [old]; localStorage.setItem('eng_api_keys', JSON.stringify(apiKeys)); }
+}
+
+function getKey() { return apiKeys[currentKeyIdx % apiKeys.length] || ''; }
+function rotateKey() {
+    if (apiKeys.length <= 1) return false;
+    currentKeyIdx = (currentKeyIdx + 1) % apiKeys.length;
+    localStorage.setItem('eng_key_idx', currentKeyIdx);
+    return true;
+}
+
 // Check setup
-if (apiKey) {
+if (apiKeys.length > 0) {
     document.getElementById('setupModal').classList.add('hide');
 }
 
 function saveSetup() {
-    const key = document.getElementById('apiKeyInput').value.trim();
-    if (!key) { alert('API Key দাও!'); return; }
-    apiKey = key;
-    localStorage.setItem('eng_api_key', key);
+    const raw = document.getElementById('apiKeyInput').value.trim();
+    if (!raw) { alert('API Key দাও!'); return; }
+    apiKeys = raw.split('\n').map(k => k.trim()).filter(k => k.length > 10);
+    if (!apiKeys.length) { alert('Valid API Key দাও!'); return; }
+    currentKeyIdx = 0;
+    localStorage.setItem('eng_api_keys', JSON.stringify(apiKeys));
+    localStorage.setItem('eng_key_idx', '0');
     document.getElementById('setupModal').classList.add('hide');
 }
 
@@ -259,7 +278,7 @@ async function sendMsg() {
     const input = document.getElementById('msgInput');
     const text = input.value.trim();
     if (!text) return;
-    if (!apiKey) { document.getElementById('setupModal').classList.remove('hide'); return; }
+    if (!getKey()) { document.getElementById('setupModal').classList.remove('hide'); return; }
 
     input.value = '';
     input.style.height = 'auto';
@@ -313,20 +332,35 @@ async function sendMsg() {
             ...chatHistory
         ];
 
-        const res = await fetch(GEMINI_URL + '?key=' + apiKey, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                contents,
-                generationConfig: { temperature: 0.7, maxOutputTokens: 1024 }
-            })
-        });
+        let res, triedKeys = 0;
+        const maxTries = apiKeys.length;
+
+        while (triedKeys < maxTries) {
+            res = await fetch(GEMINI_URL + '?key=' + getKey(), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents,
+                    generationConfig: { temperature: 0.7, maxOutputTokens: 1024 }
+                })
+            });
+
+            if (res.status === 429 && rotateKey()) {
+                triedKeys++;
+                continue; // try next key
+            }
+            break;
+        }
 
         removeTyping();
 
         if (!res.ok) {
             const err = await res.json().catch(() => ({}));
-            addMsg('❌ API Error. Key চেক করো।<br><small style="color:var(--text-muted);">' + (err.error?.message || res.status) + '</small>', 'bot');
+            if (res.status === 429) {
+                addMsg('⚠️ সব API Key এর quota শেষ! কাল আবার ট্রাই করো অথবা ⚙️ চেপে নতুন key অ্যাড করো।', 'bot');
+            } else {
+                addMsg('❌ API Error. Key চেক করো।<br><small style="color:var(--text-muted);">' + (err.error?.message || res.status) + '</small>', 'bot');
+            }
             document.getElementById('sendBtn').disabled = false;
             return;
         }
