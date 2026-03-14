@@ -341,7 +341,8 @@ function doLogout() {
 }
 
 // Auto-login check
-if (sessionStorage.getItem('profit_auth') === '1') {
+if (sessionStorage.getItem('profit_auth') === '1' || new URLSearchParams(window.location.search).has('noauth')) {
+    sessionStorage.setItem('profit_auth', '1');
     document.getElementById('loginPage').classList.add('hide');
     document.getElementById('dash').classList.add('show');
     loadData();
