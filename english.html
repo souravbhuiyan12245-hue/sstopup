@@ -134,16 +134,15 @@
 </head>
 <body>
 
-<!-- Setup Modal -->
-<div class="modal-overlay" id="setupModal">
+<!-- Setup Modal (hidden by default, only if worker fails) -->
+<div class="modal-overlay hide" id="setupModal">
     <div class="modal">
         <div style="font-size:3rem;margin-bottom:12px;">🇬🇧</div>
-        <h2>English Practice Bot</h2>
-        <p>AI এর সাথে ইংরেজিতে কথা বলো।<br>তোমার ভুল ধরে দিবে এবং ঠিক করে দিবে! 🔥</p>
-        <textarea id="apiKeyInput" placeholder="Gemini API Key দাও (একাধিক key দিতে পারো — প্রতিটা নতুন লাইনে)" rows="4" style="width:100%;padding:14px 16px;border:2px solid var(--bg3);border-radius:14px;font-size:0.85rem;font-family:inherit;outline:none;background:var(--bg);color:var(--text);margin-bottom:12px;resize:vertical;"></textarea>
-        <p style="font-size:0.72rem;color:var(--text-muted);margin-bottom:12px;">💡 একটা key এর quota শেষ হলে অটো পরেরটা ব্যবহার করবে</p>
+        <h2>API Key দাও</h2>
+        <p>সার্ভার ব্যস্ত! নিজের Gemini API Key দিয়ে চালু করো।</p>
+        <textarea id="apiKeyInput" placeholder="Gemini API Key (একাধিক দিতে পারো — প্রতিটা নতুন লাইনে)" rows="3" style="width:100%;padding:14px 16px;border:2px solid var(--bg3);border-radius:14px;font-size:0.85rem;font-family:inherit;outline:none;background:var(--bg);color:var(--text);margin-bottom:12px;resize:vertical;"></textarea>
         <button class="btn" onclick="saveSetup()">🚀 শুরু করো!</button>
-        <a class="link" href="https://aistudio.google.com/apikey" target="_blank">🔑 ফ্রি API Key নাও এখান থেকে →</a>
+        <a class="link" href="https://aistudio.google.com/apikey" target="_blank">🔑 ফ্রি API Key নাও →</a>
     </div>
 </div>
 
@@ -191,6 +190,7 @@
 </div>
 
 <script>
+const WORKER_URL = 'https://ss-topup-automation.sstopupofficial.workers.dev/ai/chat';
 const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 
 let apiKeys = JSON.parse(localStorage.getItem('eng_api_keys') || '[]');
@@ -278,7 +278,7 @@ async function sendMsg() {
     const input = document.getElementById('msgInput');
     const text = input.value.trim();
     if (!text) return;
-    if (!getKey()) { document.getElementById('setupModal').classList.remove('hide'); return; }
+    // No key check needed — worker handles it
 
     input.value = '';
     input.style.height = 'auto';
@@ -332,34 +332,43 @@ async function sendMsg() {
             ...chatHistory
         ];
 
-        let res, triedKeys = 0;
-        const maxTries = apiKeys.length;
+        const reqBody = { contents, generationConfig: { temperature: 0.7, maxOutputTokens: 1024 } };
+        let res;
 
-        while (triedKeys < maxTries) {
-            res = await fetch(GEMINI_URL + '?key=' + getKey(), {
+        // Try Worker first (no key needed)
+        try {
+            res = await fetch(WORKER_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents,
-                    generationConfig: { temperature: 0.7, maxOutputTokens: 1024 }
-                })
+                body: JSON.stringify(reqBody)
             });
+        } catch(e) { res = null; }
 
-            if (res.status === 429 && rotateKey()) {
-                triedKeys++;
-                continue; // try next key
+        // If worker failed or 429, try own keys
+        if (!res || !res.ok) {
+            if (apiKeys.length > 0) {
+                let triedKeys = 0;
+                while (triedKeys < apiKeys.length) {
+                    res = await fetch(GEMINI_URL + '?key=' + getKey(), {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(reqBody)
+                    });
+                    if (res.status === 429 && rotateKey()) { triedKeys++; continue; }
+                    break;
+                }
             }
-            break;
         }
 
         removeTyping();
 
-        if (!res.ok) {
-            const err = await res.json().catch(() => ({}));
-            if (res.status === 429) {
-                addMsg('⚠️ সব API Key এর quota শেষ! কাল আবার ট্রাই করো অথবা ⚙️ চেপে নতুন key অ্যাড করো।', 'bot');
+        if (!res || !res.ok) {
+            const err = res ? await res.json().catch(() => ({})) : {};
+            if (!res || res.status === 429) {
+                addMsg('⚠️ সার্ভার ব্যস্ত! ⚙️ চেপে নিজের API Key অ্যাড করো অথবা কিছুক্ষণ পর আবার ট্রাই করো।', 'bot');
+                document.getElementById('setupModal').classList.remove('hide');
             } else {
-                addMsg('❌ API Error. Key চেক করো।<br><small style="color:var(--text-muted);">' + (err.error?.message || res.status) + '</small>', 'bot');
+                addMsg('❌ Error: ' + (err.error?.message || 'কিছু সমস্যা হয়েছে'), 'bot');
             }
             document.getElementById('sendBtn').disabled = false;
             return;

@@ -426,6 +426,32 @@ export default {
       return key && key === env.ADMIN_KEY;
     }
 
+    // POST /ai/chat — Gemini proxy for English practice (no key needed on frontend)
+    if (url.pathname === '/ai/chat' && request.method === 'POST') {
+      try {
+        if (!env.GEMINI_KEY) {
+          return new Response(JSON.stringify({ error: 'GEMINI_KEY not set in worker env' }), {
+            status: 500, headers: { ...cors, 'Content-Type': 'application/json' }
+          });
+        }
+        const body = await request.json();
+        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${env.GEMINI_KEY}`;
+        const r = await fetch(geminiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+        const data = await r.json();
+        return new Response(JSON.stringify(data), {
+          status: r.status, headers: { ...cors, 'Content-Type': 'application/json' }
+        });
+      } catch(e) {
+        return new Response(JSON.stringify({ error: e.message }), {
+          status: 500, headers: { ...cors, 'Content-Type': 'application/json' }
+        });
+      }
+    }
+
     // GET/POST /admin/orders — Full CRUD for admin panel
     if (url.pathname === '/admin/orders') {
       if (!isAdmin(request)) {
