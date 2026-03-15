@@ -435,15 +435,21 @@ export default {
           });
         }
         const body = await request.json();
-        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${env.GEMINI_KEY}`;
-        const r = await fetch(geminiUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body)
-        });
-        const data = await r.json();
+        // Try models in order — fallback if quota exceeded
+        const models = ['gemini-2.0-flash', 'gemma-3-12b-it', 'gemma-3-27b-it', 'gemini-2.0-flash-lite'];
+        let geminiRes = null;
+        for (const model of models) {
+          const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${env.GEMINI_KEY}`;
+          geminiRes = await fetch(geminiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+          });
+          if (geminiRes.status !== 429) break; // success or non-quota error
+        }
+        const data = await geminiRes.json();
         return new Response(JSON.stringify(data), {
-          status: r.status, headers: { ...cors, 'Content-Type': 'application/json' }
+          status: geminiRes.status, headers: { ...cors, 'Content-Type': 'application/json' }
         });
       } catch(e) {
         return new Response(JSON.stringify({ error: e.message }), {

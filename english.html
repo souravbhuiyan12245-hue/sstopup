@@ -191,7 +191,8 @@
 
 <script>
 const WORKER_URL = 'https://ss-topup-automation.kodomofficial01.workers.dev/ai/chat';
-const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+const GEMINI_MODELS = ['gemini-2.0-flash', 'gemma-3-12b-it', 'gemma-3-27b-it', 'gemini-2.0-flash-lite'];
+const GEMINI_BASE = 'https://generativelanguage.googleapis.com/v1beta/models/';
 
 let apiKeys = JSON.parse(localStorage.getItem('eng_api_keys') || '[]');
 let currentKeyIdx = parseInt(localStorage.getItem('eng_key_idx') || '0');
@@ -347,15 +348,18 @@ async function sendMsg() {
         // If worker failed or 429, try own keys
         if (!res || !res.ok) {
             if (apiKeys.length > 0) {
-                let triedKeys = 0;
-                while (triedKeys < apiKeys.length) {
-                    res = await fetch(GEMINI_URL + '?key=' + getKey(), {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(reqBody)
-                    });
-                    if (res.status === 429 && rotateKey()) { triedKeys++; continue; }
-                    break;
+                for (const model of GEMINI_MODELS) {
+                    let triedKeys = 0;
+                    while (triedKeys < apiKeys.length) {
+                        res = await fetch(GEMINI_BASE + model + ':generateContent?key=' + getKey(), {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(reqBody)
+                        });
+                        if (res.status === 429 && rotateKey()) { triedKeys++; continue; }
+                        break;
+                    }
+                    if (res && res.status !== 429) break;
                 }
             }
         }
