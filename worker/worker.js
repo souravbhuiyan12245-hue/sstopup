@@ -436,7 +436,7 @@ export default {
         }
         const body = await request.json();
         // Try models in order — fallback if quota exceeded
-        const models = ['gemini-2.0-flash', 'gemma-3-12b-it', 'gemma-3-27b-it', 'gemini-2.0-flash-lite'];
+        const models = ['gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemma-3-4b-it', 'gemma-3-12b-it'];
         let geminiRes = null;
         for (const model of models) {
           const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${env.GEMINI_KEY}`;
