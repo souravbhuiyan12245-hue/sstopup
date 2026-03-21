@@ -17,6 +17,7 @@ function b64encode(str) {
 const ALLOWED_ORIGINS = [
   'https://souravbhuiyan12245-hue.github.io',
   'https://ss-topup.is-a.dev',
+  'https://ss-topup.foo.ng',
   'http://localhost',
   'http://127.0.0.1',
   'https://web.telegram.org',
