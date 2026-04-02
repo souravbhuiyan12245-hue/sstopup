@@ -63,7 +63,7 @@
   },
   "passes": {
     "weekly_lite": {
-      "price": 42,
+      "price": 43,
       "original": 140,
       "name": "Weekly Lite"
     },
@@ -96,7 +96,7 @@
     }
   },
   "announcement": "আমাদের এইখানে খুব সহজেই টপ-আপ করতে পারবেন।",
-  "updated": "2026-03-13",
+  "updated": "2026-04-02",
   "addMoneyEnabled": false,
   "siteSettings": {
     "tgBot": "8664414516:AAFRdN6yYRbUZEM31C1eTGpT0HP8ob-0Q0M",
