@@ -1,22 +1,22 @@
 {
   "diamonds": {
     "25": {
-      "price": 24,
+      "price": 20,
       "original": 26,
       "cost": 0
     },
     "50": {
-      "price": 35,
+      "price": 32,
       "original": 40,
       "cost": 0
     },
     "115": {
-      "price": 75,
+      "price": 79,
       "original": 80,
       "cost": 0
     },
     "240": {
-      "price": 155,
+      "price": 165,
       "original": 160,
       "cost": 0
     },
@@ -96,7 +96,7 @@
     }
   },
   "announcement": "আমাদের এইখানে খুব সহজেই টপ-আপ করতে পারবেন।",
-  "updated": "2026-04-02",
+  "updated": "2026-06-18",
   "addMoneyEnabled": false,
   "siteSettings": {
     "tgBot": "8664414516:AAFRdN6yYRbUZEM31C1eTGpT0HP8ob-0Q0M",
